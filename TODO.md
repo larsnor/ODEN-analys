@@ -77,8 +77,22 @@ made, so work can resume without re-deriving context.
   `npm run typecheck && npm test && npm run build` on push, so the repo is
   review-ready and regressions are caught automatically.
 
+## Cross-repo (7S-generator)
+
+The corpus generator now lives in its own repo,
+[7S-generator](https://github.com/larsnor/7S-generator). Two notes:
+
+- **Parity contract.** `plugin/src/mgrs.ts` and the 7S report format are mirrored
+  (copied, not shared) in 7S-generator's `corpusgen/mgrs.py` / `render.py`, and the
+  `7SPLATE:` image marker is a shared contract. If you change the report format,
+  the marker, or MGRS handling here, mirror it in 7S-generator so fed corpora keep
+  parsing. No build coupling — only the contract.
+- Some earlier items now belong to that repo: **enriching the generator's recon
+  templates** and **corpus plate-image generation** are 7S-generator work (its own
+  `TODO.md` tracks them).
+
 ## Minor
 
-- [ ] **Tierp corpus with plate images.** The Tierp corpus is generated without
-  images; add corroborating plate photos (as Vällinge has) if a Tierp image demo is
-  wanted. Low priority — images are plate-corroboration only.
+- [ ] **Tierp corpus with plate images.** A Tierp image demo (plate photos) is a
+  7S-generator run (`generate --images`); low priority — images are
+  plate-corroboration only.

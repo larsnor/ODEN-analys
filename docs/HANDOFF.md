@@ -1,5 +1,11 @@
 # 7S Intelligence Analysis Project — Handoff Summary
 
+> **Note (current):** The data-mimic/simulator described in parts of this
+> historical handoff has moved to its own repo,
+> **[7S-generator](https://github.com/larsnor/7S-generator)** (CLI: generate →
+> add-hostiles/-protesters → feed, optional plate images). References below to
+> `generate_reports*.py` / `feed_reports.py` / `gen_images.py` are historical.
+
 ## What this is
 A system for analysing Swedish Home Guard (Hemvärnet) 7S-format field reports,
 landing in an Obsidian vault, for pattern detection / entity re-identification.
