@@ -55,3 +55,51 @@ test("benign prose (incl. near-misses) raises NO behaviour signal (precision gua
   const falsePos = BENIGN.filter((s) => behaviourHit(s));
   assert.deepEqual(falsePos, [], `these benign phrasings falsely fired: ${falsePos.join(" | ")}`);
 });
+
+// --- sabotage / infiltration / terrorism (the extended threat vocabulary) -----
+const THREATS = [
+  // sabotage
+  "Klippte upp stängslet med en bultsax och tog sig in.",
+  "Manipulerade ett kabelskåp och kopplade bort strömmen.",
+  "Bände upp en lucka med kofot vid stationen.",
+  // infiltration
+  "Utgav sig för att vara hantverkare men saknade arbetsorder.",
+  "Smet in genom en dörr vid vaktbyte.",
+  "Skuggade en anställd och testade en dörr som skulle vara låst.",
+  // terrorism
+  "Lämnade en oidentifierad väska vid entrén och avlägsnade sig.",
+  "Körde långsamt förbi upprepade gånger.",
+  "En kvarlämnad väska stod obevakad vid perrongen.",
+];
+
+// Benign prose that specifically probes the NEW threat stems for false positives.
+const THREAT_BENIGN = [
+  "Trädgårdsmästaren klippte gräs längs staketet.",   // NOT "klippte upp"
+  "Elektriker bytte en säkring i elskåpet.",           // infra noun alone is inert
+  "Hantverkare bar sin verktygsväska till bygget.",    // toolbag ≠ breaching tool
+  "Personal visade passerkort vid grinden.",           // passcard alone is inert
+  "Bil körde förbi i normal hastighet.",               // NOT "körde långsamt förbi"
+  "Familj lämnade stranden på kvällen.",               // NOT "lämnade en väska"
+  "Bonde kontrollerade stängslet vid åkerkanten.",
+  "Lastbil hämtade en container vid terminalen.",
+];
+
+test("sabotage/infiltration/terrorism phrasings raise a threat signal", () => {
+  const missed = THREATS.filter((s) => !behaviourHit(s));
+  assert.deepEqual(missed, [], `these threat phrasings were missed: ${missed.join(" | ")}`);
+});
+
+test("benign prose does not fire the new threat stems (precision guard)", () => {
+  const fp = THREAT_BENIGN.filter((s) => behaviourHit(s));
+  assert.deepEqual(fp, [], `these benign phrasings falsely fired: ${fp.join(" | ")}`);
+});
+
+test("a high-confidence threat signal (weight 3) elevates on its own at night", () => {
+  // far from the object, but night + a weight-3 sabotage signal = 2 + 3 = 5 ≥ threshold.
+  const r = {
+    typ: "7S-rapport", tnr: "x", tidpunkt: "2026-06-16T02:00:00", plats: "p",
+    lat: 58.0, lon: 16.0, sagesman: "AQ", handelse: "Bände upp en lucka med kofot.",
+    links: [], embeds: [], file: "f.md",
+  } as unknown as Report;
+  assert.ok(scoreReport(r).score >= 5, "weight-3 sabotage + night should reach the threshold");
+});

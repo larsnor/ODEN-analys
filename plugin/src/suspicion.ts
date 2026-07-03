@@ -43,17 +43,23 @@ export const DEFAULT_SUSPICION: SuspicionOpts = {
 };
 
 /**
- * Recon-behaviour indicators (the TUNABLE / domain-specific surface, isolated
- * like vocab.ts). Deliberately specific multi-word stems so benign civilian
- * prose ("parkerade kort", "passerade") does NOT match. The LLM (later) lifts
- * the open-vocabulary ceiling this list cannot reach.
+ * Threat-behaviour indicators (the TUNABLE / domain-specific surface, isolated
+ * like vocab.ts). Covers the four hostility modes — reconnaissance, sabotage,
+ * infiltration and terrorism — each a category of behavioural signals. The LLM
+ * (later) lifts the open-vocabulary ceiling this fixed list cannot reach.
+ *
+ * `weight` defaults to 2; HIGH-CONFIDENCE signals (breaching tools, tampering,
+ * an unattended package) are weight 3, so a single such signal at night reaches
+ * the threshold even without proximity.
+ *
+ * Matching is SUBSTRING (a poor-man's stemmer: "iaktt" catches iakttog/iakttar).
+ * So every stem must be safe INSIDE benign words too — prefer verb roots and
+ * multi-word phrases, and never a stem a benign template contains (e.g. "under
+ * uppsikt av" is benign → require "uppsikt mot/över"; "klippte gräs" is benign →
+ * a saboteur "klippte upp" the fence, never bare "klippte").
  */
-// Matching is SUBSTRING (a poor-man's stemmer: "iaktt" catches iakttog/iakttar).
-// So every stem must be safe INSIDE benign words too — prefer verb roots and
-// multi-word phrases, and never a stem a civilian template contains (e.g. "under
-// uppsikt av" is benign → require "uppsikt mot/över"; a bare "längs staketet" is
-// out because a civilian "promenerade längs staketet" exists).
-export const RECON_INDICATORS: Array<{ key: string; label: string; stems: string[] }> = [
+export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: number; stems: string[] }> = [
+  // --- Reconnaissance: surveillance / optics / counter-surveillance ----------
   { key: "observation", label: "övervakning/spaning", stems: [
     "betrakta", "iaktt", "uppsikt mot", "uppsikt över", "höll uppsikt", "höll utkik",
     "höll koll", "spana", "rekognos", "rekade", "observera", "övervaka", "bevakade"] },
@@ -75,6 +81,22 @@ export const RECON_INDICATORS: Array<{ key: string; label: string; stems: string
     "klättrade över", "kröp", "forcerade", "trängde in", "tog sig in", "tog sig över"] },
   { key: "teknik", label: "teknisk inhämtning", stems: [
     "antenn", "sändare", "störsändare", "avlyssning", "signalspaning", "pejlade", "pejl"] },
+  // --- Sabotage: breaching + tampering (high confidence → weight 3) -----------
+  { key: "sabotage", label: "sabotage/åverkan", weight: 3, stems: [
+    "manipulera", "bände upp", "bröt sig in", "kopplade bort", "saboterade", "sabotage",
+    "klippte upp", "klippte hål", "sågade av", "dyrkade", "bultsax", "kofot", "bågfil",
+    "sprängmedel", "brytverktyg"] },
+  // --- Terrorism: unattended object + vehicle probing (weight 3) --------------
+  { key: "attentat", label: "attentatsindikator", weight: 3, stems: [
+    "oidentifierad väska", "kvarlämnad", "herrelöst", "lämnade en väska", "lämnade ett paket",
+    "obevakad väska", "misstänkt föremål", "misstänkt paket", "placerade ett föremål",
+    "placerade ett paket", "grävde ned", "fordonsspärr", "körde långsamt förbi",
+    "upprepade förbifarter", "rammade"] },
+  // --- Infiltration: unauthorised access + pretext + tailing ------------------
+  { key: "infiltration", label: "infiltration/tillträde", stems: [
+    "obehörig", "smet in", "gled in vid", "utgav sig för", "låtsades vara", "falsk arbetsorder",
+    "saknade arbetsorder", "förfalskad", "skuggade en", "skuggade personal",
+    "följde efter personal", "testade en dörr", "testade dörren"] },
 ];
 
 const R = 6371000; // earth radius (m)
@@ -115,9 +137,9 @@ export function scoreReport(report: Report, opts: SuspicionOpts = DEFAULT_SUSPIC
 
   // 3. Recon-behaviour indicators in Händelse ⊕ Symbol (tunable surface).
   const text = `${report.handelse ?? ""} ${report.symbol ?? ""}`.toLowerCase();
-  for (const ind of RECON_INDICATORS) {
+  for (const ind of THREAT_INDICATORS) {
     const hit = ind.stems.find((s) => text.includes(s));
-    if (hit) reasons.push({ key: `beteende:${ind.key}`, label: `spaningsindikator: ${ind.label} ("${hit}")`, weight: 2 });
+    if (hit) reasons.push({ key: `beteende:${ind.key}`, label: `hotindikator: ${ind.label} ("${hit}")`, weight: ind.weight ?? 2 });
   }
 
   const score = reasons.reduce((s, r) => s + r.weight, 0);

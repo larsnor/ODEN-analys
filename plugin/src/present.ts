@@ -24,6 +24,11 @@ const REASON_PHRASE: Record<string, string> = {
   "beteende:registrering": "antecknande/mätande",
   "beteende:kontraspaning": "kontraspaningsbeteende",
   "beteende:dröjande": "dröjande/upprepad närvaro",
+  "beteende:perimeter": "närmande mot objektet",
+  "beteende:teknik": "teknisk avlyssning/spaning",
+  "beteende:sabotage": "sabotage/åverkan",
+  "beteende:attentat": "misstänkt föremål/fordonshot",
+  "beteende:infiltration": "obehörigt tillträde",
   återkomst: "återkommande",
 };
 
