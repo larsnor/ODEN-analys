@@ -12,9 +12,9 @@ __pycache__/
 .venv/
 
 # Generated (regenerable) simulator output — the committed snapshot lives in plugin/test/fixtures/
-simulator/reports_new/
+simulator/reports_*/
 simulator/reports/
-simulator/ground_truth_new.json
+simulator/ground_truth_*.json
 simulator/ground_truth.json
 simulator/attachments/plate_*.jpg
 

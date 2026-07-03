@@ -33,12 +33,36 @@ python3 -m venv .venv
 Kör med `./.venv/bin/python3` nedan (eller lägg till `--no-images` för att hoppa
 över foton, då behövs inte Pillow).
 
+## Platsprofiler (`--site`)
+
+Generatorn har två utbytbara **platsprofiler** med samma scenarioform och samma
+beteenderepertoar — bara geografin, platsnamnen och personerna skiljer. Poängen är
+att pluginets fasta regelverk (suspicion `RECON_INDICATORS`, `vocab.ts`) ska hitta
+spaningscellen på **båda** platserna utan att tunas om per korpus.
+
+- `--site vallinge` — HvSS Vällinge (fem sektorer AQ–EQ). Skriver `reports_new/`.
+- `--site tierp` — Tierp flygfält (ESKT ~60.345 N, 17.422 E), fyra plutoner
+  AQ/BQ/CQ/DQ runt fältet, sju nya spaningsindivider. Skriver `reports_tierp/`.
+
+MGRS-rutorna beräknas från lat/lon med `mgrs_forward.py` (WGS84 → MGRS, matchar
+pluginets inversa `mgrs.ts` — verifierat mot Vällinges rutor och genom
+round-trip).
+
 ## Användning
 
 ```bash
-./.venv/bin/python3 generate_reports_newformat.py
+# Vällinge (med plåtfoton — kräver Pillow-venv)
+./.venv/bin/python3 generate_reports_newformat.py --site vallinge
 python3 feed_reports.py --source ./reports_new --vault /sökväg/till/Vault
+
+# Tierp (utan foton)
+python3 generate_reports_newformat.py --site tierp --no-images
+python3 feed_reports.py --source ./reports_tierp --vault /sökväg/till/Vault
 ```
+
+> Sätt skyddsobjektets koordinat i ODEN-inställningarna till platsen du matar in
+> (Vällinge 59.2622,17.712 · Tierp 60.345,17.422) så att närhets-signalen mäter
+> mot rätt objekt.
 
 Matarkommandon: `send` (nästa) · `send 5` · `auto` (~15 min) · `auto 5` ·
 `status` · `reset` (töm) · `quit`.
