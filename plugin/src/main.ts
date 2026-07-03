@@ -547,12 +547,13 @@ export default class SevenSPlugin extends Plugin {
 
   /** ODEN's own marker note for the protected object (idempotent, own-note). */
   private async writeAoiNote(): Promise<void> {
-    const { protectedLat: lat, protectedLon: lon } = this.settings;
-    const name = this.settings.operationName || "Skyddsobjekt";
-    const md = [
+    const { protectedLat: lat, protectedLon: lon, operationName } = this.settings;
+    // Internal tag/metod stay `skyddsobjekt` (the graph/map colour key); the
+    // visible node is "Objektet".
+    const body: string[] = [
       "---",
       "typ: skyddsobjekt",
-      `namn: "${name.replace(/"/g, "'")}"`,
+      'namn: "Objektet"',
       "källa: 7s-plugin",
       "generator: 7s-plugin",
       "metod: skyddsobjekt",
@@ -562,14 +563,17 @@ export default class SevenSPlugin extends Plugin {
       `location: "${lat},${lon}"`,
       "---",
       "",
-      `# 🎯 Skyddsobjekt: ${name}`,
+      "# 🎯 Objektet",
       "",
+    ];
+    if (operationName) body.push(`**Operation:** ${operationName}`, "");
+    body.push(
       `**Koordinat:** ${lat}, ${lon}`,
       "",
       "_Operationens område av intresse. ODEN mäter närhet mot denna punkt._",
       "",
-    ].join("\n");
-    await this.writeOwnedNotes([{ name: "Skyddsobjekt.md", body: md }], "skyddsobjekt");
+    );
+    await this.writeOwnedNotes([{ name: "Objektet.md", body: body.join("\n") }], "skyddsobjekt");
   }
 
   /** Guided dialog → a COMPLETE operator-authored 7S observation (all fields). */
@@ -832,7 +836,7 @@ export default class SevenSPlugin extends Plugin {
       await this.materializeAgents(reports, a);
       await this.revealPanel();
       await this.refreshPanel();
-      new Notice(`ODEN: ${a.elevated.length} förhöjda observationer; ${a.nearObjectElevated} nära skyddsobjekt.`);
+      new Notice(`ODEN: ${a.elevated.length} förhöjda observationer; ${a.nearObjectElevated} nära objektet.`);
     } catch (err) {
       console.error("ODEN: suspicion analysis failed", err);
       new Notice("ODEN: kunde inte göra misstankeanalys (se konsolen).");
@@ -1261,7 +1265,7 @@ class SevenSTextView extends ItemView {
         "padding:10px 12px;margin-bottom:10px;border-radius:6px;border:1px solid var(--interactive-accent);background:var(--background-secondary-alt);";
       card.createEl("div", { text: "🎯 Kom igång" }).style.cssText = "font-weight:700;margin-bottom:4px;";
       card.createEl("div", {
-        text: "Ange operationens område av intresse (skyddsobjektet). ODEN mäter närhet mot denna punkt och centrerar kartan där.",
+        text: "Ange operationens område av intresse (objektet). ODEN mäter närhet mot denna punkt och centrerar kartan där.",
       }).style.cssText = "font-size:.9em;opacity:.85;margin-bottom:8px;";
       const btn = card.createEl("button", { text: "Konfigurera operationsområde", cls: "mod-cta" });
       btn.onclick = () => this.plugin.openOperationSetup();
@@ -1489,8 +1493,8 @@ class SevenSSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Sägesman (din signal)")
-      .setDesc("Förvald sägesman/callsign för observationer du själv skapar.")
+      .setName("Sagesman (din signal)")
+      .setDesc("Förvald sagesman/callsign för observationer du själv skapar.")
       .addText((text) =>
         text
           .setPlaceholder("OP")
@@ -1502,9 +1506,9 @@ class SevenSSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Skyddsobjekt — koordinat")
+      .setName("Objektet — koordinat")
       .setDesc(
-        "Lat,lon för skyddsobjektet. Används av misstankeanalysen för närhets-" +
+        "Lat,lon för objektet som ska bevakas. Används av misstankeanalysen för närhets-" +
           "signalen (haversine). Sätts enklast via \"Konfigurera operationsområde\". Format: \"lat,lon\".",
       )
       .addText((text) =>
@@ -1677,7 +1681,7 @@ class SetupOperationModal extends Modal {
     const { contentEl } = this;
     contentEl.createEl("h3", { text: "Operationsområde" });
     contentEl.createEl("p", {
-      text: "Ange skyddsobjektet/området som ska bevakas. ODEN mäter närhet mot denna punkt och centrerar kartan där.",
+      text: "Ange objektet/området som ska bevakas. ODEN mäter närhet mot denna punkt och centrerar kartan där.",
     }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
 
     const nameIn = contentEl.createEl("input", { type: "text" });
@@ -1739,7 +1743,7 @@ class NewObservationModal extends Modal {
       }
     };
 
-    // Fields follow the 7S order: Stund · Ställe · Händelse · Symbol · Sägesman.
+    // Fields follow the 7S order: Stund · Ställe · Händelse · Symbol · Sagesman.
     field("Stund");
     const time = contentEl.createEl("input", { type: "datetime-local" });
     time.value = this.init.tidpunkt.slice(0, 16);
@@ -1760,7 +1764,7 @@ class NewObservationModal extends Modal {
     sym.rows = 2;
     sym.style.cssText = "width:100%;resize:vertical;";
 
-    field("Sägesman");
+    field("Sagesman");
     const cs = contentEl.createEl("input", { type: "text" });
     cs.value = this.init.sagesman;
     cs.style.cssText = "width:100%;";
