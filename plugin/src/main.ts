@@ -474,14 +474,18 @@ export default class SevenSPlugin extends Plugin {
    *  naming. Feature-detected + try/caught: if Map View is absent or its API
    *  changes, naming still works, just without the zoom. `dedicatedPane` reuses
    *  the open map leaf rather than replacing the active (ODEN) panel. */
-  private focusMapOn(lat: number, lon: number): void {
+  private focusMapOn(lat: number, lon: number, query?: string): void {
     try {
       const mv = (this.app as unknown as { plugins?: { plugins?: Record<string, unknown> } }).plugins?.plugins?.[
         "obsidian-map-view"
       ] as { openMapWithState?: (s: unknown, b: string, f: boolean) => unknown; settings?: { zoomOnGoFromNote?: number } } | undefined;
       if (!mv || typeof mv.openMapWithState !== "function") return;
       const mapZoom = mv.settings?.zoomOnGoFromNote ?? 15;
-      void mv.openMapWithState({ mapCenter: { lat, lng: lon }, mapZoom }, "dedicatedPane", false);
+      // Optionally override the query so a just-created marker (e.g. the AOI) is
+      // visible even if the map's persisted query doesn't include its tag yet.
+      const state: Record<string, unknown> = { mapCenter: { lat, lng: lon }, mapZoom };
+      if (query) state.query = query;
+      void mv.openMapWithState(state, "dedicatedPane", false);
     } catch (err) {
       console.warn("ODEN: could not focus Map View", err);
     }
@@ -532,7 +536,9 @@ export default class SevenSPlugin extends Plugin {
         this.settings.setupComplete = true;
         await this.saveSettings();
         await this.writeAoiNote();
-        this.focusMapOn(res.lat, res.lon); // point the map at the area now
+        // Point the map at the area AND include the AOI tag in the query so the
+        // marker shows now (the persisted map rule/query only reloads on restart).
+        this.focusMapOn(res.lat, res.lon, "tag:#skyddsobjekt OR tag:#larm OR tag:#aktör");
         await this.refreshPanel();
         new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
       },
@@ -1675,7 +1681,7 @@ class SetupOperationModal extends Modal {
     }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
 
     const nameIn = contentEl.createEl("input", { type: "text" });
-    nameIn.placeholder = "Namn, t.ex. HvSS Vällinge";
+    nameIn.placeholder = "Operation ODEN";
     nameIn.value = this.init.name;
     nameIn.style.cssText = "width:100%;margin:0 0 8px;";
 
@@ -1733,7 +1739,8 @@ class NewObservationModal extends Modal {
       }
     };
 
-    field("Tidpunkt");
+    // Fields follow the 7S order: Stund · Ställe · Händelse · Symbol · Sägesman.
+    field("Stund");
     const time = contentEl.createEl("input", { type: "datetime-local" });
     time.value = this.init.tidpunkt.slice(0, 16);
     time.style.cssText = "width:100%;";
@@ -1743,20 +1750,20 @@ class NewObservationModal extends Modal {
     plats.placeholder = "t.ex. Vid grindarna  ·  33VXF5453072480";
     plats.style.cssText = "width:100%;";
 
-    field("Sägesman");
-    const cs = contentEl.createEl("input", { type: "text" });
-    cs.value = this.init.sagesman;
-    cs.style.cssText = "width:100%;";
-
-    field("Händelse", "Vad observerades?");
+    field("Händelse", "(Slag, Styrka, Sysselsättning)");
     const hand = contentEl.createEl("textarea");
     hand.rows = 3;
     hand.style.cssText = "width:100%;resize:vertical;";
 
-    field("Kännetecken (Symbol)", "Utmärkande drag — valfritt");
+    field("Symbol", "Kännetecken — valfritt");
     const sym = contentEl.createEl("textarea");
     sym.rows = 2;
     sym.style.cssText = "width:100%;resize:vertical;";
+
+    field("Sägesman");
+    const cs = contentEl.createEl("input", { type: "text" });
+    cs.value = this.init.sagesman;
+    cs.style.cssText = "width:100%;";
 
     const err = contentEl.createEl("div");
     err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin:6px 0;";
