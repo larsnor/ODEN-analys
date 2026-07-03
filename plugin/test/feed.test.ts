@@ -9,7 +9,7 @@ test("sorts newest-first, dedups by path, labels and flags severity", () => {
   const items: FeedItem[] = [
     { path: "reports/TNR140000.md", kind: "mottaget", time: ms("2026-06-15T14:00:00"), tnr: "140000", plats: "Grindarna", tid: "14:00" },
     { path: "entities/RJK241.md", kind: "fordon", time: ms("2026-06-15T15:00:00"), label: "RJK241", count: 4 },
-    { path: "reports/TNR160300.md", kind: "larm", time: ms("2026-06-16T03:00:00"), plats: "Grindarna", level: "Hög", reasons: ["nära skyddsobjekt", "nattetid"] },
+    { path: "reports/TNR160300.md", kind: "larm", time: ms("2026-06-16T03:00:00"), plats: "Grindarna", level: "Hög", reasons: ["nära objektet", "nattetid"] },
     // duplicate path, older — should be dropped in favour of the newer one above
     { path: "reports/TNR160300.md", kind: "mottaget", time: ms("2026-06-16T02:00:00"), tnr: "160300", plats: "Grindarna" },
   ];
@@ -20,7 +20,7 @@ test("sorts newest-first, dedups by path, labels and flags severity", () => {
   assert.equal(rows[0].severity, "larm");
   assert.ok(rows[0].text.startsWith("⚠"));
   assert.match(rows[0].text, /Misstänkt aktivitet/);
-  assert.match(rows[0].text, /nära skyddsobjekt, nattetid/);
+  assert.match(rows[0].text, /nära objektet, nattetid/);
   assert.equal(rows[0].stem, "TNR160300");
   // vehicle + message are "info"
   assert.ok(rows.every((r) => r.kind === "larm" || r.severity === "info"));

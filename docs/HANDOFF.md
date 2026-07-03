@@ -147,7 +147,7 @@ Boundary test: "format/regex-link" = Bin 1; "a setting/colour/view" = Bin 2;
      entity/mark/actor notes are written.
 6. [DONE] Transparent suspicion score (§6.5/§6.6) — src/suspicion.ts (pure, NO
    LLM). Scores PER REPORT (not only per entity — the recon team has no entities):
-   proximity to skyddsobjekt (haversine, works off MGRS-derived coords), time-of-
+   proximity to objektet (haversine, works off MGRS-derived coords), time-of-
    day (night), recon-behaviour indicators in Händelse (RECON_INDICATORS = the
    tunable surface, isolated like vocab.ts). Weighted EXPLAINABLE sum, every row
    shows reasons[]. Rollup by location/day + near-object/night counts. Per-entity

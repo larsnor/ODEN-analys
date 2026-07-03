@@ -54,7 +54,7 @@ export function computeAlertItems(b: AnalysisBundle, nicks?: Nicknames): Alert[]
     out.push({
       key: `förhöjd:${r.file}`,
       kind: "förhöjd",
-      title: `Misstänkt aktivitet${near ? " — nära skyddsobjekt" : ""} — ${place}`,
+      title: `Misstänkt aktivitet${near ? " — nära objektet" : ""} — ${place}`,
       pointer:
         `Öppna [[${s}|TNR${r.tnr}]] (${r.tidpunkt}, ${r.sagesman}). ` +
         `I Map View: zooma till "${place}". Skäl: ${reasonPhrases(r.reasons).join(", ")}.`,

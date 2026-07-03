@@ -229,7 +229,7 @@ bekräftelse — en nod grafen sedan visar. **Grafen visar; pluginet resonerar.*
 
 ### 6.5 Transparent misstankepoäng
 Viktad, förklarbar summa. Signaler t.ex. återkomst över dygn, nattaktivitet,
-geografisk koncentration nära skyddsobjekt, spaningsindikatorer i sysselsättning,
+geografisk koncentration nära objektet, spaningsindikatorer i sysselsättning,
 delade (bekräftade) märken mellan olika fordon. Varje entitet får
 `suspicionReasons[]` — aldrig bara en siffra.
 

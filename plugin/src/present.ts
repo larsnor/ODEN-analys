@@ -16,7 +16,7 @@ export function suspicionLevel(score: number): "Hög" | "Förhöjd" | "Att bevak
 
 /** Clean operator phrase for one suspicion reason — no weights, no jargon. */
 const REASON_PHRASE: Record<string, string> = {
-  proximity: "nära skyddsobjekt",
+  proximity: "nära objektet",
   natt: "nattetid",
   skymning: "skymning/gryning",
   "beteende:observation": "övervakande beteende",

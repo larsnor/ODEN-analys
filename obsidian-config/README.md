@@ -10,17 +10,17 @@ and hides the cloud of unconnected message dots:
 
 | Class | query | colour |
 |-------|-------|--------|
-| Skyddsobjekt (area of interest) | `tag:#skyddsobjekt` | gold |
+| Objektet (area of interest) | `tag:#objektet` | gold |
 | Misstänkta (pending suspects) | `tag:#larm` | red |
 | Aktörer (confirmed actors) | `tag:#aktör` | blue |
 | Platser (relevant locations) | `tag:#plats` | amber |
 | Kännetecken (mark entities) | `file:marke-` | violet |
-| Fordon (vehicle entities) | `path:entities -tag:#skyddsobjekt -tag:#aktör -tag:#plats -file:marke- -tag:#larm` | green |
+| Fordon (vehicle entities) | `path:entities -tag:#objektet -tag:#aktör -tag:#plats -file:marke- -tag:#larm` | green |
 | Meddelanden (raw 7S reports) | `file:TNR` | grey |
 
-The **skyddsobjekt** (gold) node is the operation's area of interest, created by
+The **objektet** (gold) node is the operation's area of interest, created by
 ODEN's "Konfigurera operationsområde" — the suspicion proximity signal measures
-against it. On the map it's a gold bullseye (`tag:#skyddsobjekt`).
+against it. On the map it's a gold bullseye (`tag:#objektet`).
 
 Location nodes (`#plats`, amber) are one note per relevant place — a location with
 a suspicious report or a vehicle plate — linking every report observed there, so

@@ -7,12 +7,12 @@
   "showOrphans": false,
   "collapse-color-groups": true,
   "colorGroups": [
-    { "query": "tag:#skyddsobjekt", "color": { "a": 1, "rgb": 16766720 } },
+    { "query": "tag:#objektet", "color": { "a": 1, "rgb": 16766720 } },
     { "query": "tag:#larm", "color": { "a": 1, "rgb": 16711680 } },
     { "query": "tag:#aktör", "color": { "a": 1, "rgb": 3447003 } },
     { "query": "tag:#plats", "color": { "a": 1, "rgb": 15844367 } },
     { "query": "file:marke-", "color": { "a": 1, "rgb": 10181046 } },
-    { "query": "path:entities -tag:#skyddsobjekt -tag:#aktör -tag:#plats -file:marke- -tag:#larm", "color": { "a": 1, "rgb": 3066993 } },
+    { "query": "path:entities -tag:#objektet -tag:#aktör -tag:#plats -file:marke- -tag:#larm", "color": { "a": 1, "rgb": 3066993 } },
     { "query": "file:TNR", "color": { "a": 1, "rgb": 8421504 } }
   ],
   "collapse-display": true,

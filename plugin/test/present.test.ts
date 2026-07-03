@@ -12,7 +12,7 @@ test("suspicionLevel bands", () => {
 });
 
 test("reasonPhrase maps keys and scrubs weights/distance", () => {
-  assert.equal(reasonPhrase({ key: "proximity", label: "nära skyddsobjekt (~108 m)", weight: 3 }), "nära skyddsobjekt");
+  assert.equal(reasonPhrase({ key: "proximity", label: "nära objektet (~108 m)", weight: 3 }), "nära objektet");
   assert.equal(reasonPhrase({ key: "natt", label: "nattaktivitet (kl 23)", weight: 2 }), "nattetid");
   assert.equal(reasonPhrase({ key: "beteende:optik", label: 'spaningsindikator: optik/foto ("kikare")', weight: 2 }), "kamera/kikare");
   // fallback scrubs a raw weight
@@ -21,7 +21,7 @@ test("reasonPhrase maps keys and scrubs weights/distance", () => {
 
 test("no architecture meta leaks into operator phrases", () => {
   const reasons: Signal[] = [
-    { key: "proximity", label: "nära skyddsobjekt (~108 m)", weight: 3 },
+    { key: "proximity", label: "nära objektet (~108 m)", weight: 3 },
     { key: "natt", label: "nattaktivitet (kl 23)", weight: 2 },
     { key: "beteende:registrering", label: "x", weight: 2 },
   ];
@@ -29,5 +29,5 @@ test("no architecture meta leaks into operator phrases", () => {
   for (const bad of ["+", "§", "Job", "Bin", "deterministisk", "(~"]) {
     assert.ok(!text.includes(bad), `leak "${bad}" in: ${text}`);
   }
-  assert.deepEqual(reasonPhrases(reasons), ["nära skyddsobjekt", "nattetid", "antecknande/mätande"]);
+  assert.deepEqual(reasonPhrases(reasons), ["nära objektet", "nattetid", "antecknande/mätande"]);
 });

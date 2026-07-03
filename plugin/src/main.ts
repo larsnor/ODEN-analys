@@ -62,7 +62,7 @@ interface SevenSSettings {
   actorDecisions: Record<string, ActorDecision>;
   /** Evidence threshold for actor derivation (§9.3-A parameter request). */
   actorThreshold: number;
-  /** Protected object (skyddsobjekt) coords for the suspicion proximity signal. */
+  /** Protected object (objektet) coords for the suspicion proximity signal. */
   protectedLat: number;
   protectedLon: number;
   /** Live vault watcher → alerts-with-pointer on new activity (§7.2/§9.1). */
@@ -213,6 +213,7 @@ export default class SevenSPlugin extends Plugin {
       // Rewrite confirmed actors in the current format/name and prune stale twins
       // (self-heals notes written by an older version), then baseline the watcher.
       await this.cleanupDialogNote();
+      if (this.settings.setupComplete) await this.writeAoiNote(); // self-heal the Objektet marker
       await this.reconcileActorNodes();
       await this.baselineAlerts();
     });
@@ -539,7 +540,7 @@ export default class SevenSPlugin extends Plugin {
         await this.writeAoiNote();
         // Point the map at the area AND include the AOI tag in the query so the
         // marker shows now (the persisted map rule/query only reloads on restart).
-        this.focusMapOn(res.lat, res.lon, "tag:#skyddsobjekt OR tag:#larm OR tag:#aktör");
+        this.focusMapOn(res.lat, res.lon, "tag:#objektet OR tag:#larm OR tag:#aktör");
         await this.refreshPanel();
         new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
       },
@@ -549,16 +550,15 @@ export default class SevenSPlugin extends Plugin {
   /** ODEN's own marker note for the protected object (idempotent, own-note). */
   private async writeAoiNote(): Promise<void> {
     const { protectedLat: lat, protectedLon: lon, operationName } = this.settings;
-    // Internal tag/metod stay `skyddsobjekt` (the graph/map colour key); the
-    // visible node is "Objektet".
+    // typ/metod/tag = `objektet` (also the graph/map colour key); node titled "Objektet".
     const body: string[] = [
       "---",
-      "typ: skyddsobjekt",
+      "typ: objektet",
       'namn: "Objektet"',
       "källa: 7s-plugin",
       "generator: 7s-plugin",
-      "metod: skyddsobjekt",
-      "tags: [skyddsobjekt]",
+      "metod: objektet",
+      "tags: [objektet]",
       `lat: ${lat}`,
       `lon: ${lon}`,
       `location: "${lat},${lon}"`,
@@ -574,7 +574,7 @@ export default class SevenSPlugin extends Plugin {
       "_Operationens område av intresse. ODEN mäter närhet mot denna punkt._",
       "",
     );
-    await this.writeOwnedNotes([{ name: "Objektet.md", body: body.join("\n") }], "skyddsobjekt");
+    await this.writeOwnedNotes([{ name: "Objektet.md", body: body.join("\n") }], "objektet");
   }
 
   /** Guided dialog → a COMPLETE operator-authored 7S observation (all fields). */

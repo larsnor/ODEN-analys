@@ -29,7 +29,7 @@ export interface Scored {
 }
 
 export interface SuspicionOpts {
-  /** Protected object (skyddsobjekt) — HvSS Vällinge säteri by default. */
+  /** Protected object (objektet) — HvSS Vällinge säteri by default. */
   protectedLat: number;
   protectedLon: number;
   /** Elevated-suspicion threshold for the rollup. */
@@ -101,7 +101,7 @@ export function scoreReport(report: Report, opts: SuspicionOpts = DEFAULT_SUSPIC
   if (report.lat !== undefined && report.lon !== undefined) {
     const d = haversineM(report.lat, report.lon, opts.protectedLat, opts.protectedLon);
     const m = Math.round(d);
-    if (d < 800) reasons.push({ key: "proximity", label: `nära skyddsobjekt (~${m} m)`, weight: 3 });
+    if (d < 800) reasons.push({ key: "proximity", label: `nära objektet (~${m} m)`, weight: 3 });
     else if (d < 1600) reasons.push({ key: "proximity", label: `i närområdet (~${m} m)`, weight: 2 });
     else if (d < 3000) reasons.push({ key: "proximity", label: `i vidare område (~${m} m)`, weight: 1 });
   }
