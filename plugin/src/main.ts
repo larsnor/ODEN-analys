@@ -28,6 +28,8 @@ import {
 } from "obsidian";
 import { ParseIssue, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
+import { plateIdentifiers } from "./ids";
+import { EmbeddedPlateVision, corroboratePlate, PlateVision } from "./vision";
 import { isOverwritable, isPluginOwned, renderAll, safeFilename } from "./entity_notes";
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
 import { markFilename, renderMarkNote } from "./mark_notes";
@@ -249,14 +251,19 @@ export default class SevenSPlugin extends Plugin {
     try {
       const { reports } = await this.readReports();
       const result = buildPlateEntities(reports);
-      const notes = renderAll(result.entities);
+      const confirmed = await this.computePlateCorroboration(reports);
+      const notes = renderAll(result.entities, confirmed);
       const write = await this.writeOwnedNotes(
         notes.map((n) => ({ name: n.filename, body: n.markdown })),
         "jobb-a",
       );
       await this.revealPanel();
       await this.refreshPanel();
-      new Notice(`ODEN: ${result.entities.length} fordon (${write.written} uppdaterade).`);
+      const camN = confirmed.size;
+      new Notice(
+        `ODEN: ${result.entities.length} fordon (${write.written} uppdaterade)` +
+          (camN ? ` · 📷 ${camN} bildstyrkta plåtar.` : "."),
+      );
     } catch (err) {
       console.error("ODEN: build entities failed", err);
       new Notice("ODEN: kunde inte bygga entiteter (se konsolen).");
@@ -771,6 +778,7 @@ export default class SevenSPlugin extends Plugin {
         time: ms(e.lastSeen),
         label: e.canonical,
         count: e.count,
+        photo: this.lastCorroboration.has(e.canonical),
       });
     }
     // Confirmed marks / actors.
@@ -878,8 +886,52 @@ export default class SevenSPlugin extends Plugin {
    *  confirmation-gated. The watcher ignores the entities folder, so no loop. */
   private async autoBuildJobA(bundle: AnalysisBundle): Promise<void> {
     if (!this.settings.autoBuildEntities) return;
-    const notes = renderAll(bundle.jobA.entities).map((n) => ({ name: n.filename, body: n.markdown }));
+    const confirmed = await this.computePlateCorroboration(bundle.reports);
+    const notes = renderAll(bundle.jobA.entities, confirmed).map((n) => ({ name: n.filename, body: n.markdown }));
     await this.writeOwnedNotes(notes, "jobb-a");
+  }
+
+  // --- §6.7 image corroboration: a photo confirms a plate typed in the text ----
+  private vision: PlateVision = new EmbeddedPlateVision();
+  /** canonical plate → observation files whose attached photo backs the plate. */
+  private lastCorroboration: Map<string, Set<string>> = new Map();
+
+  /**
+   * Read each report's attached photos through the vision adapter and record which
+   * observations are photo-corroborated (the read plate matches a plate the human
+   * typed in that report). Never introduces a plate the text doesn't already have.
+   */
+  private async computePlateCorroboration(reports: Report[]): Promise<Map<string, Set<string>>> {
+    const byPlate = new Map<string, Set<string>>();
+    for (const r of reports) {
+      if (!r.bilagor || r.bilagor.length === 0) continue;
+      const textPlates = plateIdentifiers(r).filter((p) => !p.partial).map((p) => p.value);
+      if (textPlates.length === 0) continue;
+      for (const att of r.bilagor) {
+        if (!/\.(jpe?g|png)$/i.test(att)) continue;
+        const bytes = await this.readAttachment(att, r.file);
+        if (!bytes) continue;
+        const reading = this.vision.readPlate(bytes);
+        if (corroboratePlate(reading, textPlates) === "confirmed" && reading) {
+          if (!byPlate.has(reading.plate)) byPlate.set(reading.plate, new Set());
+          byPlate.get(reading.plate)!.add(r.file);
+        }
+      }
+    }
+    this.lastCorroboration = byPlate;
+    return byPlate;
+  }
+
+  /** Resolve a `bilagor` name to a vault file and read its bytes (best-effort). */
+  private async readAttachment(name: string, fromPath: string): Promise<Uint8Array | null> {
+    const tf = this.app.metadataCache.getFirstLinkpathDest(name, fromPath);
+    if (!(tf instanceof TFile)) return null;
+    try {
+      return new Uint8Array(await this.app.vault.readBinary(tf));
+    } catch (err) {
+      console.warn("ODEN: could not read attachment", name, err);
+      return null;
+    }
   }
 
   /** Materialize one marker note per suspicious AGENT (vehicle/person) — the map

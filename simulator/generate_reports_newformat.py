@@ -115,12 +115,16 @@ def render(rec):
     if rec.get("lat") is not None:
         lat = rec["lat"]; lon = rec["lon"]
         fm += [f"lat: {lat}", f"lon: {lon}", f'location: "{lat},{lon}"']
+    if rec.get("image"):   # a plate photo corroborating the plate typed in text
+        fm.append(f'bilagor: ["{rec["image"]}"]')
     fm += [f"sagesman: {cs}", "---", ""]
     body = [f"**TNR:** {tnr}", "", f"**Stund:** {rec['stund']}", "",
             f"**Ställe:** {rec['stalle']}", "", f"**Händelse:** {rec['handelse']}", ""]
     if rec.get("symbol"):
         body += [f"**Symbol:** {rec['symbol']}", ""]
     body += [f"**Sagesman:** {cs}", "", "**Sedan:** -", ""]
+    if rec.get("image"):
+        body += [f"![[{rec['image']}]]", ""]
     return "\n".join(fm) + "\n".join(body) + "\n"
 
 def make_record(dt, loc, kind, member=None):
@@ -196,6 +200,9 @@ def main():
     ap.add_argument("--seed", type=int, default=2026)
     ap.add_argument("--out", default="reports_new")
     ap.add_argument("--gt", default="ground_truth_new.json")
+    ap.add_argument("--attachments", default="attachments")
+    ap.add_argument("--no-images", action="store_true",
+                    help="skip rendering corroborating plate photos (needs Pillow)")
     ap.add_argument("--preview", action="store_true")
     args = ap.parse_args()
 
@@ -213,21 +220,39 @@ def main():
     out = Path(__file__).parent / args.out
     out.mkdir(exist_ok=True)
     for old in out.glob("*.md"): old.unlink()
+
+    images = not args.no_images
+    att = Path(__file__).parent / args.attachments
+    render_plate = None
+    if images:
+        att.mkdir(exist_ok=True)
+        for old in att.glob("plate_*.jpg"): old.unlink()
+        from gen_images import render_plate  # lazy: only needs Pillow when imaging
+
     gt = []
     seen = {}
+    n_images = 0
     for r in recs:
         base = f"TNR{r['tnr']}"
         seen[base] = seen.get(base, 0) + 1
-        fname = f"{base}.md" if seen[base] == 1 else f"{base}_{seen[base]}.md"
-        (out / fname).write_text(render(r), encoding="utf-8")
-        gt.append({"file": fname, "id": f"7S-{r['uuid']}", "tnr": r["tnr"], "tidpunkt": r["tidpunkt"],
+        stem = base if seen[base] == 1 else f"{base}_{seen[base]}"
+        # A corroborating plate photo for reports whose text names a plate.
+        if images and r.get("plate"):
+            img_name = f"plate_{stem}.jpg"
+            render_plate(r["plate"], att / img_name, note="prov – styrker plåt i text")
+            r["image"] = img_name
+            n_images += 1
+        (out / f"{stem}.md").write_text(render(r), encoding="utf-8")
+        gt.append({"file": f"{stem}.md", "id": f"7S-{r['uuid']}", "tnr": r["tnr"], "tidpunkt": r["tidpunkt"],
                    "truth": r["truth"], "member": r["member"], "plate": r["plate"],
-                   "sector": r["sector"]})
+                   "sector": r["sector"], "image": r.get("image")})
     (Path(__file__).parent / args.gt).write_text(json.dumps(gt, ensure_ascii=False, indent=1), encoding="utf-8")
     n_recon = sum(1 for r in recs if r["truth"]=="recon")
     n_plates = sum(1 for r in recs if r["plate"])
     print(f"Wrote {len(recs)} reports to {out} ({n_recon} recon, {len(recs)-n_recon} civilian)")
     print(f"Civilian plates in prose: {n_plates}; recon sightings have NO hard ID (pure pattern).")
+    if images:
+        print(f"Rendered {n_images} corroborating plate photos to {att} (plate embedded in JPEG).")
 
 if __name__ == "__main__":
     main()

@@ -9,6 +9,14 @@ main.js.map
 # Python
 __pycache__/
 *.pyc
+.venv/
+
+# Generated (regenerable) simulator output — the committed snapshot lives in plugin/test/fixtures/
+simulator/reports_new/
+simulator/reports/
+simulator/ground_truth_new.json
+simulator/ground_truth.json
+simulator/attachments/plate_*.jpg
 
 # OS / editor
 .DS_Store

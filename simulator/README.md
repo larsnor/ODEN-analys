@@ -17,10 +17,26 @@ Analysen hör hemma i pluginet.
   refererade bilagor (`attachments/`) så inbäddningar fungerar i vaulten.
 - **`gen_images.py`** — genererar platshållarbilder till `attachments/`.
 
+## Bilder (plåtfoton)
+
+Generatorn bifogar ett **plåtfoto** till varje meddelande vars text nämner en
+plåt (korroborerande — fotot bekräftar en plåt en människa redan skrivit). Plåten
+ritas läsbart OCH bäddas in i JPEG-kommentaren (`7SPLATE:`) så att pluginets
+deterministiska vision-stub kan läsa den offline; en riktig vision-modell läser
+pixlarna i stället. Bildgenerering kräver **Pillow**:
+
+```bash
+python3 -m venv .venv
+./.venv/bin/pip install Pillow
+```
+
+Kör med `./.venv/bin/python3` nedan (eller lägg till `--no-images` för att hoppa
+över foton, då behövs inte Pillow).
+
 ## Användning
 
 ```bash
-python3 generate_reports_newformat.py
+./.venv/bin/python3 generate_reports_newformat.py
 python3 feed_reports.py --source ./reports_new --vault /sökväg/till/Vault
 ```
 

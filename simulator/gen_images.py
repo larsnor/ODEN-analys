@@ -15,16 +15,24 @@ without detection ever depending on vision.
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
+# The plugin's deterministic vision stub reads this marker from the JPEG comment
+# (a real VLM would OCR the pixels instead). Keep in sync with plugin/src/vision.ts.
+PLATE_MARKER = "7SPLATE:"
+
 # A Swedish-plate-like card: blue EU strip + black chars on white.
 def _font(size):
-    for p in ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    for p in ["/System/Library/Fonts/Supplemental/Arial Bold.ttf",       # macOS
+              "/System/Library/Fonts/Supplemental/Courier New Bold.ttf",  # macOS mono
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",     # Linux
               "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]:
         if Path(p).exists():
             return ImageFont.truetype(p, size)
     return ImageFont.load_default()
 
 def render_plate(plate_text: str, out_path: Path, note: str = ""):
-    """A simple plate placeholder. plate_text shown with a space (ABC 123)."""
+    """A legible plate placeholder. The plate is rendered visibly AND embedded in
+    the JPEG comment (marker ``7SPLATE:``) so the plugin's deterministic vision
+    stub can read it offline; a real vision model would OCR the pixels."""
     W, H = 520, 150
     img = Image.new("RGB", (W, H), (245, 245, 245))
     d = ImageDraw.Draw(img)
@@ -43,7 +51,9 @@ def render_plate(plate_text: str, out_path: Path, note: str = ""):
     # tiny caption (context note), not part of OCR target
     if note:
         d.text((40, 126), note, font=_font(14), fill=(120, 120, 120))
-    img.save(out_path, "JPEG", quality=85)
+    # Embed the plate in the JPEG comment (COM/FFFE segment) so the offline vision
+    # stub can corroborate it; a real vision model would read the pixels instead.
+    img.save(out_path, "JPEG", quality=85, comment=(PLATE_MARKER + plate_text).encode("ascii"))
     return out_path
 
 def render_mark_panel(caption: str, out_path: Path):

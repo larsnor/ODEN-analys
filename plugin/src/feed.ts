@@ -35,6 +35,8 @@ export interface FeedItem {
   review?: "actors" | "marks" | "place";
   /** For a "namnge-plats" row: the MGRS grid to name. */
   place?: string;
+  /** Vehicle has ≥1 photo-corroborated plate observation (§6.7). */
+  photo?: boolean;
 }
 
 export interface FeedRow {
@@ -55,7 +57,7 @@ function label(item: FeedItem): string {
     case "mottaget":
       return `Meddelande TNR${item.tnr} mottaget${item.plats ? " — " + item.plats : ""}${item.tid ? ", " + item.tid : ""}`;
     case "fordon":
-      return `Fordon ${item.label} identifierat${item.count ? ` (${item.count} observationer)` : ""}`;
+      return `Fordon ${item.label} identifierat${item.count ? ` (${item.count} observationer)` : ""}${item.photo ? " 📷" : ""}`;
     case "kännetecken":
       return `Kännetecken bekräftat: ${item.label}`;
     case "aktör":

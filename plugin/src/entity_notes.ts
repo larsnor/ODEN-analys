@@ -35,7 +35,7 @@ function tnrLink(o: { file: string; tnr: string }): string {
   return `[[${stem}|TNR${o.tnr}]]`;
 }
 
-function frontmatter(e: PlateEntity): string {
+function frontmatter(e: PlateEntity, corroborated: number): string {
   const lines = [
     "---",
     "typ: entitet",
@@ -47,6 +47,7 @@ function frontmatter(e: PlateEntity): string {
     "metod: jobb-a",
     `antal_observationer: ${e.count}`,
   ];
+  if (corroborated > 0) lines.push(`bild_styrkt: ${corroborated}`);
   if (e.firstSeen) lines.push(`forsta_observation: "${e.firstSeen}"`);
   if (e.lastSeen) lines.push(`sista_observation: "${e.lastSeen}"`);
   lines.push("taggar: [fordon]");
@@ -54,12 +55,21 @@ function frontmatter(e: PlateEntity): string {
   return lines.join("\n");
 }
 
-export function renderEntityNote(e: PlateEntity): RenderedNote {
+/**
+ * @param confirmed  observation files whose attached photo's plate matches this
+ *   entity's plate (image-corroboration, §6.7). Absent → no image handling, so
+ *   the note is byte-identical to the pre-vision output (fixtures stay stable).
+ */
+export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): RenderedNote {
+  const corroborated = confirmed ? e.observations.filter((o) => confirmed.has(o.file)).length : 0;
   const body: string[] = [];
   body.push(`# ${e.canonical}`);
   body.push("");
   body.push(`**Slag:** ${e.slag}  `);
   body.push(`**Antal observationer:** ${e.count}  `);
+  if (corroborated > 0) {
+    body.push(`**📷 Bildstyrkt:** ${corroborated} observation(er) med foto som bekräftar plåten  `);
+  }
   if (e.firstSeen && e.lastSeen) {
     body.push(`**Tidsspann:** ${e.firstSeen} → ${e.lastSeen}  `);
   }
@@ -91,7 +101,8 @@ export function renderEntityNote(e: PlateEntity): RenderedNote {
   body.push("## Observationer");
   for (const o of e.observations) {
     const shown = o.shown !== e.canonical ? `  — sedd som \`${o.shown}\`` : "";
-    body.push(`- ${tnrLink(o)} — ${o.tidpunkt} — ${o.plats}${shown}`);
+    const cam = confirmed?.has(o.file) ? " 📷" : "";
+    body.push(`- ${tnrLink(o)} — ${o.tidpunkt} — ${o.plats}${shown}${cam}`);
   }
   body.push("");
   body.push(
@@ -101,13 +112,16 @@ export function renderEntityNote(e: PlateEntity): RenderedNote {
 
   return {
     filename: safeFilename(e.canonical),
-    markdown: frontmatter(e) + "\n\n" + body.join("\n") + "\n",
+    markdown: frontmatter(e, corroborated) + "\n\n" + body.join("\n") + "\n",
   };
 }
 
-/** Render all entities → notes (deterministic order from reid.ts preserved). */
-export function renderAll(entities: PlateEntity[]): RenderedNote[] {
-  return entities.map(renderEntityNote);
+/**
+ * Render all entities → notes (deterministic order from reid.ts preserved).
+ * @param confirmedByPlate  canonical plate → observation files photo-corroborated.
+ */
+export function renderAll(entities: PlateEntity[], confirmedByPlate?: Map<string, Set<string>>): RenderedNote[] {
+  return entities.map((e) => renderEntityNote(e, confirmedByPlate?.get(e.canonical)));
 }
 
 /** Does an existing file's text mark it as plugin-owned (§5.2)? */
