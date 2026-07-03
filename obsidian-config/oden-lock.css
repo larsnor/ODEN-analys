@@ -1,0 +1,25 @@
+/*
+ * ODEN — "lås panelerna" (Bin 2).
+ * Obsidian har ingen inbyggd layout-lås; detta snippet gömmer de affordanser i
+ * huvudytan som råkar stänga eller flytta operatörens paneler:
+ *   - stäng-knappen (×) på flikarna
+ *   - "ny flik"-knappen (+)
+ * Panelerna kan fortfarande öppnas igen från kommandopaletten / ribbon.
+ *
+ * Aktivera: Inställningar → Utseende → CSS-snuttar → slå på "oden-lock".
+ * Laddas om direkt — Obsidian behöver inte startas om.
+ *
+ * Tips: aktivera kärn-pluginet "Arbetsytor" (Workspaces) för att spara och
+ * återställa ODEN-layouten (Map | Graf uppe, ODEN nere) med ett klick.
+ */
+
+/* Göm stäng-knappen (×) på flikar i huvudytan */
+.workspace-split.mod-root .workspace-tab-header .workspace-tab-header-inner-close-button {
+  display: none !important;
+}
+
+/* Göm "ny flik"-knappen (+) i huvudytan */
+.workspace-split.mod-root .workspace-tab-header-container-inner + .workspace-tab-header-new-tab,
+.workspace-split.mod-root .mod-new-tab {
+  display: none !important;
+}

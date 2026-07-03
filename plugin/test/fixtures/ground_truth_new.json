@@ -1,0 +1,6002 @@
+[
+ {
+  "file": "TNR150525.md",
+  "id": "7S-6dcfbed0-b0a1-48aa-bd14-9c1daf682c9b",
+  "tnr": "150525",
+  "tidpunkt": "2026-06-15T05:22:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR150558.md",
+  "id": "7S-cd2d4412-c1a7-49e3-bfe2-a7d7a040f9ed",
+  "tnr": "150558",
+  "tidpunkt": "2026-06-15T05:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR150616.md",
+  "id": "7S-958fb02b-a2cc-46fd-967a-ccfc838f18c5",
+  "tnr": "150616",
+  "tidpunkt": "2026-06-15T06:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR150627.md",
+  "id": "7S-bd06e910-3c59-42f9-8927-98ff9de775ca",
+  "tnr": "150627",
+  "tidpunkt": "2026-06-15T06:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR150900.md",
+  "id": "7S-023350a2-7434-4613-ac72-04d778d60ca4",
+  "tnr": "150900",
+  "tidpunkt": "2026-06-15T08:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR150905.md",
+  "id": "7S-b1f2bb07-0cca-4d1b-a06a-bcfaf33e46ab",
+  "tnr": "150905",
+  "tidpunkt": "2026-06-15T09:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR150931.md",
+  "id": "7S-8733bd06-4bbd-470a-8c8f-bd5464b9fba5",
+  "tnr": "150931",
+  "tidpunkt": "2026-06-15T09:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151011.md",
+  "id": "7S-68348e1a-c309-4db0-8593-848b7e7bd57b",
+  "tnr": "151011",
+  "tidpunkt": "2026-06-15T10:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151010.md",
+  "id": "7S-4a075fa5-a993-48ee-993c-59b94c79f8a7",
+  "tnr": "151010",
+  "tidpunkt": "2026-06-15T10:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151011_2.md",
+  "id": "7S-acc38f4c-5cfa-4136-a125-21487cff264f",
+  "tnr": "151011",
+  "tidpunkt": "2026-06-15T10:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151029.md",
+  "id": "7S-9a18f6cb-6c72-4a2e-85c2-618f1da5b96c",
+  "tnr": "151029",
+  "tidpunkt": "2026-06-15T10:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151031.md",
+  "id": "7S-caaba2c9-3616-4514-8380-a16b20615b85",
+  "tnr": "151031",
+  "tidpunkt": "2026-06-15T10:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151108.md",
+  "id": "7S-cd72c58a-042a-4dcc-83c6-2c28915551cf",
+  "tnr": "151108",
+  "tidpunkt": "2026-06-15T11:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151114.md",
+  "id": "7S-7a234465-c352-4554-a0fe-e077c493ede1",
+  "tnr": "151114",
+  "tidpunkt": "2026-06-15T11:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR151121.md",
+  "id": "7S-486e7476-c161-4772-bd22-d11e532a04e3",
+  "tnr": "151121",
+  "tidpunkt": "2026-06-15T11:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151122.md",
+  "id": "7S-d02e4912-547b-47e5-96d7-196427e3c092",
+  "tnr": "151122",
+  "tidpunkt": "2026-06-15T11:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "DLG74C",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151124.md",
+  "id": "7S-c79c5dc9-b959-4d5e-86e8-4a9c31394b64",
+  "tnr": "151124",
+  "tidpunkt": "2026-06-15T11:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151135.md",
+  "id": "7S-24be4d06-240f-4835-8a56-b71722fc5880",
+  "tnr": "151135",
+  "tidpunkt": "2026-06-15T11:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151141.md",
+  "id": "7S-703ab6f1-93a8-4cd0-a291-ab4ae9af8ea1",
+  "tnr": "151141",
+  "tidpunkt": "2026-06-15T11:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151154.md",
+  "id": "7S-415d4775-747b-4949-a2c5-3171a7548572",
+  "tnr": "151154",
+  "tidpunkt": "2026-06-15T11:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151153.md",
+  "id": "7S-c766a7a6-4344-4766-9877-90608da4b335",
+  "tnr": "151153",
+  "tidpunkt": "2026-06-15T11:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151157.md",
+  "id": "7S-c85e8018-3772-4817-8016-c12bf8f7413a",
+  "tnr": "151157",
+  "tidpunkt": "2026-06-15T11:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR151208.md",
+  "id": "7S-efa4f9f1-fcf2-486d-9394-43188fa960d1",
+  "tnr": "151208",
+  "tidpunkt": "2026-06-15T12:06:00",
+  "truth": "recon",
+  "member": "R7",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151240.md",
+  "id": "7S-df61fce8-4690-4eab-a83f-d3506e59976d",
+  "tnr": "151240",
+  "tidpunkt": "2026-06-15T12:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151300.md",
+  "id": "7S-a540ab92-fd5b-42cd-bb3f-062bf5634416",
+  "tnr": "151300",
+  "tidpunkt": "2026-06-15T12:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151307.md",
+  "id": "7S-23b2659a-4713-4d22-9e8e-fe8269c4ef18",
+  "tnr": "151307",
+  "tidpunkt": "2026-06-15T13:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151317.md",
+  "id": "7S-74c517a8-8a29-4abd-9e6a-efc8f6042370",
+  "tnr": "151317",
+  "tidpunkt": "2026-06-15T13:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151321.md",
+  "id": "7S-03ac5306-f261-4e63-89d0-39f09b1f7aa7",
+  "tnr": "151321",
+  "tidpunkt": "2026-06-15T13:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151345.md",
+  "id": "7S-8234efdd-addc-4401-b8ca-6b4af85e9bea",
+  "tnr": "151345",
+  "tidpunkt": "2026-06-15T13:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151358.md",
+  "id": "7S-8cab8b2c-95a4-4f8f-974e-3b7472baa5b4",
+  "tnr": "151358",
+  "tidpunkt": "2026-06-15T13:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151406.md",
+  "id": "7S-a5a840f6-84e5-40a9-af0a-dcbf77931d8e",
+  "tnr": "151406",
+  "tidpunkt": "2026-06-15T14:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151509.md",
+  "id": "7S-44a65715-e7b9-49ad-8dec-4ebd62850a03",
+  "tnr": "151509",
+  "tidpunkt": "2026-06-15T15:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151601.md",
+  "id": "7S-f99b105e-1ace-44bb-ba4a-7d41f195e9b8",
+  "tnr": "151601",
+  "tidpunkt": "2026-06-15T15:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151601_2.md",
+  "id": "7S-f0726c73-aa74-45fa-9d2f-9d084edb3d67",
+  "tnr": "151601",
+  "tidpunkt": "2026-06-15T16:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151635.md",
+  "id": "7S-05e7cf29-a276-4d5a-b7cf-66b346eb607a",
+  "tnr": "151635",
+  "tidpunkt": "2026-06-15T16:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR151638.md",
+  "id": "7S-3fc75f2c-0f31-47bd-9587-417cd63c8882",
+  "tnr": "151638",
+  "tidpunkt": "2026-06-15T16:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR151648.md",
+  "id": "7S-ecc986fe-676b-460c-8eaf-29498df2a2e6",
+  "tnr": "151648",
+  "tidpunkt": "2026-06-15T16:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151648_2.md",
+  "id": "7S-d57aec5e-74b0-4753-bef8-7a02faf6c1a8",
+  "tnr": "151648",
+  "tidpunkt": "2026-06-15T16:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151713.md",
+  "id": "7S-fd809e3d-6a87-498d-a66d-a8bdb718a417",
+  "tnr": "151713",
+  "tidpunkt": "2026-06-15T17:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151728.md",
+  "id": "7S-2de6c061-d6ec-46fd-96e5-fc4497f97ad6",
+  "tnr": "151728",
+  "tidpunkt": "2026-06-15T17:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR151803.md",
+  "id": "7S-6a24b2c3-9c99-4583-a4f5-3734943628f7",
+  "tnr": "151803",
+  "tidpunkt": "2026-06-15T18:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR151842.md",
+  "id": "7S-ca314dc6-7de5-4540-8b2d-d4e447ad6aa4",
+  "tnr": "151842",
+  "tidpunkt": "2026-06-15T18:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "FPN42C",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR151901.md",
+  "id": "7S-77ea2865-0b04-40be-86f2-9bb191b70e38",
+  "tnr": "151901",
+  "tidpunkt": "2026-06-15T19:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR152105.md",
+  "id": "7S-048704f6-c4f4-4178-8d25-b75a7d52abd8",
+  "tnr": "152105",
+  "tidpunkt": "2026-06-15T21:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR160503.md",
+  "id": "7S-3b3a03be-fd0e-448f-836f-e72abbf7d98f",
+  "tnr": "160503",
+  "tidpunkt": "2026-06-16T05:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR160540.md",
+  "id": "7S-c28bc4a0-fa8c-4cb5-b66b-0b7f4b62275f",
+  "tnr": "160540",
+  "tidpunkt": "2026-06-16T05:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR160630.md",
+  "id": "7S-56d3f1af-d142-4dd1-a0dc-a1e175ec6409",
+  "tnr": "160630",
+  "tidpunkt": "2026-06-16T06:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR160647.md",
+  "id": "7S-9663776c-d7ef-4531-ba56-1df8fed975e6",
+  "tnr": "160647",
+  "tidpunkt": "2026-06-16T06:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR160804.md",
+  "id": "7S-33574a5b-a988-4e57-b36d-e2a0b1cba655",
+  "tnr": "160804",
+  "tidpunkt": "2026-06-16T08:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR160904.md",
+  "id": "7S-f7540c8b-7c09-4b65-b822-6978e19bdbb0",
+  "tnr": "160904",
+  "tidpunkt": "2026-06-16T09:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR160934.md",
+  "id": "7S-362f9d09-1c55-427e-8812-e8573c76d8a0",
+  "tnr": "160934",
+  "tidpunkt": "2026-06-16T09:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR160946.md",
+  "id": "7S-dc8958da-82aa-4315-bc8c-4e72d1115ea7",
+  "tnr": "160946",
+  "tidpunkt": "2026-06-16T09:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR160949.md",
+  "id": "7S-5c82ef50-6a42-4d7f-b209-4a5bbcc94aa3",
+  "tnr": "160949",
+  "tidpunkt": "2026-06-16T09:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR160955.md",
+  "id": "7S-ddd284e8-6961-4452-838d-04fb1018d7f5",
+  "tnr": "160955",
+  "tidpunkt": "2026-06-16T09:53:00",
+  "truth": "recon",
+  "member": "R7",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161119.md",
+  "id": "7S-b362c5af-adff-455b-becf-f09e225fcf8b",
+  "tnr": "161119",
+  "tidpunkt": "2026-06-16T11:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161129.md",
+  "id": "7S-cbb079b2-8cfd-405e-bf7f-5ad6eb0c1184",
+  "tnr": "161129",
+  "tidpunkt": "2026-06-16T11:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161143.md",
+  "id": "7S-3c0ddc92-ee9e-45d7-ac6e-28146b77eefe",
+  "tnr": "161143",
+  "tidpunkt": "2026-06-16T11:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161146.md",
+  "id": "7S-514d1d86-e9fa-4ac9-93be-3fffcf55cd61",
+  "tnr": "161146",
+  "tidpunkt": "2026-06-16T11:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "ZJA29J",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161152.md",
+  "id": "7S-559363f4-36fc-48ec-9f56-8f8ade2b25c0",
+  "tnr": "161152",
+  "tidpunkt": "2026-06-16T11:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR161310.md",
+  "id": "7S-2acda483-3434-4af9-8875-bcf9df243d3f",
+  "tnr": "161310",
+  "tidpunkt": "2026-06-16T13:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR161317.md",
+  "id": "7S-d6da89ca-bc27-4aaf-bf02-8231df189d06",
+  "tnr": "161317",
+  "tidpunkt": "2026-06-16T13:15:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "LDA261",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR161326.md",
+  "id": "7S-a5289661-62c2-4100-a607-29286a161893",
+  "tnr": "161326",
+  "tidpunkt": "2026-06-16T13:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR161326_2.md",
+  "id": "7S-8f2606ce-2a22-4326-bca4-8c302bec3194",
+  "tnr": "161326",
+  "tidpunkt": "2026-06-16T13:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR161336.md",
+  "id": "7S-b0b6a177-c807-41e4-85ab-13e5703ed317",
+  "tnr": "161336",
+  "tidpunkt": "2026-06-16T13:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR161349.md",
+  "id": "7S-78ab7f03-0b74-46bc-8495-6e1f0ee15bdc",
+  "tnr": "161349",
+  "tidpunkt": "2026-06-16T13:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR161358.md",
+  "id": "7S-a4c5fdf8-197b-46a3-a9f3-9668a0995504",
+  "tnr": "161358",
+  "tidpunkt": "2026-06-16T13:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161424.md",
+  "id": "7S-80737f7e-6347-41ea-9aba-cbaf5a282611",
+  "tnr": "161424",
+  "tidpunkt": "2026-06-16T14:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR161430.md",
+  "id": "7S-685be8e8-0c0b-4c47-bf69-704a193a1d06",
+  "tnr": "161430",
+  "tidpunkt": "2026-06-16T14:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR161441.md",
+  "id": "7S-9c5d91ab-f1b2-42b3-a8de-df40beb36948",
+  "tnr": "161441",
+  "tidpunkt": "2026-06-16T14:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161444.md",
+  "id": "7S-ffb5a97d-1263-47d6-8af3-f372cb5342b5",
+  "tnr": "161444",
+  "tidpunkt": "2026-06-16T14:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR161635.md",
+  "id": "7S-eb5dad6c-753a-40ef-92e7-c1d4d0c2acb2",
+  "tnr": "161635",
+  "tidpunkt": "2026-06-16T16:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR161646.md",
+  "id": "7S-1f1e376b-75b4-46fc-992e-e906a33ee15c",
+  "tnr": "161646",
+  "tidpunkt": "2026-06-16T16:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR161740.md",
+  "id": "7S-11b64330-9677-4057-bf62-f3720651ed65",
+  "tnr": "161740",
+  "tidpunkt": "2026-06-16T17:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161801.md",
+  "id": "7S-60fc0a5e-4f00-48ca-8353-9c53f05460fa",
+  "tnr": "161801",
+  "tidpunkt": "2026-06-16T17:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR161820.md",
+  "id": "7S-3803a2f9-2eeb-422e-95ec-cefdc0f35e04",
+  "tnr": "161820",
+  "tidpunkt": "2026-06-16T18:19:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR162031.md",
+  "id": "7S-b6e710b7-1a04-4087-b3da-296b86ec5bb0",
+  "tnr": "162031",
+  "tidpunkt": "2026-06-16T20:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR162038.md",
+  "id": "7S-75f09712-78ca-4508-ad4d-3635fde48df1",
+  "tnr": "162038",
+  "tidpunkt": "2026-06-16T20:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR170052.md",
+  "id": "7S-58d62944-d573-47bb-8d26-efa012cc86e3",
+  "tnr": "170052",
+  "tidpunkt": "2026-06-17T00:51:00",
+  "truth": "recon",
+  "member": "R5",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR170704.md",
+  "id": "7S-d7879ce4-0082-47e2-844d-e1c6a4b62e0d",
+  "tnr": "170704",
+  "tidpunkt": "2026-06-17T07:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR170839.md",
+  "id": "7S-7cc6f442-7c88-42b5-ac49-db8a43168b5f",
+  "tnr": "170839",
+  "tidpunkt": "2026-06-17T08:38:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "MAG89B",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR170906.md",
+  "id": "7S-791a8470-db8f-4ac6-9626-c1fb5d0a0205",
+  "tnr": "170906",
+  "tidpunkt": "2026-06-17T09:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR170933.md",
+  "id": "7S-cb9d2149-6888-4c56-b3cd-1e1c85f23fa0",
+  "tnr": "170933",
+  "tidpunkt": "2026-06-17T09:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR170938.md",
+  "id": "7S-42b6be30-de7e-44ce-9a2f-6d41bd0b9cff",
+  "tnr": "170938",
+  "tidpunkt": "2026-06-17T09:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR170945.md",
+  "id": "7S-c369ca3d-d89f-4813-9b51-6cb7e1d5bf89",
+  "tnr": "170945",
+  "tidpunkt": "2026-06-17T09:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR170954.md",
+  "id": "7S-c8f8744f-3d32-4245-8966-db1dd7297e27",
+  "tnr": "170954",
+  "tidpunkt": "2026-06-17T09:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171009.md",
+  "id": "7S-8752e539-30bd-4ef3-9804-1c882cc32538",
+  "tnr": "171009",
+  "tidpunkt": "2026-06-17T10:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171007.md",
+  "id": "7S-6c456dce-e858-47ec-88f1-3b4e3ead4f39",
+  "tnr": "171007",
+  "tidpunkt": "2026-06-17T10:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171012.md",
+  "id": "7S-1ab02ff9-82b6-443b-ab51-318e692a2c28",
+  "tnr": "171012",
+  "tidpunkt": "2026-06-17T10:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171012_2.md",
+  "id": "7S-c8056a45-b224-471d-8e74-75f911f9d551",
+  "tnr": "171012",
+  "tidpunkt": "2026-06-17T10:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171024.md",
+  "id": "7S-324ce2dd-2d3f-4bf3-904d-7d95672f8dab",
+  "tnr": "171024",
+  "tidpunkt": "2026-06-17T10:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171045.md",
+  "id": "7S-65678ad3-1367-4c3c-a511-5ecf267007e6",
+  "tnr": "171045",
+  "tidpunkt": "2026-06-17T10:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171045_2.md",
+  "id": "7S-845d1c8d-71eb-45d5-8539-701115d68e98",
+  "tnr": "171045",
+  "tidpunkt": "2026-06-17T10:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171057.md",
+  "id": "7S-f51ad83a-5b1e-4077-9cb3-7082a53c20c4",
+  "tnr": "171057",
+  "tidpunkt": "2026-06-17T10:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171058.md",
+  "id": "7S-04b17f80-3608-4d32-a873-87f6cb72b630",
+  "tnr": "171058",
+  "tidpunkt": "2026-06-17T10:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171100.md",
+  "id": "7S-a3eb3d85-8a86-40f0-b981-24d43bd7978c",
+  "tnr": "171100",
+  "tidpunkt": "2026-06-17T10:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR171103.md",
+  "id": "7S-638ffb31-2cf8-4ce3-9184-af6da81a2e4e",
+  "tnr": "171103",
+  "tidpunkt": "2026-06-17T11:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171116.md",
+  "id": "7S-b856681a-6525-4e84-b083-1a0a17e2f198",
+  "tnr": "171116",
+  "tidpunkt": "2026-06-17T11:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171123.md",
+  "id": "7S-da1500cd-74eb-49ae-a5ab-55d239569742",
+  "tnr": "171123",
+  "tidpunkt": "2026-06-17T11:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171148.md",
+  "id": "7S-4e078910-9492-4482-bdb9-b5265a9c0829",
+  "tnr": "171148",
+  "tidpunkt": "2026-06-17T11:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171151.md",
+  "id": "7S-dc009722-25b7-47b3-a028-cbea585328e3",
+  "tnr": "171151",
+  "tidpunkt": "2026-06-17T11:49:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171216.md",
+  "id": "7S-17958bf7-600e-4ef2-bdea-d8cbf29d7733",
+  "tnr": "171216",
+  "tidpunkt": "2026-06-17T12:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171221.md",
+  "id": "7S-16e45ff8-3370-4815-aeb9-9c198e630bba",
+  "tnr": "171221",
+  "tidpunkt": "2026-06-17T12:19:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171222.md",
+  "id": "7S-f66fc94c-1d31-446b-b23d-823f40f1516b",
+  "tnr": "171222",
+  "tidpunkt": "2026-06-17T12:19:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171243.md",
+  "id": "7S-46dadf18-1061-43d6-8d28-b4b378ebf5fe",
+  "tnr": "171243",
+  "tidpunkt": "2026-06-17T12:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR171247.md",
+  "id": "7S-b1c4de43-59ca-46d9-9fa1-43616cd1169c",
+  "tnr": "171247",
+  "tidpunkt": "2026-06-17T12:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171254.md",
+  "id": "7S-c4979df3-e0a5-43e7-b5bf-4adeedd51be8",
+  "tnr": "171254",
+  "tidpunkt": "2026-06-17T12:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171258.md",
+  "id": "7S-0b6dba44-9297-461b-8e84-94fb951765da",
+  "tnr": "171258",
+  "tidpunkt": "2026-06-17T12:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171301.md",
+  "id": "7S-aff4815a-2e01-4ef7-8eac-779a98f8ae89",
+  "tnr": "171301",
+  "tidpunkt": "2026-06-17T12:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR171312.md",
+  "id": "7S-6ca199b1-cda6-4a38-abb6-a57ea0e2e6c5",
+  "tnr": "171312",
+  "tidpunkt": "2026-06-17T13:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171314.md",
+  "id": "7S-eee4303d-6553-4ade-985c-5385124648a5",
+  "tnr": "171314",
+  "tidpunkt": "2026-06-17T13:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR171316.md",
+  "id": "7S-9832251a-090c-4a68-9dfe-53738dcbce00",
+  "tnr": "171316",
+  "tidpunkt": "2026-06-17T13:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171333.md",
+  "id": "7S-e79b1227-dda1-441c-a7df-7edc57f7a853",
+  "tnr": "171333",
+  "tidpunkt": "2026-06-17T13:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171340.md",
+  "id": "7S-d0ae738f-45f2-4085-8477-129f101b5003",
+  "tnr": "171340",
+  "tidpunkt": "2026-06-17T13:38:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171403.md",
+  "id": "7S-c84811e7-17f4-4019-b455-90c182dd11fe",
+  "tnr": "171403",
+  "tidpunkt": "2026-06-17T14:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171418.md",
+  "id": "7S-6e05afe1-7170-4a61-8c02-94712e213eba",
+  "tnr": "171418",
+  "tidpunkt": "2026-06-17T14:15:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171427.md",
+  "id": "7S-b976d3a9-6146-4bc7-928d-e89486079883",
+  "tnr": "171427",
+  "tidpunkt": "2026-06-17T14:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171441.md",
+  "id": "7S-d75d71eb-a9b2-4cbe-97f4-41d149d3d45b",
+  "tnr": "171441",
+  "tidpunkt": "2026-06-17T14:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171446.md",
+  "id": "7S-98aac06d-2a11-4430-a7d6-c3cacd107c87",
+  "tnr": "171446",
+  "tidpunkt": "2026-06-17T14:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR171508.md",
+  "id": "7S-53357419-c0f3-42b4-8df4-b4b5d5a6a5dc",
+  "tnr": "171508",
+  "tidpunkt": "2026-06-17T15:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171515.md",
+  "id": "7S-b044d871-84fa-43e6-93cf-26449d18e28f",
+  "tnr": "171515",
+  "tidpunkt": "2026-06-17T15:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171518.md",
+  "id": "7S-ad9b2d16-ac45-4d1c-8f01-c89a3b1e5070",
+  "tnr": "171518",
+  "tidpunkt": "2026-06-17T15:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR171634.md",
+  "id": "7S-de158dbc-baa8-4776-b8d4-dcdf408e4e1e",
+  "tnr": "171634",
+  "tidpunkt": "2026-06-17T16:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR171719.md",
+  "id": "7S-14b3f1e3-b092-4e82-858f-2cf0ee12baea",
+  "tnr": "171719",
+  "tidpunkt": "2026-06-17T17:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR171721.md",
+  "id": "7S-43f6f9e8-de2c-443a-89b4-c6209f744a37",
+  "tnr": "171721",
+  "tidpunkt": "2026-06-17T17:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR171941.md",
+  "id": "7S-7ef13139-5239-4180-b509-facc62a1a8f4",
+  "tnr": "171941",
+  "tidpunkt": "2026-06-17T19:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR171943.md",
+  "id": "7S-ae096dd6-6059-4ed9-8528-efd30bff798d",
+  "tnr": "171943",
+  "tidpunkt": "2026-06-17T19:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR172039.md",
+  "id": "7S-748743d0-1e60-4c39-8427-aa3d235cd8a8",
+  "tnr": "172039",
+  "tidpunkt": "2026-06-17T20:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR172108.md",
+  "id": "7S-a35a71af-5c88-428d-92e9-c985e9d778e9",
+  "tnr": "172108",
+  "tidpunkt": "2026-06-17T21:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR172107.md",
+  "id": "7S-a23ec721-8d39-4b85-a3da-c0fdb169805d",
+  "tnr": "172107",
+  "tidpunkt": "2026-06-17T21:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR180543.md",
+  "id": "7S-8bae8e66-fa97-402c-bcba-d167f5a9ca5f",
+  "tnr": "180543",
+  "tidpunkt": "2026-06-18T05:40:00",
+  "truth": "recon",
+  "member": "R2",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR180547.md",
+  "id": "7S-7d9fb37d-2060-49c3-b8b1-7cfc42992891",
+  "tnr": "180547",
+  "tidpunkt": "2026-06-18T05:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR180553.md",
+  "id": "7S-ea7f1f8c-99da-48bf-987f-d76e087984a1",
+  "tnr": "180553",
+  "tidpunkt": "2026-06-18T05:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR180654.md",
+  "id": "7S-f4f87c2b-c496-4181-a7c5-d28f1972feab",
+  "tnr": "180654",
+  "tidpunkt": "2026-06-18T06:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR180701.md",
+  "id": "7S-5a8dd33d-8c3b-4aa7-8032-aa40e4e43716",
+  "tnr": "180701",
+  "tidpunkt": "2026-06-18T06:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR180702.md",
+  "id": "7S-40c5f5d2-1801-4648-9182-4e0cd73f213d",
+  "tnr": "180702",
+  "tidpunkt": "2026-06-18T07:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR180812.md",
+  "id": "7S-fdf3e307-9baa-442a-af52-2d1ede5f5102",
+  "tnr": "180812",
+  "tidpunkt": "2026-06-18T08:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR180844.md",
+  "id": "7S-1899cf32-fe97-4155-9aaa-2cd251a1ba6b",
+  "tnr": "180844",
+  "tidpunkt": "2026-06-18T08:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR180857.md",
+  "id": "7S-91aa52ef-2b6b-49b5-8c10-79a5f720af50",
+  "tnr": "180857",
+  "tidpunkt": "2026-06-18T08:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR180907.md",
+  "id": "7S-1eca71d9-1eaa-49f3-938f-fbba52c8f9e3",
+  "tnr": "180907",
+  "tidpunkt": "2026-06-18T09:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR180911.md",
+  "id": "7S-cd31370e-c6a9-4ffa-8214-9a694eba6849",
+  "tnr": "180911",
+  "tidpunkt": "2026-06-18T09:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR180915.md",
+  "id": "7S-87006b4c-edd7-49a4-8fa6-f537f0c2e17f",
+  "tnr": "180915",
+  "tidpunkt": "2026-06-18T09:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181033.md",
+  "id": "7S-72577df7-1f72-4b07-ae0c-70c93f76107b",
+  "tnr": "181033",
+  "tidpunkt": "2026-06-18T10:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR181121.md",
+  "id": "7S-73f8a294-83ae-4bff-a287-40b47fb9a019",
+  "tnr": "181121",
+  "tidpunkt": "2026-06-18T11:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "SKS732",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181223.md",
+  "id": "7S-f607b85d-294f-4f76-9c28-7a1dc7057d94",
+  "tnr": "181223",
+  "tidpunkt": "2026-06-18T12:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181233.md",
+  "id": "7S-9e3b456b-99f6-427a-9ebf-dee76dd5f12a",
+  "tnr": "181233",
+  "tidpunkt": "2026-06-18T12:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR181241.md",
+  "id": "7S-79d60994-7d08-4e72-b822-f69ced9df87a",
+  "tnr": "181241",
+  "tidpunkt": "2026-06-18T12:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181255.md",
+  "id": "7S-2841ef60-c5f4-4a38-b3df-a9bbaf4c9d5f",
+  "tnr": "181255",
+  "tidpunkt": "2026-06-18T12:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181258.md",
+  "id": "7S-ff38cd93-00fa-4e53-9087-3455423acfc4",
+  "tnr": "181258",
+  "tidpunkt": "2026-06-18T12:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR181306.md",
+  "id": "7S-53a25662-628a-4b4f-92da-204e4fe72662",
+  "tnr": "181306",
+  "tidpunkt": "2026-06-18T13:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR181406.md",
+  "id": "7S-e0dff8b8-d02e-4262-a4ba-4d4370e95f0c",
+  "tnr": "181406",
+  "tidpunkt": "2026-06-18T14:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181431.md",
+  "id": "7S-2eb52387-ab9f-4430-98ae-93fbd978673a",
+  "tnr": "181431",
+  "tidpunkt": "2026-06-18T14:29:00",
+  "truth": "recon",
+  "member": "R6",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181438.md",
+  "id": "7S-c057e791-5442-48d0-8d7e-976869e5d4fb",
+  "tnr": "181438",
+  "tidpunkt": "2026-06-18T14:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181448.md",
+  "id": "7S-091b59fe-aac1-49fb-8cb9-1baf72888c53",
+  "tnr": "181448",
+  "tidpunkt": "2026-06-18T14:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181448_2.md",
+  "id": "7S-fde2acca-1a40-4828-91ff-df5e1f452509",
+  "tnr": "181448",
+  "tidpunkt": "2026-06-18T14:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181514.md",
+  "id": "7S-e865d24e-9a49-4039-a45d-01c3aa4b3288",
+  "tnr": "181514",
+  "tidpunkt": "2026-06-18T15:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR181533.md",
+  "id": "7S-6664a080-2633-4853-ab87-2bc0c14b0407",
+  "tnr": "181533",
+  "tidpunkt": "2026-06-18T15:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "XBT23H",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181619.md",
+  "id": "7S-feb7512e-8277-4c9e-ac5f-e7afd21dec59",
+  "tnr": "181619",
+  "tidpunkt": "2026-06-18T16:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181630.md",
+  "id": "7S-2b318dce-9c84-4704-a489-07b72a060e60",
+  "tnr": "181630",
+  "tidpunkt": "2026-06-18T16:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "ZEX81L",
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR181652.md",
+  "id": "7S-93f79783-5700-413d-9a5a-41698345c7dc",
+  "tnr": "181652",
+  "tidpunkt": "2026-06-18T16:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR181705.md",
+  "id": "7S-4618c53b-7dea-4f1d-873d-78f8b17de87c",
+  "tnr": "181705",
+  "tidpunkt": "2026-06-18T17:04:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181707.md",
+  "id": "7S-be60fca7-aac8-464e-81ee-da6d4f875935",
+  "tnr": "181707",
+  "tidpunkt": "2026-06-18T17:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181715.md",
+  "id": "7S-78bcbf36-71a2-4206-a97c-7390bdeb6028",
+  "tnr": "181715",
+  "tidpunkt": "2026-06-18T17:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181820.md",
+  "id": "7S-f471d242-804a-48e3-a97a-83cbabd926ba",
+  "tnr": "181820",
+  "tidpunkt": "2026-06-18T18:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR181847.md",
+  "id": "7S-4e7922cc-e309-4220-a97d-a2d9967ef275",
+  "tnr": "181847",
+  "tidpunkt": "2026-06-18T18:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR181852.md",
+  "id": "7S-b7a850a8-b215-4761-a837-85ccbf07af84",
+  "tnr": "181852",
+  "tidpunkt": "2026-06-18T18:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR181925.md",
+  "id": "7S-67994f1a-8bfc-4fc0-8c11-674a635fde42",
+  "tnr": "181925",
+  "tidpunkt": "2026-06-18T19:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "RUB417",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR182127.md",
+  "id": "7S-1e74cd60-22cb-4947-b110-26b11bd0035a",
+  "tnr": "182127",
+  "tidpunkt": "2026-06-18T21:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR182242.md",
+  "id": "7S-08be3b07-662f-486b-8c1f-638711cb4ea7",
+  "tnr": "182242",
+  "tidpunkt": "2026-06-18T22:39:00",
+  "truth": "recon",
+  "member": "R5",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR190514.md",
+  "id": "7S-2509c8bc-0668-465a-aed5-b0f9a0a17f51",
+  "tnr": "190514",
+  "tidpunkt": "2026-06-19T05:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR190701.md",
+  "id": "7S-8e9d4034-990d-4acf-af61-cbc8af07c7ed",
+  "tnr": "190701",
+  "tidpunkt": "2026-06-19T07:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR190704.md",
+  "id": "7S-f5600ec7-acfb-4c25-ab0c-aab509d563a3",
+  "tnr": "190704",
+  "tidpunkt": "2026-06-19T07:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR190744.md",
+  "id": "7S-4b7e1c00-3f13-4302-9711-762c4fa3af7e",
+  "tnr": "190744",
+  "tidpunkt": "2026-06-19T07:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR190746.md",
+  "id": "7S-0879d955-025f-487c-84df-8a13d4f398ee",
+  "tnr": "190746",
+  "tidpunkt": "2026-06-19T07:44:00",
+  "truth": "recon",
+  "member": "R2",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR190750.md",
+  "id": "7S-dd7e0ceb-30c7-43f9-a895-4e963c25a7ff",
+  "tnr": "190750",
+  "tidpunkt": "2026-06-19T07:49:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR190801.md",
+  "id": "7S-3ab129ca-4cff-4d55-a699-ccbcb2ec9dee",
+  "tnr": "190801",
+  "tidpunkt": "2026-06-19T07:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR190810.md",
+  "id": "7S-4a3d12c8-1ef9-49dd-8d4e-f2c030cd6143",
+  "tnr": "190810",
+  "tidpunkt": "2026-06-19T08:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "KPF256",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR190811.md",
+  "id": "7S-783a4274-18f8-466f-8b78-338815be7dde",
+  "tnr": "190811",
+  "tidpunkt": "2026-06-19T08:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR190859.md",
+  "id": "7S-0b57f8ab-564c-4c1c-bb14-db693c26ae4f",
+  "tnr": "190859",
+  "tidpunkt": "2026-06-19T08:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR190903.md",
+  "id": "7S-39f40f33-b43f-41e3-ac4f-99e07384e91f",
+  "tnr": "190903",
+  "tidpunkt": "2026-06-19T09:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR190904.md",
+  "id": "7S-c5c68c6b-c3ad-48a2-85d0-fc2a6bcd7e0c",
+  "tnr": "190904",
+  "tidpunkt": "2026-06-19T09:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "MUU35D",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR190918.md",
+  "id": "7S-d625fe97-40fc-4f1b-9dbe-75b9cf176b34",
+  "tnr": "190918",
+  "tidpunkt": "2026-06-19T09:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR190925.md",
+  "id": "7S-5c50a9a3-df90-405d-bac1-d628ce0a0602",
+  "tnr": "190925",
+  "tidpunkt": "2026-06-19T09:22:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR190925_2.md",
+  "id": "7S-5ecbc910-87cd-4a4e-8272-5b0f2d6c0c3f",
+  "tnr": "190925",
+  "tidpunkt": "2026-06-19T09:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR190928.md",
+  "id": "7S-9de0f3d4-2539-48d1-8356-89fbb0b2c8ea",
+  "tnr": "190928",
+  "tidpunkt": "2026-06-19T09:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR191038.md",
+  "id": "7S-8a7f892c-7559-4aa7-9809-fe217d6dd124",
+  "tnr": "191038",
+  "tidpunkt": "2026-06-19T10:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191109.md",
+  "id": "7S-050f9ecf-4659-4247-9305-efee50b19d05",
+  "tnr": "191109",
+  "tidpunkt": "2026-06-19T11:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191131.md",
+  "id": "7S-6b6cbef6-1fca-460d-96e8-3c48f5bebed2",
+  "tnr": "191131",
+  "tidpunkt": "2026-06-19T11:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191135.md",
+  "id": "7S-233f2d7f-de93-40e5-88b2-8d57c95a93ae",
+  "tnr": "191135",
+  "tidpunkt": "2026-06-19T11:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191219.md",
+  "id": "7S-566f46d1-984d-46fc-99d2-9ac332b5e430",
+  "tnr": "191219",
+  "tidpunkt": "2026-06-19T12:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "YDZ697",
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191238.md",
+  "id": "7S-b6e0948b-afee-4c54-9c04-6c927d5ef30a",
+  "tnr": "191238",
+  "tidpunkt": "2026-06-19T12:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR191240.md",
+  "id": "7S-d2c6bfe5-021e-4875-82c4-8f9054e7536f",
+  "tnr": "191240",
+  "tidpunkt": "2026-06-19T12:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191258.md",
+  "id": "7S-48d432e1-10e4-4b3f-9e64-dd830419ae42",
+  "tnr": "191258",
+  "tidpunkt": "2026-06-19T12:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR191308.md",
+  "id": "7S-af664e79-812c-45e0-b100-48572f3188ea",
+  "tnr": "191308",
+  "tidpunkt": "2026-06-19T13:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191307.md",
+  "id": "7S-6843f66d-3297-416c-b5c0-9f096254e2f9",
+  "tnr": "191307",
+  "tidpunkt": "2026-06-19T13:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191315.md",
+  "id": "7S-824b46c5-a941-430c-a53c-9521b8d92d95",
+  "tnr": "191315",
+  "tidpunkt": "2026-06-19T13:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191320.md",
+  "id": "7S-f1686180-039b-4cc6-9a93-2dc92727d80d",
+  "tnr": "191320",
+  "tidpunkt": "2026-06-19T13:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191325.md",
+  "id": "7S-b571fbea-f3b7-4c33-b65e-4e1285b332ca",
+  "tnr": "191325",
+  "tidpunkt": "2026-06-19T13:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR191357.md",
+  "id": "7S-872a8dd1-f81c-4771-ac37-b7e92f965c01",
+  "tnr": "191357",
+  "tidpunkt": "2026-06-19T13:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191405.md",
+  "id": "7S-6e435355-0bce-40a2-8015-1579a563b2a9",
+  "tnr": "191405",
+  "tidpunkt": "2026-06-19T14:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191409.md",
+  "id": "7S-06106b63-c7fd-42dc-91fd-c6d511f1f335",
+  "tnr": "191409",
+  "tidpunkt": "2026-06-19T14:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191418.md",
+  "id": "7S-31cd1f27-db14-49e1-96c0-155a8cc73ce6",
+  "tnr": "191418",
+  "tidpunkt": "2026-06-19T14:15:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "CRF349",
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191425.md",
+  "id": "7S-d396f4c2-5034-4971-b6dc-c547b81b5256",
+  "tnr": "191425",
+  "tidpunkt": "2026-06-19T14:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191428.md",
+  "id": "7S-9c95218d-659d-47c9-8d11-7d5dcdb973e9",
+  "tnr": "191428",
+  "tidpunkt": "2026-06-19T14:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191432.md",
+  "id": "7S-a80b6dea-f14f-4172-bbf7-f1177256df1b",
+  "tnr": "191432",
+  "tidpunkt": "2026-06-19T14:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR191439.md",
+  "id": "7S-60c76859-5459-4d9c-a21d-08233b267d0d",
+  "tnr": "191439",
+  "tidpunkt": "2026-06-19T14:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191511.md",
+  "id": "7S-1f8c686d-c5bd-44d1-8fb1-5a3d24ba1cef",
+  "tnr": "191511",
+  "tidpunkt": "2026-06-19T15:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR191541.md",
+  "id": "7S-869316c7-6bd8-483a-8374-b64b38761b7c",
+  "tnr": "191541",
+  "tidpunkt": "2026-06-19T15:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR191553.md",
+  "id": "7S-e5e4f983-cf04-4dc0-9d39-388028182bc0",
+  "tnr": "191553",
+  "tidpunkt": "2026-06-19T15:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR191624.md",
+  "id": "7S-859d5988-5d89-495c-9e8a-2e3660e6eecd",
+  "tnr": "191624",
+  "tidpunkt": "2026-06-19T16:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR191621.md",
+  "id": "7S-d056f3dd-0965-405c-ba96-df36cb5bdd8a",
+  "tnr": "191621",
+  "tidpunkt": "2026-06-19T16:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191623.md",
+  "id": "7S-bb057bda-5740-4840-a704-c0877fc1b0b5",
+  "tnr": "191623",
+  "tidpunkt": "2026-06-19T16:22:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191648.md",
+  "id": "7S-5aabbceb-d728-46f4-85e8-f721e3012e25",
+  "tnr": "191648",
+  "tidpunkt": "2026-06-19T16:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR191729.md",
+  "id": "7S-cbd84113-c7ac-4bcc-ab79-b921dfc9f4a9",
+  "tnr": "191729",
+  "tidpunkt": "2026-06-19T17:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR191744.md",
+  "id": "7S-64cd68d0-2c34-4d58-99e2-ec527980f7de",
+  "tnr": "191744",
+  "tidpunkt": "2026-06-19T17:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR191950.md",
+  "id": "7S-47eb7836-e481-4765-9312-310c5c245d45",
+  "tnr": "191950",
+  "tidpunkt": "2026-06-19T19:49:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR192034.md",
+  "id": "7S-0968590a-1ed2-46e5-b9d0-d1ce70e986a1",
+  "tnr": "192034",
+  "tidpunkt": "2026-06-19T20:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR192113.md",
+  "id": "7S-f4df6896-1f40-4c0c-947b-66c2349368a2",
+  "tnr": "192113",
+  "tidpunkt": "2026-06-19T21:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR192339.md",
+  "id": "7S-ffe9924a-1858-43f3-8919-76c25dcecaa1",
+  "tnr": "192339",
+  "tidpunkt": "2026-06-19T23:38:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR200522.md",
+  "id": "7S-480bbbf7-4cc6-4b69-a361-e30697295ae8",
+  "tnr": "200522",
+  "tidpunkt": "2026-06-20T05:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR200531.md",
+  "id": "7S-6cffb0f0-f79e-4c82-aedc-49c1f71bd135",
+  "tnr": "200531",
+  "tidpunkt": "2026-06-20T05:28:00",
+  "truth": "recon",
+  "member": "R3",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR200556.md",
+  "id": "7S-64c2ce6b-9e26-4b74-bd93-57c32cc11466",
+  "tnr": "200556",
+  "tidpunkt": "2026-06-20T05:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR200606.md",
+  "id": "7S-c2e0617d-2d80-42b1-aa22-d4badd7f5e65",
+  "tnr": "200606",
+  "tidpunkt": "2026-06-20T06:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR200742.md",
+  "id": "7S-af65ff40-97e9-44e5-9b84-b2720e72b830",
+  "tnr": "200742",
+  "tidpunkt": "2026-06-20T07:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR200816.md",
+  "id": "7S-2f159e9d-8590-448f-b91e-b23f0569867a",
+  "tnr": "200816",
+  "tidpunkt": "2026-06-20T08:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR200820.md",
+  "id": "7S-3b94ba69-c4a6-4f12-a143-3a98704ed50c",
+  "tnr": "200820",
+  "tidpunkt": "2026-06-20T08:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR200834.md",
+  "id": "7S-60e742c0-f0de-4374-927b-0ee6c78f38e4",
+  "tnr": "200834",
+  "tidpunkt": "2026-06-20T08:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR200858.md",
+  "id": "7S-bd87ec67-d176-4c2a-a1ca-b087cb554ea4",
+  "tnr": "200858",
+  "tidpunkt": "2026-06-20T08:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "WFP886",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR200912.md",
+  "id": "7S-3640f77b-5be7-4127-b3af-1014ca12a6f3",
+  "tnr": "200912",
+  "tidpunkt": "2026-06-20T09:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR200947.md",
+  "id": "7S-c6cefd5c-8575-4380-8dc4-ed947d0df521",
+  "tnr": "200947",
+  "tidpunkt": "2026-06-20T09:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "AXU943",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR200946.md",
+  "id": "7S-42e6b51e-6bd5-4bc4-bdad-8b8c8c1cd02b",
+  "tnr": "200946",
+  "tidpunkt": "2026-06-20T09:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR200954.md",
+  "id": "7S-518baf71-540d-4532-9ef8-9646cfe140a9",
+  "tnr": "200954",
+  "tidpunkt": "2026-06-20T09:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR201043.md",
+  "id": "7S-d92a54f8-2461-4db9-b33b-790e1ec79aa5",
+  "tnr": "201043",
+  "tidpunkt": "2026-06-20T10:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201053.md",
+  "id": "7S-8cb7ce07-c1e7-4648-92fd-1c1e083ef9de",
+  "tnr": "201053",
+  "tidpunkt": "2026-06-20T10:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "GKM352",
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR201136.md",
+  "id": "7S-e61f1bf9-2986-4329-b095-35bec988cfd5",
+  "tnr": "201136",
+  "tidpunkt": "2026-06-20T11:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201158.md",
+  "id": "7S-aea22ca7-3deb-45a9-ae3f-d8f47fcffda1",
+  "tnr": "201158",
+  "tidpunkt": "2026-06-20T11:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201201.md",
+  "id": "7S-182c483a-3ff3-4d7c-92e3-d516260efb5f",
+  "tnr": "201201",
+  "tidpunkt": "2026-06-20T12:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201255.md",
+  "id": "7S-af2623c9-1d69-4459-9421-1bd0a389c196",
+  "tnr": "201255",
+  "tidpunkt": "2026-06-20T12:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201306.md",
+  "id": "7S-a4ec9988-9ad0-4e31-baaa-a925d966b6ea",
+  "tnr": "201306",
+  "tidpunkt": "2026-06-20T13:04:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201325.md",
+  "id": "7S-eff0de97-766c-444a-b104-2703c33191e7",
+  "tnr": "201325",
+  "tidpunkt": "2026-06-20T13:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201338.md",
+  "id": "7S-c051ac7c-8e48-4488-87cd-07f7b74c990a",
+  "tnr": "201338",
+  "tidpunkt": "2026-06-20T13:35:00",
+  "truth": "recon",
+  "member": "R6",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201353.md",
+  "id": "7S-7aceb1fc-948e-428f-b1bf-1c2f5956e6fd",
+  "tnr": "201353",
+  "tidpunkt": "2026-06-20T13:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201400.md",
+  "id": "7S-cdd3c011-c9c2-49d1-b6ce-c14ced502b26",
+  "tnr": "201400",
+  "tidpunkt": "2026-06-20T14:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201410.md",
+  "id": "7S-009181ab-27a0-4ac1-8624-3f1d86fc27ef",
+  "tnr": "201410",
+  "tidpunkt": "2026-06-20T14:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201411.md",
+  "id": "7S-34acbd1e-4448-4eb5-82df-98aec61d7005",
+  "tnr": "201411",
+  "tidpunkt": "2026-06-20T14:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201420.md",
+  "id": "7S-2a9695db-851f-44bb-9e98-ae789a2ac845",
+  "tnr": "201420",
+  "tidpunkt": "2026-06-20T14:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR201418.md",
+  "id": "7S-829d700b-cec7-478d-9de7-12f2d2358118",
+  "tnr": "201418",
+  "tidpunkt": "2026-06-20T14:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "WAT386",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201425.md",
+  "id": "7S-ab86bd7d-93b6-4dc2-9df6-bd280291bf4d",
+  "tnr": "201425",
+  "tidpunkt": "2026-06-20T14:25:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201428.md",
+  "id": "7S-2622968c-5e2e-4444-aa65-bc7f4e92c0b7",
+  "tnr": "201428",
+  "tidpunkt": "2026-06-20T14:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201431.md",
+  "id": "7S-f7bd62bc-ad1a-4fce-954f-108ca5b44ac1",
+  "tnr": "201431",
+  "tidpunkt": "2026-06-20T14:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR201507.md",
+  "id": "7S-b9d5ccec-529a-4ef8-a101-2fe8598d83f9",
+  "tnr": "201507",
+  "tidpunkt": "2026-06-20T15:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR201512.md",
+  "id": "7S-6aa523a1-1e51-412e-8247-7628ca3e1f82",
+  "tnr": "201512",
+  "tidpunkt": "2026-06-20T15:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR201525.md",
+  "id": "7S-86a614b6-7879-49ec-a530-a944fcc1a27c",
+  "tnr": "201525",
+  "tidpunkt": "2026-06-20T15:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201542.md",
+  "id": "7S-1432b9b9-d5e1-4e60-8584-ceefcaf8ed2b",
+  "tnr": "201542",
+  "tidpunkt": "2026-06-20T15:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201630.md",
+  "id": "7S-35f61650-5b2f-460e-a60e-2382a8c2d5ff",
+  "tnr": "201630",
+  "tidpunkt": "2026-06-20T16:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201640.md",
+  "id": "7S-ba8ed768-2732-40d0-bad0-ebf2b46ef085",
+  "tnr": "201640",
+  "tidpunkt": "2026-06-20T16:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR201643.md",
+  "id": "7S-2a65b12c-001d-4a9e-b889-dd002c5f4d03",
+  "tnr": "201643",
+  "tidpunkt": "2026-06-20T16:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR201728.md",
+  "id": "7S-827b17be-ad7d-4c51-aff1-c9901ac58826",
+  "tnr": "201728",
+  "tidpunkt": "2026-06-20T17:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201736.md",
+  "id": "7S-6d9f2b50-ef60-4932-87d4-5f14232b32a1",
+  "tnr": "201736",
+  "tidpunkt": "2026-06-20T17:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR201754.md",
+  "id": "7S-7e48df0e-0570-47ca-939e-508dfc18e44b",
+  "tnr": "201754",
+  "tidpunkt": "2026-06-20T17:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR201816.md",
+  "id": "7S-0a35ef9d-21a6-45c2-8df0-711f2c7df31a",
+  "tnr": "201816",
+  "tidpunkt": "2026-06-20T18:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR201830.md",
+  "id": "7S-dc73da96-ae30-4167-a3e9-5c9d769a1475",
+  "tnr": "201830",
+  "tidpunkt": "2026-06-20T18:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201837.md",
+  "id": "7S-3fb7e407-e3c7-43ab-b239-ffeba9528364",
+  "tnr": "201837",
+  "tidpunkt": "2026-06-20T18:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR201949.md",
+  "id": "7S-7a624b11-c258-486d-8f7a-bc967f7ca5cc",
+  "tnr": "201949",
+  "tidpunkt": "2026-06-20T19:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR201959.md",
+  "id": "7S-4a8ac858-111f-4235-a436-917ea3a42d24",
+  "tnr": "201959",
+  "tidpunkt": "2026-06-20T19:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR202003.md",
+  "id": "7S-7e123532-3148-4b76-bebc-eac14fa5c06b",
+  "tnr": "202003",
+  "tidpunkt": "2026-06-20T20:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR202003_2.md",
+  "id": "7S-e5451436-2660-4d98-8ff0-4d8063926513",
+  "tnr": "202003",
+  "tidpunkt": "2026-06-20T20:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR202051.md",
+  "id": "7S-45458e05-729a-4f81-ba74-81bc2c718e2e",
+  "tnr": "202051",
+  "tidpunkt": "2026-06-20T20:49:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR202254.md",
+  "id": "7S-8eb5140f-16f4-4881-9724-1955b91dddd9",
+  "tnr": "202254",
+  "tidpunkt": "2026-06-20T22:51:00",
+  "truth": "recon",
+  "member": "R1",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR210514.md",
+  "id": "7S-96038247-7b6a-4038-8442-d2c1ac1b0475",
+  "tnr": "210514",
+  "tidpunkt": "2026-06-21T05:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR210517.md",
+  "id": "7S-74d492e1-06a2-4ffc-8e36-702b4c37ce17",
+  "tnr": "210517",
+  "tidpunkt": "2026-06-21T05:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR210539.md",
+  "id": "7S-a3c7e7db-405d-48cb-833f-9f62ecacbd62",
+  "tnr": "210539",
+  "tidpunkt": "2026-06-21T05:38:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR210812.md",
+  "id": "7S-3f6620c0-b524-4b18-a9ee-c498efea62dc",
+  "tnr": "210812",
+  "tidpunkt": "2026-06-21T08:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR210937.md",
+  "id": "7S-25cb8378-00f8-4d88-9f7d-3ce0b31ac2b5",
+  "tnr": "210937",
+  "tidpunkt": "2026-06-21T09:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR210957.md",
+  "id": "7S-91269d11-4b4a-4b8a-a2e7-5ce8ceca5001",
+  "tnr": "210957",
+  "tidpunkt": "2026-06-21T09:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR211000.md",
+  "id": "7S-83aab1a7-7065-4aac-bbf0-5e2761c5c129",
+  "tnr": "211000",
+  "tidpunkt": "2026-06-21T09:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR211001.md",
+  "id": "7S-76ce00e0-e6fc-4498-8c05-df0046eb7d03",
+  "tnr": "211001",
+  "tidpunkt": "2026-06-21T10:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211008.md",
+  "id": "7S-90a0dac6-221e-444a-9205-d372d70eeda6",
+  "tnr": "211008",
+  "tidpunkt": "2026-06-21T10:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211009.md",
+  "id": "7S-abf10d95-d804-430d-a11d-56635ebeab54",
+  "tnr": "211009",
+  "tidpunkt": "2026-06-21T10:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211011.md",
+  "id": "7S-f0b9d495-5862-42e1-a989-a78e103ce58c",
+  "tnr": "211011",
+  "tidpunkt": "2026-06-21T10:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211059.md",
+  "id": "7S-a9670916-0d2a-4b88-b96c-0240642a0954",
+  "tnr": "211059",
+  "tidpunkt": "2026-06-21T10:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211213.md",
+  "id": "7S-9df86a20-2347-433f-955f-38332bbd0d6c",
+  "tnr": "211213",
+  "tidpunkt": "2026-06-21T12:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211218.md",
+  "id": "7S-5c10bb61-f024-4f25-ad90-3bb6c2936ca1",
+  "tnr": "211218",
+  "tidpunkt": "2026-06-21T12:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211241.md",
+  "id": "7S-99b36b04-7439-4b51-bd64-c9c1a0aa615b",
+  "tnr": "211241",
+  "tidpunkt": "2026-06-21T12:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "EGM706",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211252.md",
+  "id": "7S-caebd022-9c9b-4ba5-9bd0-cf04a8bf8514",
+  "tnr": "211252",
+  "tidpunkt": "2026-06-21T12:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211258.md",
+  "id": "7S-2dfcdeaf-9101-4706-be6d-44a6ae1e66a7",
+  "tnr": "211258",
+  "tidpunkt": "2026-06-21T12:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211300.md",
+  "id": "7S-2e1c8707-19c1-48f0-b9d4-bcad74eb3cc3",
+  "tnr": "211300",
+  "tidpunkt": "2026-06-21T12:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211309.md",
+  "id": "7S-34de850a-3251-4241-9e2e-10f815c94045",
+  "tnr": "211309",
+  "tidpunkt": "2026-06-21T13:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211310.md",
+  "id": "7S-586fa4ad-fcc4-4d94-b975-0018ffc379f9",
+  "tnr": "211310",
+  "tidpunkt": "2026-06-21T13:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR211310_2.md",
+  "id": "7S-4991714e-2e2a-41c3-b36b-23e363b262ee",
+  "tnr": "211310",
+  "tidpunkt": "2026-06-21T13:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211319.md",
+  "id": "7S-01484051-a017-4756-a22e-9caa61924ddf",
+  "tnr": "211319",
+  "tidpunkt": "2026-06-21T13:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211412.md",
+  "id": "7S-0b38fb89-45a8-4922-9c2b-18427f12c1c7",
+  "tnr": "211412",
+  "tidpunkt": "2026-06-21T14:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211437.md",
+  "id": "7S-7f44c1db-3b36-4caa-b951-b2150ee34a3d",
+  "tnr": "211437",
+  "tidpunkt": "2026-06-21T14:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211459.md",
+  "id": "7S-9d6cd5f1-db9b-40e6-ad4a-e6dd51b49326",
+  "tnr": "211459",
+  "tidpunkt": "2026-06-21T14:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211459_2.md",
+  "id": "7S-909545c3-5d31-4ba7-9f18-9bc66d44aad2",
+  "tnr": "211459",
+  "tidpunkt": "2026-06-21T14:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR211505.md",
+  "id": "7S-48c905e4-887c-4c80-a249-b05fd6bfe9ff",
+  "tnr": "211505",
+  "tidpunkt": "2026-06-21T15:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR211537.md",
+  "id": "7S-60c7007e-f885-4531-89c9-0c598afd6238",
+  "tnr": "211537",
+  "tidpunkt": "2026-06-21T15:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "RHF09G",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211606.md",
+  "id": "7S-2f8e4530-0148-4345-9487-020b156848b5",
+  "tnr": "211606",
+  "tidpunkt": "2026-06-21T16:04:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211617.md",
+  "id": "7S-d5d1fe12-250a-4871-8f09-8258cda00f8a",
+  "tnr": "211617",
+  "tidpunkt": "2026-06-21T16:15:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR211635.md",
+  "id": "7S-010e7bfa-eb0c-498a-ad8c-0479fd5e0d69",
+  "tnr": "211635",
+  "tidpunkt": "2026-06-21T16:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR211637.md",
+  "id": "7S-106c5a2f-a229-41ef-910b-02efa6b96aa5",
+  "tnr": "211637",
+  "tidpunkt": "2026-06-21T16:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211639.md",
+  "id": "7S-1cc60b5c-16a3-4845-bf6f-2a4c9dd481b6",
+  "tnr": "211639",
+  "tidpunkt": "2026-06-21T16:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211651.md",
+  "id": "7S-b36b5fd5-aa21-4b2b-a393-37d8b9f2a5f6",
+  "tnr": "211651",
+  "tidpunkt": "2026-06-21T16:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211726.md",
+  "id": "7S-07465834-8afd-44ae-aef7-b374200da2b8",
+  "tnr": "211726",
+  "tidpunkt": "2026-06-21T17:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR211735.md",
+  "id": "7S-c897b436-a105-464b-ab58-d9585a988c7a",
+  "tnr": "211735",
+  "tidpunkt": "2026-06-21T17:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR211755.md",
+  "id": "7S-bc71bb9d-a826-4069-910a-b842be372c51",
+  "tnr": "211755",
+  "tidpunkt": "2026-06-21T17:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR211816.md",
+  "id": "7S-e22f253c-1d9a-4d7f-951e-802fd95cf033",
+  "tnr": "211816",
+  "tidpunkt": "2026-06-21T18:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR211903.md",
+  "id": "7S-3be0d267-10f3-4d90-a393-ccfbc933ed1f",
+  "tnr": "211903",
+  "tidpunkt": "2026-06-21T19:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR211958.md",
+  "id": "7S-017926d9-6b90-4a44-97c6-257fffe57932",
+  "tnr": "211958",
+  "tidpunkt": "2026-06-21T19:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR212056.md",
+  "id": "7S-e754e5a4-125d-4919-82b0-b3e85850ae15",
+  "tnr": "212056",
+  "tidpunkt": "2026-06-21T20:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR220512.md",
+  "id": "7S-0943d4e5-330d-40f4-886a-cb0a73f64eb3",
+  "tnr": "220512",
+  "tidpunkt": "2026-06-22T05:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR220544.md",
+  "id": "7S-a819f7ac-97f0-4218-a0b4-5822f2aa7843",
+  "tnr": "220544",
+  "tidpunkt": "2026-06-22T05:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR220611.md",
+  "id": "7S-0acc783c-8218-4991-9bd5-2588780fbebd",
+  "tnr": "220611",
+  "tidpunkt": "2026-06-22T06:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR220803.md",
+  "id": "7S-f7a36672-413e-4826-8141-82a253853900",
+  "tnr": "220803",
+  "tidpunkt": "2026-06-22T08:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR220810.md",
+  "id": "7S-3f3fa6b3-562b-43f7-89de-771c2b498aba",
+  "tnr": "220810",
+  "tidpunkt": "2026-06-22T08:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR220834.md",
+  "id": "7S-a9345705-8c00-4879-a1a5-2027d7e5d67f",
+  "tnr": "220834",
+  "tidpunkt": "2026-06-22T08:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR220840.md",
+  "id": "7S-8a0aa589-83a5-42ff-bd5a-d2cd7a834c7d",
+  "tnr": "220840",
+  "tidpunkt": "2026-06-22T08:38:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR220914.md",
+  "id": "7S-9b943dc3-c60a-4728-9577-eb7fe8c6beeb",
+  "tnr": "220914",
+  "tidpunkt": "2026-06-22T09:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR220919.md",
+  "id": "7S-e47c8e3f-cc39-4d48-9fae-047b75971b8c",
+  "tnr": "220919",
+  "tidpunkt": "2026-06-22T09:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221001.md",
+  "id": "7S-4970b145-5334-485f-b01b-65d4850535d8",
+  "tnr": "221001",
+  "tidpunkt": "2026-06-22T10:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221020.md",
+  "id": "7S-feaa9e45-c277-4297-be97-e4b4dbdd9809",
+  "tnr": "221020",
+  "tidpunkt": "2026-06-22T10:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221028.md",
+  "id": "7S-33d02606-16e3-4dd0-92c3-10cf4015dfac",
+  "tnr": "221028",
+  "tidpunkt": "2026-06-22T10:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221050.md",
+  "id": "7S-9c4b23ad-2f18-4a4f-b37e-0f0a2b568c7b",
+  "tnr": "221050",
+  "tidpunkt": "2026-06-22T10:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221055.md",
+  "id": "7S-8326d343-56af-47ab-9116-dd6aabbbcfb2",
+  "tnr": "221055",
+  "tidpunkt": "2026-06-22T10:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221108.md",
+  "id": "7S-433ee1a0-0d15-4ba5-b257-37a83e8b7985",
+  "tnr": "221108",
+  "tidpunkt": "2026-06-22T11:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221123.md",
+  "id": "7S-c446ab8c-82e2-4123-b776-c6557c4e4248",
+  "tnr": "221123",
+  "tidpunkt": "2026-06-22T11:23:00",
+  "truth": "recon",
+  "member": "R2",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221133.md",
+  "id": "7S-11a1c1d8-f0ff-40f6-8c7a-dee42e5abf2e",
+  "tnr": "221133",
+  "tidpunkt": "2026-06-22T11:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221151.md",
+  "id": "7S-4516e652-667a-4d3a-a842-56ff7f19a7f5",
+  "tnr": "221151",
+  "tidpunkt": "2026-06-22T11:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "LSS31D",
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221213.md",
+  "id": "7S-ad9e8d87-2f50-4986-99f7-c43712bfa34a",
+  "tnr": "221213",
+  "tidpunkt": "2026-06-22T12:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221215.md",
+  "id": "7S-424aa924-0e93-491e-95c2-16a1185c4a57",
+  "tnr": "221215",
+  "tidpunkt": "2026-06-22T12:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221253.md",
+  "id": "7S-a6ce3473-1047-4f4a-8735-be491f985bce",
+  "tnr": "221253",
+  "tidpunkt": "2026-06-22T12:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "FSA04N",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221306.md",
+  "id": "7S-dcd83b70-911f-4b86-b0b5-b413fb20c517",
+  "tnr": "221306",
+  "tidpunkt": "2026-06-22T13:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221309.md",
+  "id": "7S-cc31b44d-090f-48c6-9352-174f9774068f",
+  "tnr": "221309",
+  "tidpunkt": "2026-06-22T13:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "CEP86W",
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221332.md",
+  "id": "7S-baf0f074-627d-42f9-b7f3-ebfcf208392d",
+  "tnr": "221332",
+  "tidpunkt": "2026-06-22T13:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221345.md",
+  "id": "7S-c7c8f60d-41ad-4065-99a3-0d87e04426c4",
+  "tnr": "221345",
+  "tidpunkt": "2026-06-22T13:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221350.md",
+  "id": "7S-4dbd4f6c-092a-42ef-b840-317f5bc84abe",
+  "tnr": "221350",
+  "tidpunkt": "2026-06-22T13:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221355.md",
+  "id": "7S-97ce219b-31f1-4b90-9ee4-3d54686a696b",
+  "tnr": "221355",
+  "tidpunkt": "2026-06-22T13:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221355_2.md",
+  "id": "7S-c7df9d6e-7f2f-435c-bc72-592de436be28",
+  "tnr": "221355",
+  "tidpunkt": "2026-06-22T13:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221401.md",
+  "id": "7S-340d60b0-3a70-4789-b854-3fa3b2297a1d",
+  "tnr": "221401",
+  "tidpunkt": "2026-06-22T14:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221415.md",
+  "id": "7S-aed1aefc-c723-48c8-98df-e9e4a990d329",
+  "tnr": "221415",
+  "tidpunkt": "2026-06-22T14:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221426.md",
+  "id": "7S-17985d06-0397-431d-aa9e-7ab5730b89dc",
+  "tnr": "221426",
+  "tidpunkt": "2026-06-22T14:23:00",
+  "truth": "recon",
+  "member": "R3",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221436.md",
+  "id": "7S-94ad61e4-8bfc-43c5-abcb-ab74d4d4715f",
+  "tnr": "221436",
+  "tidpunkt": "2026-06-22T14:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221438.md",
+  "id": "7S-3f140288-6a90-438a-a5d1-708dba39a9dc",
+  "tnr": "221438",
+  "tidpunkt": "2026-06-22T14:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "YPT81A",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221509.md",
+  "id": "7S-d47d15ef-17d8-48a4-8c9b-65adacf8e9f5",
+  "tnr": "221509",
+  "tidpunkt": "2026-06-22T15:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221519.md",
+  "id": "7S-bd58668d-7229-4ee2-803b-e9484c22499d",
+  "tnr": "221519",
+  "tidpunkt": "2026-06-22T15:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221526.md",
+  "id": "7S-582e7a9e-3577-44ba-a8ac-0f06baf0c018",
+  "tnr": "221526",
+  "tidpunkt": "2026-06-22T15:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "NZZ10Y",
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221525.md",
+  "id": "7S-d39e3b35-5a58-4be3-89f6-1267b2315837",
+  "tnr": "221525",
+  "tidpunkt": "2026-06-22T15:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221527.md",
+  "id": "7S-98bc7fa9-ccb4-4d58-8941-e6debce6f38a",
+  "tnr": "221527",
+  "tidpunkt": "2026-06-22T15:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221542.md",
+  "id": "7S-afb7668f-e8fd-4031-a7a5-a21844983c2f",
+  "tnr": "221542",
+  "tidpunkt": "2026-06-22T15:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221553.md",
+  "id": "7S-7f8a4365-05ea-4ddc-a8b3-760a4f06dd4e",
+  "tnr": "221553",
+  "tidpunkt": "2026-06-22T15:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221612.md",
+  "id": "7S-5c3417a0-719b-4c23-98b7-fd958e093067",
+  "tnr": "221612",
+  "tidpunkt": "2026-06-22T16:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR221631.md",
+  "id": "7S-010621be-103a-4113-95f2-a265d1f422ac",
+  "tnr": "221631",
+  "tidpunkt": "2026-06-22T16:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221633.md",
+  "id": "7S-7a11b431-84b0-4cb7-a4c4-c4f43c3713d5",
+  "tnr": "221633",
+  "tidpunkt": "2026-06-22T16:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221724.md",
+  "id": "7S-e2f72735-00f1-4607-8113-a5458a8ad881",
+  "tnr": "221724",
+  "tidpunkt": "2026-06-22T17:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR221801.md",
+  "id": "7S-ce810ef5-4e1e-4051-990c-82e9d42921bc",
+  "tnr": "221801",
+  "tidpunkt": "2026-06-22T17:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR221913.md",
+  "id": "7S-7244f7f5-2818-4e38-b624-026d62536f4b",
+  "tnr": "221913",
+  "tidpunkt": "2026-06-22T19:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR221931.md",
+  "id": "7S-f81d22a0-64a7-40ab-8cd7-a911bc89e307",
+  "tnr": "221931",
+  "tidpunkt": "2026-06-22T19:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221935.md",
+  "id": "7S-c528005f-e221-4c7f-a6a2-62f8412717f7",
+  "tnr": "221935",
+  "tidpunkt": "2026-06-22T19:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR221949.md",
+  "id": "7S-87958dbd-e7af-4413-a728-5cfafc39d4c2",
+  "tnr": "221949",
+  "tidpunkt": "2026-06-22T19:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR222140.md",
+  "id": "7S-6a37398e-166f-4991-b681-ea65e975bb3d",
+  "tnr": "222140",
+  "tidpunkt": "2026-06-22T21:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR222245.md",
+  "id": "7S-9e5cf6e9-9255-4248-b771-f894f2e36355",
+  "tnr": "222245",
+  "tidpunkt": "2026-06-22T22:43:00",
+  "truth": "recon",
+  "member": "R5",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR230431.md",
+  "id": "7S-210f4de3-053d-42cb-a0b8-9bcbadbafed0",
+  "tnr": "230431",
+  "tidpunkt": "2026-06-23T04:28:00",
+  "truth": "recon",
+  "member": "R5",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR230511.md",
+  "id": "7S-4434b2f3-dad0-44c4-86ca-3a78273c998e",
+  "tnr": "230511",
+  "tidpunkt": "2026-06-23T05:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "RRJ643",
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR230518.md",
+  "id": "7S-2604777c-f817-4543-8283-977a8e1d7394",
+  "tnr": "230518",
+  "tidpunkt": "2026-06-23T05:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR230520.md",
+  "id": "7S-6f60cae7-cad8-45a1-b11f-9d7b283fe47d",
+  "tnr": "230520",
+  "tidpunkt": "2026-06-23T05:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR230609.md",
+  "id": "7S-4a03aa7d-e87c-4241-b06d-af0b0ffe14f5",
+  "tnr": "230609",
+  "tidpunkt": "2026-06-23T06:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR230749.md",
+  "id": "7S-744be5da-44ab-4de7-a6df-8bfd4e2eccd4",
+  "tnr": "230749",
+  "tidpunkt": "2026-06-23T07:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR230821.md",
+  "id": "7S-9f7246b8-41f2-4ab7-ab0f-fac64342d169",
+  "tnr": "230821",
+  "tidpunkt": "2026-06-23T08:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR230832.md",
+  "id": "7S-b29c14d5-d475-4f17-aa7e-bc93e0412ed5",
+  "tnr": "230832",
+  "tidpunkt": "2026-06-23T08:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR230921.md",
+  "id": "7S-32f4a5a7-b729-4516-ae3a-fbac9b4e7ba9",
+  "tnr": "230921",
+  "tidpunkt": "2026-06-23T09:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR230943.md",
+  "id": "7S-c263064f-2ca2-4ba5-8c45-1ccbdd0e4de9",
+  "tnr": "230943",
+  "tidpunkt": "2026-06-23T09:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR230947.md",
+  "id": "7S-e896319b-7ea3-4365-ac42-c96bc464352d",
+  "tnr": "230947",
+  "tidpunkt": "2026-06-23T09:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR230952.md",
+  "id": "7S-f876b3e9-cfaf-4931-a4f9-3bd94fff8dec",
+  "tnr": "230952",
+  "tidpunkt": "2026-06-23T09:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231026.md",
+  "id": "7S-6ef24fb4-0552-47fb-8985-e170c209cd98",
+  "tnr": "231026",
+  "tidpunkt": "2026-06-23T10:25:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231046.md",
+  "id": "7S-6d4ae0f2-0b4f-4e94-9303-fe36b2c4f9ef",
+  "tnr": "231046",
+  "tidpunkt": "2026-06-23T10:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231049.md",
+  "id": "7S-5111826b-4d23-4dd3-87ff-788859658ba2",
+  "tnr": "231049",
+  "tidpunkt": "2026-06-23T10:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR231140.md",
+  "id": "7S-9e51c337-151b-4730-9ab9-63db3abda712",
+  "tnr": "231140",
+  "tidpunkt": "2026-06-23T11:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231147.md",
+  "id": "7S-0817548d-222d-46da-b317-f3ecf972b53b",
+  "tnr": "231147",
+  "tidpunkt": "2026-06-23T11:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR231204.md",
+  "id": "7S-b1a42b51-5678-4bec-8c73-b101ff151556",
+  "tnr": "231204",
+  "tidpunkt": "2026-06-23T12:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR231217.md",
+  "id": "7S-1b17cba6-3c5e-4e74-a7fd-5f34a831c1b5",
+  "tnr": "231217",
+  "tidpunkt": "2026-06-23T12:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231247.md",
+  "id": "7S-d42e16ab-54e4-44e0-9bee-0f5e1258886c",
+  "tnr": "231247",
+  "tidpunkt": "2026-06-23T12:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231317.md",
+  "id": "7S-5d2a844d-6cb9-4b2a-a0e7-c3165cb492d3",
+  "tnr": "231317",
+  "tidpunkt": "2026-06-23T13:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231323.md",
+  "id": "7S-84c6d6a6-e116-49c5-8dd7-8343c6fa9381",
+  "tnr": "231323",
+  "tidpunkt": "2026-06-23T13:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR231324.md",
+  "id": "7S-866dfe7e-37a7-4194-b8cb-dbb53e1cf1a4",
+  "tnr": "231324",
+  "tidpunkt": "2026-06-23T13:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR231325.md",
+  "id": "7S-678716f1-b8f6-4785-8943-33d2f1c2e1ce",
+  "tnr": "231325",
+  "tidpunkt": "2026-06-23T13:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR231340.md",
+  "id": "7S-160098ec-f34a-4d9d-b94a-47e0187d8150",
+  "tnr": "231340",
+  "tidpunkt": "2026-06-23T13:38:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231410.md",
+  "id": "7S-4f37fdfb-b49c-4061-abb8-159dac531842",
+  "tnr": "231410",
+  "tidpunkt": "2026-06-23T14:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231414.md",
+  "id": "7S-c9e39659-e5a3-4078-b95c-2b9bcfba5e78",
+  "tnr": "231414",
+  "tidpunkt": "2026-06-23T14:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231415.md",
+  "id": "7S-a0520eeb-e1a8-4f74-be59-61f28413d5f1",
+  "tnr": "231415",
+  "tidpunkt": "2026-06-23T14:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231424.md",
+  "id": "7S-7f2dc649-d18f-47f7-a21b-575ed8eaaee7",
+  "tnr": "231424",
+  "tidpunkt": "2026-06-23T14:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR231424_2.md",
+  "id": "7S-bcb6b5bc-7fad-4a55-bdf8-4fabf35ab704",
+  "tnr": "231424",
+  "tidpunkt": "2026-06-23T14:22:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231429.md",
+  "id": "7S-8d74540b-ba1d-4f54-aa9e-4b0f2a3e60ae",
+  "tnr": "231429",
+  "tidpunkt": "2026-06-23T14:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231455.md",
+  "id": "7S-c96a8390-b091-4933-81a5-65e4030e7201",
+  "tnr": "231455",
+  "tidpunkt": "2026-06-23T14:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231509.md",
+  "id": "7S-5dc7705b-7344-4ecf-8361-5bc77a7d98c4",
+  "tnr": "231509",
+  "tidpunkt": "2026-06-23T15:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "MBF97Y",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231513.md",
+  "id": "7S-0709e452-aa30-45b4-9f15-2e63173eca1e",
+  "tnr": "231513",
+  "tidpunkt": "2026-06-23T15:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR231633.md",
+  "id": "7S-8a96d1c0-0344-496d-9367-6ffedb8a7587",
+  "tnr": "231633",
+  "tidpunkt": "2026-06-23T16:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR231643.md",
+  "id": "7S-b2ed4f6d-9bb7-4ff1-97ec-63c45d894d82",
+  "tnr": "231643",
+  "tidpunkt": "2026-06-23T16:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR231750.md",
+  "id": "7S-b09cdee9-f61b-480d-a539-30017ef74f44",
+  "tnr": "231750",
+  "tidpunkt": "2026-06-23T17:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR231806.md",
+  "id": "7S-fa1d3c07-b324-4d39-bc83-801a0f44b6e9",
+  "tnr": "231806",
+  "tidpunkt": "2026-06-23T18:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR231836.md",
+  "id": "7S-766a6563-1ed7-474c-9014-5f2e1f44a464",
+  "tnr": "231836",
+  "tidpunkt": "2026-06-23T18:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR232138.md",
+  "id": "7S-88830985-6bbd-4bde-8548-b95f0a0fb8a8",
+  "tnr": "232138",
+  "tidpunkt": "2026-06-23T21:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR232311.md",
+  "id": "7S-f92af541-a5dc-4896-98d1-e3045aa26879",
+  "tnr": "232311",
+  "tidpunkt": "2026-06-23T23:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR240021.md",
+  "id": "7S-96060250-ea3e-4f73-884c-1884c88f63d6",
+  "tnr": "240021",
+  "tidpunkt": "2026-06-24T00:18:00",
+  "truth": "recon",
+  "member": "R4",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR240149.md",
+  "id": "7S-22867c53-f000-4394-b870-e4e1b093e3b4",
+  "tnr": "240149",
+  "tidpunkt": "2026-06-24T01:49:00",
+  "truth": "recon",
+  "member": "R4",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR240657.md",
+  "id": "7S-168c90c0-a725-44e4-bec4-8ea8b6cd1524",
+  "tnr": "240657",
+  "tidpunkt": "2026-06-24T06:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR240707.md",
+  "id": "7S-503c4c5a-413d-4d24-9662-03ade6e44b92",
+  "tnr": "240707",
+  "tidpunkt": "2026-06-24T07:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR240803.md",
+  "id": "7S-c507a35a-1dbc-4b7e-8dfe-be14cb10c60b",
+  "tnr": "240803",
+  "tidpunkt": "2026-06-24T08:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR240802.md",
+  "id": "7S-6d1675c1-7671-47fd-9814-26123733ef91",
+  "tnr": "240802",
+  "tidpunkt": "2026-06-24T08:02:00",
+  "truth": "recon",
+  "member": "R7",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR240831.md",
+  "id": "7S-0a51fcb7-b91a-4060-9c67-514a20aa8c80",
+  "tnr": "240831",
+  "tidpunkt": "2026-06-24T08:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR240831_2.md",
+  "id": "7S-9c9bc504-7fdd-4202-9bc2-e068c959e243",
+  "tnr": "240831",
+  "tidpunkt": "2026-06-24T08:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR240906.md",
+  "id": "7S-9bc12b86-646e-409c-9f72-b8bee4025fa1",
+  "tnr": "240906",
+  "tidpunkt": "2026-06-24T09:06:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR240926.md",
+  "id": "7S-70eb5571-7a5d-4682-9242-a6c7699f48c0",
+  "tnr": "240926",
+  "tidpunkt": "2026-06-24T09:25:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR240930.md",
+  "id": "7S-12e25711-fc37-4511-b0a0-e888121152be",
+  "tnr": "240930",
+  "tidpunkt": "2026-06-24T09:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR240935.md",
+  "id": "7S-43e99e9f-183e-4cb5-8916-35310fb42099",
+  "tnr": "240935",
+  "tidpunkt": "2026-06-24T09:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR241002.md",
+  "id": "7S-90e7d048-7885-4b00-86a5-7298ef1a1cdb",
+  "tnr": "241002",
+  "tidpunkt": "2026-06-24T09:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241015.md",
+  "id": "7S-788afbad-3adf-41d6-a319-67c42ae4b388",
+  "tnr": "241015",
+  "tidpunkt": "2026-06-24T10:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241026.md",
+  "id": "7S-85aeda01-1bb1-4a7d-b9e6-6319c54e7d3e",
+  "tnr": "241026",
+  "tidpunkt": "2026-06-24T10:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241026_2.md",
+  "id": "7S-33489418-03c1-4af8-9d31-47d69ddb1e35",
+  "tnr": "241026",
+  "tidpunkt": "2026-06-24T10:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241049.md",
+  "id": "7S-114a6df1-8222-4aff-9923-b4dc983aafb3",
+  "tnr": "241049",
+  "tidpunkt": "2026-06-24T10:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR241117.md",
+  "id": "7S-8cf862ea-3308-4d2c-93bb-77cefe40dce6",
+  "tnr": "241117",
+  "tidpunkt": "2026-06-24T11:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241123.md",
+  "id": "7S-1e17b082-a5c5-4c0b-8d2e-cb659df0bdde",
+  "tnr": "241123",
+  "tidpunkt": "2026-06-24T11:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241123_2.md",
+  "id": "7S-207b2b60-eb2b-4332-9ad4-e5c92d7e34ce",
+  "tnr": "241123",
+  "tidpunkt": "2026-06-24T11:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR241136.md",
+  "id": "7S-275bafc5-caf0-47e0-b5bb-11c63a886ba7",
+  "tnr": "241136",
+  "tidpunkt": "2026-06-24T11:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR241206.md",
+  "id": "7S-adec6f11-7d83-4e77-af67-d461e4163207",
+  "tnr": "241206",
+  "tidpunkt": "2026-06-24T12:05:00",
+  "truth": "recon",
+  "member": "R1",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR241258.md",
+  "id": "7S-4144498c-dc48-4871-88e6-823d2b0d86d4",
+  "tnr": "241258",
+  "tidpunkt": "2026-06-24T12:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR241322.md",
+  "id": "7S-527053de-8b40-420f-a490-d145e438f48b",
+  "tnr": "241322",
+  "tidpunkt": "2026-06-24T13:19:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR241337.md",
+  "id": "7S-eb5b5ebd-c234-4179-8a28-1487d7d0d131",
+  "tnr": "241337",
+  "tidpunkt": "2026-06-24T13:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR241353.md",
+  "id": "7S-6bdb0388-ee91-47cc-a4c8-05ee8a156515",
+  "tnr": "241353",
+  "tidpunkt": "2026-06-24T13:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR241358.md",
+  "id": "7S-943923a8-0b91-4d9f-98aa-ad7b5c5fb73d",
+  "tnr": "241358",
+  "tidpunkt": "2026-06-24T13:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241357.md",
+  "id": "7S-bdc075f8-c227-4a48-8b9e-a82176c5660a",
+  "tnr": "241357",
+  "tidpunkt": "2026-06-24T13:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR241428.md",
+  "id": "7S-cdf98b1b-c6a0-4071-bdc0-63b8b14ef385",
+  "tnr": "241428",
+  "tidpunkt": "2026-06-24T14:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241442.md",
+  "id": "7S-7b6465b6-f44a-4f18-96c5-b6507228a9d3",
+  "tnr": "241442",
+  "tidpunkt": "2026-06-24T14:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR241445.md",
+  "id": "7S-cfe5c229-c8be-4b36-b8b7-3fc24e24bc1b",
+  "tnr": "241445",
+  "tidpunkt": "2026-06-24T14:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR241649.md",
+  "id": "7S-58423f0c-a3cf-4d29-a7ca-47633db0f678",
+  "tnr": "241649",
+  "tidpunkt": "2026-06-24T16:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR241701.md",
+  "id": "7S-cc81c1d7-9683-46c8-8312-3efb8bb22752",
+  "tnr": "241701",
+  "tidpunkt": "2026-06-24T17:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241801.md",
+  "id": "7S-21b00417-2b2d-4044-b7df-eb73c0552270",
+  "tnr": "241801",
+  "tidpunkt": "2026-06-24T18:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR241809.md",
+  "id": "7S-66b46093-4bed-4197-aac6-5cfd0f1c2105",
+  "tnr": "241809",
+  "tidpunkt": "2026-06-24T18:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR241813.md",
+  "id": "7S-e7c6a33b-7361-471e-9037-ba0e4b39b945",
+  "tnr": "241813",
+  "tidpunkt": "2026-06-24T18:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR241949.md",
+  "id": "7S-9510be30-7198-4778-91d3-8b33a9756747",
+  "tnr": "241949",
+  "tidpunkt": "2026-06-24T19:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR250010.md",
+  "id": "7S-0f7815f2-af3e-4dd9-9b25-28692bd8af21",
+  "tnr": "250010",
+  "tidpunkt": "2026-06-25T00:08:00",
+  "truth": "recon",
+  "member": "R7",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR250122.md",
+  "id": "7S-e41686cd-6616-4227-9737-14726c167229",
+  "tnr": "250122",
+  "tidpunkt": "2026-06-25T01:19:00",
+  "truth": "recon",
+  "member": "R1",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR250700.md",
+  "id": "7S-8f0ba6c9-1846-4126-a4fa-aad941c75d20",
+  "tnr": "250700",
+  "tidpunkt": "2026-06-25T07:00:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR250749.md",
+  "id": "7S-fe61314b-430c-43dd-901d-d86b54d28b51",
+  "tnr": "250749",
+  "tidpunkt": "2026-06-25T07:49:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR250837.md",
+  "id": "7S-6e57df76-8507-4420-9336-6fe4458a9292",
+  "tnr": "250837",
+  "tidpunkt": "2026-06-25T08:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR250846.md",
+  "id": "7S-665efd1c-d106-4497-91e8-60405abdfea2",
+  "tnr": "250846",
+  "tidpunkt": "2026-06-25T08:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR250904.md",
+  "id": "7S-d0dd804d-40ce-4b91-9dde-f7559ce22b91",
+  "tnr": "250904",
+  "tidpunkt": "2026-06-25T09:03:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR250912.md",
+  "id": "7S-0b9009c1-2d4a-40c7-b220-98e258a26e4a",
+  "tnr": "250912",
+  "tidpunkt": "2026-06-25T09:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR251054.md",
+  "id": "7S-7506e7d2-ca6e-4fc8-b58f-b7fcc79f0652",
+  "tnr": "251054",
+  "tidpunkt": "2026-06-25T10:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR251105.md",
+  "id": "7S-370f0a39-acd4-442e-bdd0-b5b3d135ad54",
+  "tnr": "251105",
+  "tidpunkt": "2026-06-25T11:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251111.md",
+  "id": "7S-40d3a5a2-d0cb-47ac-a330-ddac5e890ffd",
+  "tnr": "251111",
+  "tidpunkt": "2026-06-25T11:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR251127.md",
+  "id": "7S-e14d0ced-93c8-490b-8172-974c30d54eef",
+  "tnr": "251127",
+  "tidpunkt": "2026-06-25T11:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251214.md",
+  "id": "7S-f6d004d0-716f-4b5a-8155-159f32646b02",
+  "tnr": "251214",
+  "tidpunkt": "2026-06-25T12:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR251225.md",
+  "id": "7S-ae2b0682-a8a3-4f6b-a57d-dcacc1f26432",
+  "tnr": "251225",
+  "tidpunkt": "2026-06-25T12:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR251233.md",
+  "id": "7S-ab4512ef-ad32-426d-a251-153f4004ec07",
+  "tnr": "251233",
+  "tidpunkt": "2026-06-25T12:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR251307.md",
+  "id": "7S-b0de2b25-71d2-4c70-81e9-4ee7601f9cbc",
+  "tnr": "251307",
+  "tidpunkt": "2026-06-25T13:04:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR251349.md",
+  "id": "7S-246de81d-79b7-464a-ba26-65692b42bf15",
+  "tnr": "251349",
+  "tidpunkt": "2026-06-25T13:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR251357.md",
+  "id": "7S-b93f4edc-aedf-474d-a700-14696db5f093",
+  "tnr": "251357",
+  "tidpunkt": "2026-06-25T13:56:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR251453.md",
+  "id": "7S-167b570b-b619-4e01-aa7e-a30bad48ba17",
+  "tnr": "251453",
+  "tidpunkt": "2026-06-25T14:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251520.md",
+  "id": "7S-65598ec9-c897-488d-915c-c96f4753fefc",
+  "tnr": "251520",
+  "tidpunkt": "2026-06-25T15:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251534.md",
+  "id": "7S-e58d1af6-07ef-4a8c-ba64-c8c1b0df6f82",
+  "tnr": "251534",
+  "tidpunkt": "2026-06-25T15:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "DCW496",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251535.md",
+  "id": "7S-e1919780-3fe6-4fe2-94c7-e3cd9a904b67",
+  "tnr": "251535",
+  "tidpunkt": "2026-06-25T15:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR251540.md",
+  "id": "7S-1da1c76a-d1db-4546-b02e-1fa2a7ad2245",
+  "tnr": "251540",
+  "tidpunkt": "2026-06-25T15:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR251608.md",
+  "id": "7S-995bc7ed-9829-4e69-a080-2040dc2fcdad",
+  "tnr": "251608",
+  "tidpunkt": "2026-06-25T16:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR251611.md",
+  "id": "7S-c8c24e82-0676-4941-ba5f-8d65b135c12f",
+  "tnr": "251611",
+  "tidpunkt": "2026-06-25T16:08:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR251653.md",
+  "id": "7S-844c3494-688c-426e-95e1-32b3d0485319",
+  "tnr": "251653",
+  "tidpunkt": "2026-06-25T16:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "MZB618",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR251654.md",
+  "id": "7S-9ad57e37-301b-4162-ac47-6d99552cc227",
+  "tnr": "251654",
+  "tidpunkt": "2026-06-25T16:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251804.md",
+  "id": "7S-3e84f97b-8a3e-4db8-80b3-dfc181ba7b52",
+  "tnr": "251804",
+  "tidpunkt": "2026-06-25T18:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR251817.md",
+  "id": "7S-7a85bcfc-d363-407c-83a1-0a3a9ffc3b72",
+  "tnr": "251817",
+  "tidpunkt": "2026-06-25T18:16:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR251856.md",
+  "id": "7S-fffc4b67-2341-4fcb-9144-7d0c7a061eaf",
+  "tnr": "251856",
+  "tidpunkt": "2026-06-25T18:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR251930.md",
+  "id": "7S-1f9679a3-c584-4076-98bf-485a3c5a25e6",
+  "tnr": "251930",
+  "tidpunkt": "2026-06-25T19:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "RDS56D",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR252054.md",
+  "id": "7S-b3ba9cf3-f114-4f4e-b8ad-56b02185c6ea",
+  "tnr": "252054",
+  "tidpunkt": "2026-06-25T20:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR260507.md",
+  "id": "7S-cf37c8e6-b203-4a1e-960d-30f076e20c76",
+  "tnr": "260507",
+  "tidpunkt": "2026-06-26T05:05:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR260743.md",
+  "id": "7S-e0800498-faa1-4ee6-86c7-15bfe6f1cf5f",
+  "tnr": "260743",
+  "tidpunkt": "2026-06-26T07:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR260809.md",
+  "id": "7S-06c5b334-e85a-4666-8df4-4ef320f9f43f",
+  "tnr": "260809",
+  "tidpunkt": "2026-06-26T08:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR260913.md",
+  "id": "7S-8f1bbae4-f2ab-4967-af64-2b5f70c313a5",
+  "tnr": "260913",
+  "tidpunkt": "2026-06-26T09:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR260926.md",
+  "id": "7S-4445cd9e-558c-4f19-b052-1b27eff8e82a",
+  "tnr": "260926",
+  "tidpunkt": "2026-06-26T09:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "DLK333",
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR260930.md",
+  "id": "7S-3bbf3643-5336-417c-9ea2-5b1770f17cab",
+  "tnr": "260930",
+  "tidpunkt": "2026-06-26T09:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261025.md",
+  "id": "7S-7a33fd49-79c8-47c0-8234-8a1ff82c6d27",
+  "tnr": "261025",
+  "tidpunkt": "2026-06-26T10:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "JAL860",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261043.md",
+  "id": "7S-bcddb3de-30d5-4fa9-9b80-67927dd01929",
+  "tnr": "261043",
+  "tidpunkt": "2026-06-26T10:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261044.md",
+  "id": "7S-84c79991-3181-4e7e-9b55-f1e56469ea73",
+  "tnr": "261044",
+  "tidpunkt": "2026-06-26T10:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261049.md",
+  "id": "7S-7bebec41-200b-42bb-8d71-cf75359409bf",
+  "tnr": "261049",
+  "tidpunkt": "2026-06-26T10:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR261101.md",
+  "id": "7S-a51ef446-3c26-4166-aff8-d40134d53d27",
+  "tnr": "261101",
+  "tidpunkt": "2026-06-26T10:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR261103.md",
+  "id": "7S-06f06f15-a5dd-451e-8de9-cf28e19f8df3",
+  "tnr": "261103",
+  "tidpunkt": "2026-06-26T11:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261119.md",
+  "id": "7S-c8318d16-ccb3-4698-9061-0cd13cf43a4b",
+  "tnr": "261119",
+  "tidpunkt": "2026-06-26T11:18:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261136.md",
+  "id": "7S-1ae40538-86d6-493b-9694-bece19da6fae",
+  "tnr": "261136",
+  "tidpunkt": "2026-06-26T11:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261143.md",
+  "id": "7S-1cf65d21-7a65-44e4-a981-ddf8eec88dfe",
+  "tnr": "261143",
+  "tidpunkt": "2026-06-26T11:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261149.md",
+  "id": "7S-d1f97a65-7ec9-4b84-bcec-d1608a4ba013",
+  "tnr": "261149",
+  "tidpunkt": "2026-06-26T11:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261201.md",
+  "id": "7S-5b72250a-bea0-45a7-afb3-963901c9aa53",
+  "tnr": "261201",
+  "tidpunkt": "2026-06-26T11:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261207.md",
+  "id": "7S-b3ace279-3752-454b-b10b-637f2ccb3e39",
+  "tnr": "261207",
+  "tidpunkt": "2026-06-26T12:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261226.md",
+  "id": "7S-265557e6-7283-4af9-9c6b-41581cc3f2c7",
+  "tnr": "261226",
+  "tidpunkt": "2026-06-26T12:23:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR261241.md",
+  "id": "7S-3cc9548d-6d34-49d4-ac74-daa527f9d3b2",
+  "tnr": "261241",
+  "tidpunkt": "2026-06-26T12:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261253.md",
+  "id": "7S-ff5adee9-0037-4523-93f4-0ffdd51ab20f",
+  "tnr": "261253",
+  "tidpunkt": "2026-06-26T12:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR261301.md",
+  "id": "7S-4c852bbf-f302-4e1b-8898-a739dfe6df17",
+  "tnr": "261301",
+  "tidpunkt": "2026-06-26T12:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR261306.md",
+  "id": "7S-8b8dd74d-78c3-4fe8-81a4-b4095bb57c42",
+  "tnr": "261306",
+  "tidpunkt": "2026-06-26T13:04:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261311.md",
+  "id": "7S-3e168259-b0c1-487c-b7fa-a448e58af8d3",
+  "tnr": "261311",
+  "tidpunkt": "2026-06-26T13:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR261318.md",
+  "id": "7S-6c2076ea-5e76-485c-9b64-8c596ef0929e",
+  "tnr": "261318",
+  "tidpunkt": "2026-06-26T13:15:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261319.md",
+  "id": "7S-6acc222e-6295-4109-841c-a2058a65f65c",
+  "tnr": "261319",
+  "tidpunkt": "2026-06-26T13:17:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR261413.md",
+  "id": "7S-8fa4110f-3e13-4b11-9a7a-7b2089f13801",
+  "tnr": "261413",
+  "tidpunkt": "2026-06-26T14:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR261445.md",
+  "id": "7S-2bf8ff27-ab27-4a17-8cb7-8a0011af5289",
+  "tnr": "261445",
+  "tidpunkt": "2026-06-26T14:42:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR261457.md",
+  "id": "7S-11db438e-c66a-4e4b-9493-07eec144038d",
+  "tnr": "261457",
+  "tidpunkt": "2026-06-26T14:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR261515.md",
+  "id": "7S-13e3c774-5704-4e14-b3e6-01d8e65a93f3",
+  "tnr": "261515",
+  "tidpunkt": "2026-06-26T15:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR261533.md",
+  "id": "7S-b2cedc0c-b463-4028-9805-d62d9604bf34",
+  "tnr": "261533",
+  "tidpunkt": "2026-06-26T15:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261535.md",
+  "id": "7S-721251bf-e9ed-4628-b7ac-bde1e59133bc",
+  "tnr": "261535",
+  "tidpunkt": "2026-06-26T15:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261537.md",
+  "id": "7S-42e56fc7-8bf1-4d26-b8e1-2df64b335d8e",
+  "tnr": "261537",
+  "tidpunkt": "2026-06-26T15:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR261536.md",
+  "id": "7S-c68c2630-e135-44fb-ae2f-68fe3a2be0c2",
+  "tnr": "261536",
+  "tidpunkt": "2026-06-26T15:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261556.md",
+  "id": "7S-21b2ec7a-0f90-4b3e-96c6-77aecd72d5cb",
+  "tnr": "261556",
+  "tidpunkt": "2026-06-26T15:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR261653.md",
+  "id": "7S-77be780b-697f-40ae-b7cc-b83c1edc4794",
+  "tnr": "261653",
+  "tidpunkt": "2026-06-26T16:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "WJW75R",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR261710.md",
+  "id": "7S-27ba9bc9-c501-4b60-8809-b7d73db40e50",
+  "tnr": "261710",
+  "tidpunkt": "2026-06-26T17:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261748.md",
+  "id": "7S-8646cd2d-e781-464f-82d6-b0a675ff0f2a",
+  "tnr": "261748",
+  "tidpunkt": "2026-06-26T17:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR261850.md",
+  "id": "7S-74880f08-3223-42da-a188-1d08fbac644c",
+  "tnr": "261850",
+  "tidpunkt": "2026-06-26T18:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR262051.md",
+  "id": "7S-9c888cfc-f8cc-437b-9f22-f09e65c7ca88",
+  "tnr": "262051",
+  "tidpunkt": "2026-06-26T20:48:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR262151.md",
+  "id": "7S-f529d1b6-2188-4c58-92aa-b280f4a78730",
+  "tnr": "262151",
+  "tidpunkt": "2026-06-26T21:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR262322.md",
+  "id": "7S-aaefdf8d-ad24-4d59-90b6-22aa52333e9c",
+  "tnr": "262322",
+  "tidpunkt": "2026-06-26T23:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR270159.md",
+  "id": "7S-7aac319f-fb75-4e0f-ad1d-9d1690624fe3",
+  "tnr": "270159",
+  "tidpunkt": "2026-06-27T01:56:00",
+  "truth": "recon",
+  "member": "R1",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR270547.md",
+  "id": "7S-f5b60c07-ebb6-48e5-9da0-d74c66574cd8",
+  "tnr": "270547",
+  "tidpunkt": "2026-06-27T05:44:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR270626.md",
+  "id": "7S-ed9cfe04-83c4-4d4b-a29f-7a0756bca737",
+  "tnr": "270626",
+  "tidpunkt": "2026-06-27T06:25:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR270632.md",
+  "id": "7S-e938a0b6-29c2-4e89-a837-233217608b62",
+  "tnr": "270632",
+  "tidpunkt": "2026-06-27T06:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR270709.md",
+  "id": "7S-5b56e44d-a153-4ece-a131-215fc8b00d99",
+  "tnr": "270709",
+  "tidpunkt": "2026-06-27T07:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR270744.md",
+  "id": "7S-10dab564-c83e-466b-baf1-41c6dc13c393",
+  "tnr": "270744",
+  "tidpunkt": "2026-06-27T07:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR270752.md",
+  "id": "7S-0aa910cc-51a3-40f7-af53-fab16377e41c",
+  "tnr": "270752",
+  "tidpunkt": "2026-06-27T07:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR270900.md",
+  "id": "7S-b65af855-8d58-48c0-b1d3-c89b041cdea9",
+  "tnr": "270900",
+  "tidpunkt": "2026-06-27T08:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR270937.md",
+  "id": "7S-9e3db699-17c4-4f11-b693-36ba640d2f3d",
+  "tnr": "270937",
+  "tidpunkt": "2026-06-27T09:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR270949.md",
+  "id": "7S-ce7f0fe7-94cb-4382-bd0b-3d275772d78e",
+  "tnr": "270949",
+  "tidpunkt": "2026-06-27T09:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR270950.md",
+  "id": "7S-b6e5681c-d0b6-4777-84ad-fb3e9d20ddeb",
+  "tnr": "270950",
+  "tidpunkt": "2026-06-27T09:49:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271010.md",
+  "id": "7S-e91ada6a-2cdb-4bc6-9bee-98ea0af6b01e",
+  "tnr": "271010",
+  "tidpunkt": "2026-06-27T10:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR271022.md",
+  "id": "7S-8552aaf2-fe83-4948-936b-cb546f59c507",
+  "tnr": "271022",
+  "tidpunkt": "2026-06-27T10:20:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271037.md",
+  "id": "7S-40475fbf-cad7-4eb4-99c8-60eabc48ec72",
+  "tnr": "271037",
+  "tidpunkt": "2026-06-27T10:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR271053.md",
+  "id": "7S-32155353-444a-44ea-aadd-ce03a7e1e13d",
+  "tnr": "271053",
+  "tidpunkt": "2026-06-27T10:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "MPY353",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271105.md",
+  "id": "7S-3c65f292-08c4-4491-bf64-bdf45752a857",
+  "tnr": "271105",
+  "tidpunkt": "2026-06-27T11:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271137.md",
+  "id": "7S-5ae674a0-98fd-4097-b765-bfff2075a66c",
+  "tnr": "271137",
+  "tidpunkt": "2026-06-27T11:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271155.md",
+  "id": "7S-1d359ab3-a5aa-4da5-8e4d-e609cea856b5",
+  "tnr": "271155",
+  "tidpunkt": "2026-06-27T11:52:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271213.md",
+  "id": "7S-710241df-459d-4f18-ae4b-b57a53d67539",
+  "tnr": "271213",
+  "tidpunkt": "2026-06-27T12:12:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271219.md",
+  "id": "7S-b16531ea-8a52-4be0-b68d-ddcb447eb77a",
+  "tnr": "271219",
+  "tidpunkt": "2026-06-27T12:19:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271234.md",
+  "id": "7S-0c279dce-50ed-4ff5-88fd-ce714f8031d1",
+  "tnr": "271234",
+  "tidpunkt": "2026-06-27T12:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271241.md",
+  "id": "7S-2112bdb0-b931-434c-8c76-a75a4beeecb3",
+  "tnr": "271241",
+  "tidpunkt": "2026-06-27T12:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "DUF029",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271256.md",
+  "id": "7S-a5c72ac9-2262-4ef0-8421-4fa21d512569",
+  "tnr": "271256",
+  "tidpunkt": "2026-06-27T12:54:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR271309.md",
+  "id": "7S-4a83f338-f8c7-42a7-a2fb-31546a0b8767",
+  "tnr": "271309",
+  "tidpunkt": "2026-06-27T13:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271315.md",
+  "id": "7S-503577a6-ed7f-452f-86a8-4c5a43b62f60",
+  "tnr": "271315",
+  "tidpunkt": "2026-06-27T13:13:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271344.md",
+  "id": "7S-8af1654b-e355-4107-9d39-610983bb5916",
+  "tnr": "271344",
+  "tidpunkt": "2026-06-27T13:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271402.md",
+  "id": "7S-6a26b86f-0d12-433e-ae48-569430aef2b6",
+  "tnr": "271402",
+  "tidpunkt": "2026-06-27T13:59:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271436.md",
+  "id": "7S-e6ede0a8-8318-484a-a213-a2a69f5709c8",
+  "tnr": "271436",
+  "tidpunkt": "2026-06-27T14:35:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR271443.md",
+  "id": "7S-e85deb15-c0e8-453f-9f38-e2bc484e9059",
+  "tnr": "271443",
+  "tidpunkt": "2026-06-27T14:40:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR271450.md",
+  "id": "7S-b091d372-cd24-4df9-8351-a26028c333a9",
+  "tnr": "271450",
+  "tidpunkt": "2026-06-27T14:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271532.md",
+  "id": "7S-9b454ed0-4b7a-40cd-a58c-e435c219a42c",
+  "tnr": "271532",
+  "tidpunkt": "2026-06-27T15:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR271540.md",
+  "id": "7S-710ab05b-1acf-46d1-91de-b076e0bef7b6",
+  "tnr": "271540",
+  "tidpunkt": "2026-06-27T15:37:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR271629.md",
+  "id": "7S-5a42a0f6-8416-4950-ad52-c8160ebacdca",
+  "tnr": "271629",
+  "tidpunkt": "2026-06-27T16:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271652.md",
+  "id": "7S-ee0d6547-05a9-4460-ac38-f4a480760e99",
+  "tnr": "271652",
+  "tidpunkt": "2026-06-27T16:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR271656.md",
+  "id": "7S-26d181f1-e141-4dc2-bdda-23a6362cd34c",
+  "tnr": "271656",
+  "tidpunkt": "2026-06-27T16:55:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR271659.md",
+  "id": "7S-b4963ac3-4222-4a8b-b214-1ac9773dc572",
+  "tnr": "271659",
+  "tidpunkt": "2026-06-27T16:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "TUH220",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271733.md",
+  "id": "7S-ee12a84c-0869-4d36-b1b4-23e59e3f93fc",
+  "tnr": "271733",
+  "tidpunkt": "2026-06-27T17:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR271840.md",
+  "id": "7S-f2b05206-e644-4bb0-b075-ea816eff8cef",
+  "tnr": "271840",
+  "tidpunkt": "2026-06-27T18:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR272036.md",
+  "id": "7S-3d56c970-9fbb-40b8-8b2f-8dfeadb8f44d",
+  "tnr": "272036",
+  "tidpunkt": "2026-06-27T20:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR272220.md",
+  "id": "7S-8652ab69-cbee-43b0-86f9-fa211ebf3deb",
+  "tnr": "272220",
+  "tidpunkt": "2026-06-27T22:18:00",
+  "truth": "recon",
+  "member": "R6",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR280523.md",
+  "id": "7S-f3637d63-76dd-46b0-9bee-7dc21e131a1d",
+  "tnr": "280523",
+  "tidpunkt": "2026-06-28T05:22:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "CJJ563",
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR280527.md",
+  "id": "7S-5814b53f-2fec-4275-8e0e-889662186f4b",
+  "tnr": "280527",
+  "tidpunkt": "2026-06-28T05:24:00",
+  "truth": "recon",
+  "member": "R6",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR280533.md",
+  "id": "7S-1613a862-bd79-4971-8602-cea8262afbbe",
+  "tnr": "280533",
+  "tidpunkt": "2026-06-28T05:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "JTG40Y",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR280540.md",
+  "id": "7S-44becdce-f4d4-45ec-8be4-0e7fc07991d4",
+  "tnr": "280540",
+  "tidpunkt": "2026-06-28T05:39:00",
+  "truth": "recon",
+  "member": "R3",
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR280636.md",
+  "id": "7S-56c05ddb-28f2-4c9d-b00e-aa9569a854d6",
+  "tnr": "280636",
+  "tidpunkt": "2026-06-28T06:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR280646.md",
+  "id": "7S-88dca2a9-71a9-40d0-ad3b-8bd0cdc8642b",
+  "tnr": "280646",
+  "tidpunkt": "2026-06-28T06:43:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR280651.md",
+  "id": "7S-72fd04e1-0990-45fd-9ee4-a0ff2aa43b8d",
+  "tnr": "280651",
+  "tidpunkt": "2026-06-28T06:50:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR280734.md",
+  "id": "7S-06178444-1649-4fa6-99de-55cddde1c9d0",
+  "tnr": "280734",
+  "tidpunkt": "2026-06-28T07:34:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR280739.md",
+  "id": "7S-c54ab738-9923-414d-bc61-c16ff8d17b4f",
+  "tnr": "280739",
+  "tidpunkt": "2026-06-28T07:36:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR280805.md",
+  "id": "7S-35c1cee5-23a9-491a-b6b7-5843697d9309",
+  "tnr": "280805",
+  "tidpunkt": "2026-06-28T08:02:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR280834.md",
+  "id": "7S-bc42513d-0ec0-42e2-9b37-a699d11ad49d",
+  "tnr": "280834",
+  "tidpunkt": "2026-06-28T08:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "AKL146",
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR280911.md",
+  "id": "7S-37b7f919-e214-46a1-ba7f-c4afb2d26952",
+  "tnr": "280911",
+  "tidpunkt": "2026-06-28T09:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "CXH569",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR280924.md",
+  "id": "7S-f77f5350-f7d4-4415-a530-38436c4e7f0f",
+  "tnr": "280924",
+  "tidpunkt": "2026-06-28T09:21:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR280928.md",
+  "id": "7S-dddc5a19-af6f-4602-9508-33ed415e4ac5",
+  "tnr": "280928",
+  "tidpunkt": "2026-06-28T09:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR280931.md",
+  "id": "7S-c9e179ec-0302-4930-a443-d89261faac40",
+  "tnr": "280931",
+  "tidpunkt": "2026-06-28T09:29:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR281004.md",
+  "id": "7S-07f64c96-4e0a-4b4f-8ab5-bdd3e9ed2f01",
+  "tnr": "281004",
+  "tidpunkt": "2026-06-28T10:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281008.md",
+  "id": "7S-82408b69-2687-4550-9c35-958c57edb9dd",
+  "tnr": "281008",
+  "tidpunkt": "2026-06-28T10:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281011.md",
+  "id": "7S-a35a5dba-43a3-4fc2-9c05-13251330278a",
+  "tnr": "281011",
+  "tidpunkt": "2026-06-28T10:11:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281027.md",
+  "id": "7S-08608651-b0c6-44cd-8b04-925fcd6f3628",
+  "tnr": "281027",
+  "tidpunkt": "2026-06-28T10:24:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR281034.md",
+  "id": "7S-f957ede2-a9ab-4d4e-86a1-e448904b8288",
+  "tnr": "281034",
+  "tidpunkt": "2026-06-28T10:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281042.md",
+  "id": "7S-1e5101a6-32c5-48cb-8ca5-5c966acda474",
+  "tnr": "281042",
+  "tidpunkt": "2026-06-28T10:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281048.md",
+  "id": "7S-9dcbed67-9fe6-404d-83a9-a49347f3ac31",
+  "tnr": "281048",
+  "tidpunkt": "2026-06-28T10:47:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR281124.md",
+  "id": "7S-f9b75d10-c76f-410c-91ac-44be1521f652",
+  "tnr": "281124",
+  "tidpunkt": "2026-06-28T11:22:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281134.md",
+  "id": "7S-510a7f02-0c84-4f4a-ae2d-dd0b3f251035",
+  "tnr": "281134",
+  "tidpunkt": "2026-06-28T11:31:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281141.md",
+  "id": "7S-602f95c7-901d-48a4-943c-2300d39f7151",
+  "tnr": "281141",
+  "tidpunkt": "2026-06-28T11:39:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281147.md",
+  "id": "7S-b5ceb55d-20a4-4841-9fb3-486937d34410",
+  "tnr": "281147",
+  "tidpunkt": "2026-06-28T11:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281256.md",
+  "id": "7S-e4cdc809-f0b2-4f28-824d-5f959c2a451e",
+  "tnr": "281256",
+  "tidpunkt": "2026-06-28T12:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281303.md",
+  "id": "7S-9f4fb02b-b7a1-474f-9a42-721eaba4c70e",
+  "tnr": "281303",
+  "tidpunkt": "2026-06-28T13:03:00",
+  "truth": "recon",
+  "member": "R2",
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281322.md",
+  "id": "7S-07c416a1-5d36-4a61-a1d5-c7732a4bdd3d",
+  "tnr": "281322",
+  "tidpunkt": "2026-06-28T13:19:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281329.md",
+  "id": "7S-efc756d6-9ace-46f0-81fb-1f7e42a8e7bf",
+  "tnr": "281329",
+  "tidpunkt": "2026-06-28T13:26:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281352.md",
+  "id": "7S-72d503dc-1ad3-4242-89ab-b45a6ec8b082",
+  "tnr": "281352",
+  "tidpunkt": "2026-06-28T13:51:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281401.md",
+  "id": "7S-7742f0ed-bd16-4dd6-8254-c80e9bb16117",
+  "tnr": "281401",
+  "tidpunkt": "2026-06-28T13:58:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR281404.md",
+  "id": "7S-3c582cfa-5021-4be2-b9cf-84b9483bfdcc",
+  "tnr": "281404",
+  "tidpunkt": "2026-06-28T14:01:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281409.md",
+  "id": "7S-d5e581d8-8003-4490-af7b-f9910341c43d",
+  "tnr": "281409",
+  "tidpunkt": "2026-06-28T14:09:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281428.md",
+  "id": "7S-5f524fc4-3674-4738-be9b-56d2f7ca1132",
+  "tnr": "281428",
+  "tidpunkt": "2026-06-28T14:27:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281433.md",
+  "id": "7S-330d0493-fd68-4c0e-a1fb-808ba37316c7",
+  "tnr": "281433",
+  "tidpunkt": "2026-06-28T14:32:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR281456.md",
+  "id": "7S-ce27ba9a-42e6-4740-8e44-d60f1aef5c51",
+  "tnr": "281456",
+  "tidpunkt": "2026-06-28T14:53:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR281546.md",
+  "id": "7S-5b3c0dc7-a1c9-47ce-95de-70ba4c43bfd0",
+  "tnr": "281546",
+  "tidpunkt": "2026-06-28T15:45:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281616.md",
+  "id": "7S-e2537a1b-d209-40c7-b8cf-4ad5723516a7",
+  "tnr": "281616",
+  "tidpunkt": "2026-06-28T16:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR281633.md",
+  "id": "7S-9717e79b-149e-4f6a-8987-ec0f4bf85505",
+  "tnr": "281633",
+  "tidpunkt": "2026-06-28T16:33:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Vattensektorn"
+ },
+ {
+  "file": "TNR281715.md",
+  "id": "7S-599cb833-6d8b-415a-9e16-f7e5a0a3fe82",
+  "tnr": "281715",
+  "tidpunkt": "2026-06-28T17:14:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Västsektorn"
+ },
+ {
+  "file": "TNR281742.md",
+  "id": "7S-b87fe983-ce6a-461c-8616-78552651337c",
+  "tnr": "281742",
+  "tidpunkt": "2026-06-28T17:41:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "ENM16F",
+  "sector": "Östsektorn"
+ },
+ {
+  "file": "TNR281812.md",
+  "id": "7S-e7bc738b-d4af-40eb-87eb-a10e3bfd73cd",
+  "tnr": "281812",
+  "tidpunkt": "2026-06-28T18:10:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR281829.md",
+  "id": "7S-11a5494f-bb9b-4b86-9ead-513aa489cf65",
+  "tnr": "281829",
+  "tidpunkt": "2026-06-28T18:28:00",
+  "truth": "civil",
+  "member": null,
+  "plate": "ETW938",
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281831.md",
+  "id": "7S-497254cb-01de-4900-b460-a4424774948c",
+  "tnr": "281831",
+  "tidpunkt": "2026-06-28T18:30:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR281858.md",
+  "id": "7S-3b244d7c-2fee-4406-84ce-251c3156743b",
+  "tnr": "281858",
+  "tidpunkt": "2026-06-28T18:57:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ },
+ {
+  "file": "TNR282108.md",
+  "id": "7S-a8c41a78-c3b4-450e-98e6-21165f0cc4f6",
+  "tnr": "282108",
+  "tidpunkt": "2026-06-28T21:07:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Nordsektorn"
+ },
+ {
+  "file": "TNR282247.md",
+  "id": "7S-5698c04a-3b96-49ee-a1a3-3974acfc87b0",
+  "tnr": "282247",
+  "tidpunkt": "2026-06-28T22:46:00",
+  "truth": "civil",
+  "member": null,
+  "plate": null,
+  "sector": "Sydsektorn"
+ }
+]

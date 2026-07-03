@@ -1,0 +1,2228 @@
+[
+  {
+    "file": "TNR140526.md",
+    "id": "7S-001",
+    "tnr": "140526",
+    "tidpunkt": "2026-02-14T05:26:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140636.md",
+    "id": "7S-002",
+    "tnr": "140636",
+    "tidpunkt": "2026-02-14T06:36:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140748.md",
+    "id": "7S-003",
+    "tnr": "140748",
+    "tidpunkt": "2026-02-14T07:48:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140755.md",
+    "id": "7S-004",
+    "tnr": "140755",
+    "tidpunkt": "2026-02-14T07:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140755_2.md",
+    "id": "7S-005",
+    "tnr": "140755_2",
+    "tidpunkt": "2026-02-14T07:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140821.md",
+    "id": "7S-006",
+    "tnr": "140821",
+    "tidpunkt": "2026-02-14T08:21:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140845.md",
+    "id": "7S-007",
+    "tnr": "140845",
+    "tidpunkt": "2026-02-14T08:45:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140901.md",
+    "id": "7S-008",
+    "tnr": "140901",
+    "tidpunkt": "2026-02-14T09:01:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR140918.md",
+    "id": "7S-009",
+    "tnr": "140918",
+    "tidpunkt": "2026-02-14T09:18:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141019.md",
+    "id": "7S-010",
+    "tnr": "141019",
+    "tidpunkt": "2026-02-14T10:19:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141044.md",
+    "id": "7S-011",
+    "tnr": "141044",
+    "tidpunkt": "2026-02-14T10:44:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo"
+    ],
+    "plate": "TLP893",
+    "plate_shown": "TLP893",
+    "image_corroborates_plate": "TLP893"
+  },
+  {
+    "file": "TNR141108.md",
+    "id": "7S-012",
+    "tnr": "141108",
+    "tidpunkt": "2026-02-14T11:08:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141138.md",
+    "id": "7S-013",
+    "tnr": "141138",
+    "tidpunkt": "2026-02-14T11:38:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141155.md",
+    "id": "7S-014",
+    "tnr": "141155",
+    "tidpunkt": "2026-02-14T11:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141217.md",
+    "id": "7S-015",
+    "tnr": "141217",
+    "tidpunkt": "2026-02-14T12:17:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141315.md",
+    "id": "7S-016",
+    "tnr": "141315",
+    "tidpunkt": "2026-02-14T13:15:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141317.md",
+    "id": "7S-017",
+    "tnr": "141317",
+    "tidpunkt": "2026-02-14T13:17:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141324.md",
+    "id": "7S-018",
+    "tnr": "141324",
+    "tidpunkt": "2026-02-14T13:24:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141326.md",
+    "id": "7S-019",
+    "tnr": "141326",
+    "tidpunkt": "2026-02-14T13:26:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141344.md",
+    "id": "7S-020",
+    "tnr": "141344",
+    "tidpunkt": "2026-02-14T13:44:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141414.md",
+    "id": "7S-021",
+    "tnr": "141414",
+    "tidpunkt": "2026-02-14T14:14:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141454.md",
+    "id": "7S-022",
+    "tnr": "141454",
+    "tidpunkt": "2026-02-14T14:54:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141510.md",
+    "id": "7S-023",
+    "tnr": "141510",
+    "tidpunkt": "2026-02-14T15:10:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141516.md",
+    "id": "7S-024",
+    "tnr": "141516",
+    "tidpunkt": "2026-02-14T15:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141541.md",
+    "id": "7S-025",
+    "tnr": "141541",
+    "tidpunkt": "2026-02-14T15:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141613.md",
+    "id": "7S-026",
+    "tnr": "141613",
+    "tidpunkt": "2026-02-14T16:13:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141623.md",
+    "id": "7S-027",
+    "tnr": "141623",
+    "tidpunkt": "2026-02-14T16:23:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141635.md",
+    "id": "7S-028",
+    "tnr": "141635",
+    "tidpunkt": "2026-02-14T16:35:00",
+    "truth": "POI"
+  },
+  {
+    "file": "TNR141638.md",
+    "id": "7S-029",
+    "tnr": "141638",
+    "tidpunkt": "2026-02-14T16:38:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141640.md",
+    "id": "7S-030",
+    "tnr": "141640",
+    "tidpunkt": "2026-02-14T16:40:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141648.md",
+    "id": "7S-031",
+    "tnr": "141648",
+    "tidpunkt": "2026-02-14T16:48:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141650.md",
+    "id": "7S-032",
+    "tnr": "141650",
+    "tidpunkt": "2026-02-14T16:50:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141703.md",
+    "id": "7S-033",
+    "tnr": "141703",
+    "tidpunkt": "2026-02-14T17:03:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141733.md",
+    "id": "7S-034",
+    "tnr": "141733",
+    "tidpunkt": "2026-02-14T17:33:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141739.md",
+    "id": "7S-035",
+    "tnr": "141739",
+    "tidpunkt": "2026-02-14T17:39:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141823.md",
+    "id": "7S-036",
+    "tnr": "141823",
+    "tidpunkt": "2026-02-14T18:23:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141838.md",
+    "id": "7S-037",
+    "tnr": "141838",
+    "tidpunkt": "2026-02-14T18:38:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR141841.md",
+    "id": "7S-038",
+    "tnr": "141841",
+    "tidpunkt": "2026-02-14T18:41:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR141911.md",
+    "id": "7S-039",
+    "tnr": "141911",
+    "tidpunkt": "2026-02-14T19:11:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR142316.md",
+    "id": "7S-040",
+    "tnr": "142316",
+    "tidpunkt": "2026-02-14T23:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150545.md",
+    "id": "7S-041",
+    "tnr": "150545",
+    "tidpunkt": "2026-02-15T05:45:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150645.md",
+    "id": "7S-042",
+    "tnr": "150645",
+    "tidpunkt": "2026-02-15T06:45:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR150646.md",
+    "id": "7S-043",
+    "tnr": "150646",
+    "tidpunkt": "2026-02-15T06:46:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ],
+    "plate": "RJK241",
+    "plate_shown": ".J..41"
+  },
+  {
+    "file": "TNR150646_2.md",
+    "id": "7S-044",
+    "tnr": "150646_2",
+    "tidpunkt": "2026-02-15T06:46:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150650.md",
+    "id": "7S-045",
+    "tnr": "150650",
+    "tidpunkt": "2026-02-15T06:50:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150701.md",
+    "id": "7S-046",
+    "tnr": "150701",
+    "tidpunkt": "2026-02-15T07:01:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150721.md",
+    "id": "7S-047",
+    "tnr": "150721",
+    "tidpunkt": "2026-02-15T07:21:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150728.md",
+    "id": "7S-048",
+    "tnr": "150728",
+    "tidpunkt": "2026-02-15T07:28:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150737.md",
+    "id": "7S-049",
+    "tnr": "150737",
+    "tidpunkt": "2026-02-15T07:37:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150813.md",
+    "id": "7S-050",
+    "tnr": "150813",
+    "tidpunkt": "2026-02-15T08:13:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150859.md",
+    "id": "7S-051",
+    "tnr": "150859",
+    "tidpunkt": "2026-02-15T08:59:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150906.md",
+    "id": "7S-052",
+    "tnr": "150906",
+    "tidpunkt": "2026-02-15T09:06:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR150951.md",
+    "id": "7S-053",
+    "tnr": "150951",
+    "tidpunkt": "2026-02-15T09:51:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151034.md",
+    "id": "7S-054",
+    "tnr": "151034",
+    "tidpunkt": "2026-02-15T10:34:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151049.md",
+    "id": "7S-055",
+    "tnr": "151049",
+    "tidpunkt": "2026-02-15T10:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151153.md",
+    "id": "7S-056",
+    "tnr": "151153",
+    "tidpunkt": "2026-02-15T11:53:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151210.md",
+    "id": "7S-057",
+    "tnr": "151210",
+    "tidpunkt": "2026-02-15T12:10:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151247.md",
+    "id": "7S-058",
+    "tnr": "151247",
+    "tidpunkt": "2026-02-15T12:47:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151324.md",
+    "id": "7S-059",
+    "tnr": "151324",
+    "tidpunkt": "2026-02-15T13:24:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151527.md",
+    "id": "7S-060",
+    "tnr": "151527",
+    "tidpunkt": "2026-02-15T15:27:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151531.md",
+    "id": "7S-061",
+    "tnr": "151531",
+    "tidpunkt": "2026-02-15T15:31:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151538.md",
+    "id": "7S-062",
+    "tnr": "151538",
+    "tidpunkt": "2026-02-15T15:38:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151547.md",
+    "id": "7S-063",
+    "tnr": "151547",
+    "tidpunkt": "2026-02-15T15:47:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151549.md",
+    "id": "7S-064",
+    "tnr": "151549",
+    "tidpunkt": "2026-02-15T15:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151559.md",
+    "id": "7S-065",
+    "tnr": "151559",
+    "tidpunkt": "2026-02-15T15:59:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151616.md",
+    "id": "7S-066",
+    "tnr": "151616",
+    "tidpunkt": "2026-02-15T16:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151725.md",
+    "id": "7S-067",
+    "tnr": "151725",
+    "tidpunkt": "2026-02-15T17:25:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151729.md",
+    "id": "7S-068",
+    "tnr": "151729",
+    "tidpunkt": "2026-02-15T17:29:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151738.md",
+    "id": "7S-069",
+    "tnr": "151738",
+    "tidpunkt": "2026-02-15T17:38:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151744.md",
+    "id": "7S-070",
+    "tnr": "151744",
+    "tidpunkt": "2026-02-15T17:44:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151748.md",
+    "id": "7S-071",
+    "tnr": "151748",
+    "tidpunkt": "2026-02-15T17:48:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151753.md",
+    "id": "7S-072",
+    "tnr": "151753",
+    "tidpunkt": "2026-02-15T17:53:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR151829.md",
+    "id": "7S-073",
+    "tnr": "151829",
+    "tidpunkt": "2026-02-15T18:29:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151851.md",
+    "id": "7S-074",
+    "tnr": "151851",
+    "tidpunkt": "2026-02-15T18:51:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR151913.md",
+    "id": "7S-075",
+    "tnr": "151913",
+    "tidpunkt": "2026-02-15T19:13:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR152002.md",
+    "id": "7S-076",
+    "tnr": "152002",
+    "tidpunkt": "2026-02-15T20:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR152050.md",
+    "id": "7S-077",
+    "tnr": "152050",
+    "tidpunkt": "2026-02-15T20:50:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR152152.md",
+    "id": "7S-078",
+    "tnr": "152152",
+    "tidpunkt": "2026-02-15T21:52:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR152313.md",
+    "id": "7S-079",
+    "tnr": "152313",
+    "tidpunkt": "2026-02-15T23:13:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160501.md",
+    "id": "7S-080",
+    "tnr": "160501",
+    "tidpunkt": "2026-02-16T05:01:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160609.md",
+    "id": "7S-081",
+    "tnr": "160609",
+    "tidpunkt": "2026-02-16T06:09:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160615.md",
+    "id": "7S-082",
+    "tnr": "160615",
+    "tidpunkt": "2026-02-16T06:15:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR160641.md",
+    "id": "7S-083",
+    "tnr": "160641",
+    "tidpunkt": "2026-02-16T06:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160754.md",
+    "id": "7S-084",
+    "tnr": "160754",
+    "tidpunkt": "2026-02-16T07:54:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR160809.md",
+    "id": "7S-085",
+    "tnr": "160809",
+    "tidpunkt": "2026-02-16T08:09:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR160840.md",
+    "id": "7S-086",
+    "tnr": "160840",
+    "tidpunkt": "2026-02-16T08:40:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160841.md",
+    "id": "7S-087",
+    "tnr": "160841",
+    "tidpunkt": "2026-02-16T08:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160856.md",
+    "id": "7S-088",
+    "tnr": "160856",
+    "tidpunkt": "2026-02-16T08:56:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160915.md",
+    "id": "7S-089",
+    "tnr": "160915",
+    "tidpunkt": "2026-02-16T09:15:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160922.md",
+    "id": "7S-090",
+    "tnr": "160922",
+    "tidpunkt": "2026-02-16T09:22:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160922_2.md",
+    "id": "7S-091",
+    "tnr": "160922_2",
+    "tidpunkt": "2026-02-16T09:22:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR160935.md",
+    "id": "7S-092",
+    "tnr": "160935",
+    "tidpunkt": "2026-02-16T09:35:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161007.md",
+    "id": "7S-093",
+    "tnr": "161007",
+    "tidpunkt": "2026-02-16T10:07:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161017.md",
+    "id": "7S-094",
+    "tnr": "161017",
+    "tidpunkt": "2026-02-16T10:17:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161114.md",
+    "id": "7S-095",
+    "tnr": "161114",
+    "tidpunkt": "2026-02-16T11:14:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161139.md",
+    "id": "7S-096",
+    "tnr": "161139",
+    "tidpunkt": "2026-02-16T11:39:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ],
+    "plate": "PMR556",
+    "plate_shown": "PMR..6"
+  },
+  {
+    "file": "TNR161141.md",
+    "id": "7S-097",
+    "tnr": "161141",
+    "tidpunkt": "2026-02-16T11:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161149.md",
+    "id": "7S-098",
+    "tnr": "161149",
+    "tidpunkt": "2026-02-16T11:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161202.md",
+    "id": "7S-099",
+    "tnr": "161202",
+    "tidpunkt": "2026-02-16T12:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161347.md",
+    "id": "7S-100",
+    "tnr": "161347",
+    "tidpunkt": "2026-02-16T13:47:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161355.md",
+    "id": "7S-101",
+    "tnr": "161355",
+    "tidpunkt": "2026-02-16T13:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161400.md",
+    "id": "7S-102",
+    "tnr": "161400",
+    "tidpunkt": "2026-02-16T14:00:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161410.md",
+    "id": "7S-103",
+    "tnr": "161410",
+    "tidpunkt": "2026-02-16T14:10:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161439.md",
+    "id": "7S-104",
+    "tnr": "161439",
+    "tidpunkt": "2026-02-16T14:39:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ],
+    "plate": "TLP893",
+    "plate_shown": "TLP893"
+  },
+  {
+    "file": "TNR161455.md",
+    "id": "7S-105",
+    "tnr": "161455",
+    "tidpunkt": "2026-02-16T14:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161500.md",
+    "id": "7S-106",
+    "tnr": "161500",
+    "tidpunkt": "2026-02-16T15:00:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161505.md",
+    "id": "7S-107",
+    "tnr": "161505",
+    "tidpunkt": "2026-02-16T15:05:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161515.md",
+    "id": "7S-108",
+    "tnr": "161515",
+    "tidpunkt": "2026-02-16T15:15:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161607.md",
+    "id": "7S-109",
+    "tnr": "161607",
+    "tidpunkt": "2026-02-16T16:07:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR161619.md",
+    "id": "7S-110",
+    "tnr": "161619",
+    "tidpunkt": "2026-02-16T16:19:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR161628.md",
+    "id": "7S-111",
+    "tnr": "161628",
+    "tidpunkt": "2026-02-16T16:28:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR161653.md",
+    "id": "7S-112",
+    "tnr": "161653",
+    "tidpunkt": "2026-02-16T16:53:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161653_2.md",
+    "id": "7S-113",
+    "tnr": "161653_2",
+    "tidpunkt": "2026-02-16T16:53:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161656.md",
+    "id": "7S-114",
+    "tnr": "161656",
+    "tidpunkt": "2026-02-16T16:56:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161716.md",
+    "id": "7S-115",
+    "tnr": "161716",
+    "tidpunkt": "2026-02-16T17:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161804.md",
+    "id": "7S-116",
+    "tnr": "161804",
+    "tidpunkt": "2026-02-16T18:04:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161841.md",
+    "id": "7S-117",
+    "tnr": "161841",
+    "tidpunkt": "2026-02-16T18:41:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR161842.md",
+    "id": "7S-118",
+    "tnr": "161842",
+    "tidpunkt": "2026-02-16T18:42:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR161901.md",
+    "id": "7S-119",
+    "tnr": "161901",
+    "tidpunkt": "2026-02-16T19:01:00",
+    "truth": "POI",
+    "plate": "RJK241",
+    "plate_shown": "R.K24."
+  },
+  {
+    "file": "TNR161917.md",
+    "id": "7S-120",
+    "tnr": "161917",
+    "tidpunkt": "2026-02-16T19:17:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161935.md",
+    "id": "7S-121",
+    "tnr": "161935",
+    "tidpunkt": "2026-02-16T19:35:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR161955.md",
+    "id": "7S-122",
+    "tnr": "161955",
+    "tidpunkt": "2026-02-16T19:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR162003.md",
+    "id": "7S-123",
+    "tnr": "162003",
+    "tidpunkt": "2026-02-16T20:03:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR162005.md",
+    "id": "7S-124",
+    "tnr": "162005",
+    "tidpunkt": "2026-02-16T20:05:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR162306.md",
+    "id": "7S-125",
+    "tnr": "162306",
+    "tidpunkt": "2026-02-16T23:06:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170106.md",
+    "id": "7S-126",
+    "tnr": "170106",
+    "tidpunkt": "2026-02-17T01:06:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170352.md",
+    "id": "7S-127",
+    "tnr": "170352",
+    "tidpunkt": "2026-02-17T03:52:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170408.md",
+    "id": "7S-128",
+    "tnr": "170408",
+    "tidpunkt": "2026-02-17T04:08:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170501.md",
+    "id": "7S-129",
+    "tnr": "170501",
+    "tidpunkt": "2026-02-17T05:01:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170509.md",
+    "id": "7S-130",
+    "tnr": "170509",
+    "tidpunkt": "2026-02-17T05:09:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170515.md",
+    "id": "7S-131",
+    "tnr": "170515",
+    "tidpunkt": "2026-02-17T05:15:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170707.md",
+    "id": "7S-132",
+    "tnr": "170707",
+    "tidpunkt": "2026-02-17T07:07:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170711.md",
+    "id": "7S-133",
+    "tnr": "170711",
+    "tidpunkt": "2026-02-17T07:11:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170743.md",
+    "id": "7S-134",
+    "tnr": "170743",
+    "tidpunkt": "2026-02-17T07:43:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR170745.md",
+    "id": "7S-135",
+    "tnr": "170745",
+    "tidpunkt": "2026-02-17T07:45:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170756.md",
+    "id": "7S-136",
+    "tnr": "170756",
+    "tidpunkt": "2026-02-17T07:56:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170830.md",
+    "id": "7S-137",
+    "tnr": "170830",
+    "tidpunkt": "2026-02-17T08:30:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170846.md",
+    "id": "7S-138",
+    "tnr": "170846",
+    "tidpunkt": "2026-02-17T08:46:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR170847.md",
+    "id": "7S-139",
+    "tnr": "170847",
+    "tidpunkt": "2026-02-17T08:47:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR170941.md",
+    "id": "7S-140",
+    "tnr": "170941",
+    "tidpunkt": "2026-02-17T09:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR170942.md",
+    "id": "7S-141",
+    "tnr": "170942",
+    "tidpunkt": "2026-02-17T09:42:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171024.md",
+    "id": "7S-142",
+    "tnr": "171024",
+    "tidpunkt": "2026-02-17T10:24:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171055.md",
+    "id": "7S-143",
+    "tnr": "171055",
+    "tidpunkt": "2026-02-17T10:55:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag"
+    ]
+  },
+  {
+    "file": "TNR171143.md",
+    "id": "7S-144",
+    "tnr": "171143",
+    "tidpunkt": "2026-02-17T11:43:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171149.md",
+    "id": "7S-145",
+    "tnr": "171149",
+    "tidpunkt": "2026-02-17T11:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171230.md",
+    "id": "7S-146",
+    "tnr": "171230",
+    "tidpunkt": "2026-02-17T12:30:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171231.md",
+    "id": "7S-147",
+    "tnr": "171231",
+    "tidpunkt": "2026-02-17T12:31:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171302.md",
+    "id": "7S-148",
+    "tnr": "171302",
+    "tidpunkt": "2026-02-17T13:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171321.md",
+    "id": "7S-149",
+    "tnr": "171321",
+    "tidpunkt": "2026-02-17T13:21:00",
+    "truth": "POI",
+    "plate": "SDG417",
+    "plate_shown": "SDG417",
+    "image_corroborates_plate": "SDG417"
+  },
+  {
+    "file": "TNR171331.md",
+    "id": "7S-150",
+    "tnr": "171331",
+    "tidpunkt": "2026-02-17T13:31:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171402.md",
+    "id": "7S-151",
+    "tnr": "171402",
+    "tidpunkt": "2026-02-17T14:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171425.md",
+    "id": "7S-152",
+    "tnr": "171425",
+    "tidpunkt": "2026-02-17T14:25:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171437.md",
+    "id": "7S-153",
+    "tnr": "171437",
+    "tidpunkt": "2026-02-17T14:37:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171437_2.md",
+    "id": "7S-154",
+    "tnr": "171437_2",
+    "tidpunkt": "2026-02-17T14:37:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171518.md",
+    "id": "7S-155",
+    "tnr": "171518",
+    "tidpunkt": "2026-02-17T15:18:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR171533.md",
+    "id": "7S-156",
+    "tnr": "171533",
+    "tidpunkt": "2026-02-17T15:33:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo",
+      "tell_cap"
+    ],
+    "plate": "WBN84X",
+    "plate_shown": "WBN84X",
+    "image_corroborates_plate": "WBN84X"
+  },
+  {
+    "file": "TNR171551.md",
+    "id": "7S-157",
+    "tnr": "171551",
+    "tidpunkt": "2026-02-17T15:51:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171603.md",
+    "id": "7S-158",
+    "tnr": "171603",
+    "tidpunkt": "2026-02-17T16:03:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171652.md",
+    "id": "7S-159",
+    "tnr": "171652",
+    "tidpunkt": "2026-02-17T16:52:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171655.md",
+    "id": "7S-160",
+    "tnr": "171655",
+    "tidpunkt": "2026-02-17T16:55:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171657.md",
+    "id": "7S-161",
+    "tnr": "171657",
+    "tidpunkt": "2026-02-17T16:57:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR171706.md",
+    "id": "7S-162",
+    "tnr": "171706",
+    "tidpunkt": "2026-02-17T17:06:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR171707.md",
+    "id": "7S-163",
+    "tnr": "171707",
+    "tidpunkt": "2026-02-17T17:07:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171721.md",
+    "id": "7S-164",
+    "tnr": "171721",
+    "tidpunkt": "2026-02-17T17:21:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR171722.md",
+    "id": "7S-165",
+    "tnr": "171722",
+    "tidpunkt": "2026-02-17T17:22:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171748.md",
+    "id": "7S-166",
+    "tnr": "171748",
+    "tidpunkt": "2026-02-17T17:48:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171818.md",
+    "id": "7S-167",
+    "tnr": "171818",
+    "tidpunkt": "2026-02-17T18:18:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171847.md",
+    "id": "7S-168",
+    "tnr": "171847",
+    "tidpunkt": "2026-02-17T18:47:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171911.md",
+    "id": "7S-169",
+    "tnr": "171911",
+    "tidpunkt": "2026-02-17T19:11:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171912.md",
+    "id": "7S-170",
+    "tnr": "171912",
+    "tidpunkt": "2026-02-17T19:12:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR171914.md",
+    "id": "7S-171",
+    "tnr": "171914",
+    "tidpunkt": "2026-02-17T19:14:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR171931.md",
+    "id": "7S-172",
+    "tnr": "171931",
+    "tidpunkt": "2026-02-17T19:31:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR172120.md",
+    "id": "7S-173",
+    "tnr": "172120",
+    "tidpunkt": "2026-02-17T21:20:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180007.md",
+    "id": "7S-174",
+    "tnr": "180007",
+    "tidpunkt": "2026-02-18T00:07:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180322.md",
+    "id": "7S-175",
+    "tnr": "180322",
+    "tidpunkt": "2026-02-18T03:22:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180644.md",
+    "id": "7S-176",
+    "tnr": "180644",
+    "tidpunkt": "2026-02-18T06:44:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180738.md",
+    "id": "7S-177",
+    "tnr": "180738",
+    "tidpunkt": "2026-02-18T07:38:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR180742.md",
+    "id": "7S-178",
+    "tnr": "180742",
+    "tidpunkt": "2026-02-18T07:42:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180746.md",
+    "id": "7S-179",
+    "tnr": "180746",
+    "tidpunkt": "2026-02-18T07:46:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR180804.md",
+    "id": "7S-180",
+    "tnr": "180804",
+    "tidpunkt": "2026-02-18T08:04:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180812.md",
+    "id": "7S-181",
+    "tnr": "180812",
+    "tidpunkt": "2026-02-18T08:12:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180833.md",
+    "id": "7S-182",
+    "tnr": "180833",
+    "tidpunkt": "2026-02-18T08:33:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180837.md",
+    "id": "7S-183",
+    "tnr": "180837",
+    "tidpunkt": "2026-02-18T08:37:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR180850.md",
+    "id": "7S-184",
+    "tnr": "180850",
+    "tidpunkt": "2026-02-18T08:50:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180851.md",
+    "id": "7S-185",
+    "tnr": "180851",
+    "tidpunkt": "2026-02-18T08:51:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR180851_2.md",
+    "id": "7S-186",
+    "tnr": "180851_2",
+    "tidpunkt": "2026-02-18T08:51:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180910.md",
+    "id": "7S-187",
+    "tnr": "180910",
+    "tidpunkt": "2026-02-18T09:10:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo",
+      "tell_cap"
+    ],
+    "plate": "PMR556",
+    "plate_shown": "PMR.5."
+  },
+  {
+    "file": "TNR180919.md",
+    "id": "7S-188",
+    "tnr": "180919",
+    "tidpunkt": "2026-02-18T09:19:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180925.md",
+    "id": "7S-189",
+    "tnr": "180925",
+    "tidpunkt": "2026-02-18T09:25:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180927.md",
+    "id": "7S-190",
+    "tnr": "180927",
+    "tidpunkt": "2026-02-18T09:27:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180932.md",
+    "id": "7S-191",
+    "tnr": "180932",
+    "tidpunkt": "2026-02-18T09:32:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR180952.md",
+    "id": "7S-192",
+    "tnr": "180952",
+    "tidpunkt": "2026-02-18T09:52:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181103.md",
+    "id": "7S-193",
+    "tnr": "181103",
+    "tidpunkt": "2026-02-18T11:03:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181111.md",
+    "id": "7S-194",
+    "tnr": "181111",
+    "tidpunkt": "2026-02-18T11:11:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181117.md",
+    "id": "7S-195",
+    "tnr": "181117",
+    "tidpunkt": "2026-02-18T11:17:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181117_2.md",
+    "id": "7S-196",
+    "tnr": "181117_2",
+    "tidpunkt": "2026-02-18T11:17:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181135.md",
+    "id": "7S-197",
+    "tnr": "181135",
+    "tidpunkt": "2026-02-18T11:35:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181140.md",
+    "id": "7S-198",
+    "tnr": "181140",
+    "tidpunkt": "2026-02-18T11:40:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181147.md",
+    "id": "7S-199",
+    "tnr": "181147",
+    "tidpunkt": "2026-02-18T11:47:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo"
+    ],
+    "plate": "RJK241",
+    "plate_shown": "RJK241",
+    "image_corroborates_plate": "RJK241"
+  },
+  {
+    "file": "TNR181156.md",
+    "id": "7S-200",
+    "tnr": "181156",
+    "tidpunkt": "2026-02-18T11:56:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181203.md",
+    "id": "7S-201",
+    "tnr": "181203",
+    "tidpunkt": "2026-02-18T12:03:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181225.md",
+    "id": "7S-202",
+    "tnr": "181225",
+    "tidpunkt": "2026-02-18T12:25:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181241.md",
+    "id": "7S-203",
+    "tnr": "181241",
+    "tidpunkt": "2026-02-18T12:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181340.md",
+    "id": "7S-204",
+    "tnr": "181340",
+    "tidpunkt": "2026-02-18T13:40:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181416.md",
+    "id": "7S-205",
+    "tnr": "181416",
+    "tidpunkt": "2026-02-18T14:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181512.md",
+    "id": "7S-206",
+    "tnr": "181512",
+    "tidpunkt": "2026-02-18T15:12:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181523.md",
+    "id": "7S-207",
+    "tnr": "181523",
+    "tidpunkt": "2026-02-18T15:23:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR181539.md",
+    "id": "7S-208",
+    "tnr": "181539",
+    "tidpunkt": "2026-02-18T15:39:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181552.md",
+    "id": "7S-209",
+    "tnr": "181552",
+    "tidpunkt": "2026-02-18T15:52:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181603.md",
+    "id": "7S-210",
+    "tnr": "181603",
+    "tidpunkt": "2026-02-18T16:03:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR181619.md",
+    "id": "7S-211",
+    "tnr": "181619",
+    "tidpunkt": "2026-02-18T16:19:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181626.md",
+    "id": "7S-212",
+    "tnr": "181626",
+    "tidpunkt": "2026-02-18T16:26:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181705.md",
+    "id": "7S-213",
+    "tnr": "181705",
+    "tidpunkt": "2026-02-18T17:05:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181816.md",
+    "id": "7S-214",
+    "tnr": "181816",
+    "tidpunkt": "2026-02-18T18:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181818.md",
+    "id": "7S-215",
+    "tnr": "181818",
+    "tidpunkt": "2026-02-18T18:18:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181828.md",
+    "id": "7S-216",
+    "tnr": "181828",
+    "tidpunkt": "2026-02-18T18:28:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181837.md",
+    "id": "7S-217",
+    "tnr": "181837",
+    "tidpunkt": "2026-02-18T18:37:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181842.md",
+    "id": "7S-218",
+    "tnr": "181842",
+    "tidpunkt": "2026-02-18T18:42:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR181853.md",
+    "id": "7S-219",
+    "tnr": "181853",
+    "tidpunkt": "2026-02-18T18:53:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo",
+      "tell_cap"
+    ],
+    "plate": "PMR556",
+    "plate_shown": "PMR556"
+  },
+  {
+    "file": "TNR181904.md",
+    "id": "7S-220",
+    "tnr": "181904",
+    "tidpunkt": "2026-02-18T19:04:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181916.md",
+    "id": "7S-221",
+    "tnr": "181916",
+    "tidpunkt": "2026-02-18T19:16:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR181930.md",
+    "id": "7S-222",
+    "tnr": "181930",
+    "tidpunkt": "2026-02-18T19:30:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR181939.md",
+    "id": "7S-223",
+    "tnr": "181939",
+    "tidpunkt": "2026-02-18T19:39:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR182121.md",
+    "id": "7S-224",
+    "tnr": "182121",
+    "tidpunkt": "2026-02-18T21:21:00",
+    "truth": "POI",
+    "plate": "RJK241",
+    "plate_shown": ".JK..1"
+  },
+  {
+    "file": "TNR182134.md",
+    "id": "7S-225",
+    "tnr": "182134",
+    "tidpunkt": "2026-02-18T21:34:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190518.md",
+    "id": "7S-226",
+    "tnr": "190518",
+    "tidpunkt": "2026-02-19T05:18:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190549.md",
+    "id": "7S-227",
+    "tnr": "190549",
+    "tidpunkt": "2026-02-19T05:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190618.md",
+    "id": "7S-228",
+    "tnr": "190618",
+    "tidpunkt": "2026-02-19T06:18:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190632.md",
+    "id": "7S-229",
+    "tnr": "190632",
+    "tidpunkt": "2026-02-19T06:32:00",
+    "truth": "POI",
+    "plate": "SDG417",
+    "plate_shown": "SD.4.7"
+  },
+  {
+    "file": "TNR190711.md",
+    "id": "7S-230",
+    "tnr": "190711",
+    "tidpunkt": "2026-02-19T07:11:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190719.md",
+    "id": "7S-231",
+    "tnr": "190719",
+    "tidpunkt": "2026-02-19T07:19:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR190731.md",
+    "id": "7S-232",
+    "tnr": "190731",
+    "tidpunkt": "2026-02-19T07:31:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR190743.md",
+    "id": "7S-233",
+    "tnr": "190743",
+    "tidpunkt": "2026-02-19T07:43:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR190746.md",
+    "id": "7S-234",
+    "tnr": "190746",
+    "tidpunkt": "2026-02-19T07:46:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190802.md",
+    "id": "7S-235",
+    "tnr": "190802",
+    "tidpunkt": "2026-02-19T08:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190812.md",
+    "id": "7S-236",
+    "tnr": "190812",
+    "tidpunkt": "2026-02-19T08:12:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190830.md",
+    "id": "7S-237",
+    "tnr": "190830",
+    "tidpunkt": "2026-02-19T08:30:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo"
+    ],
+    "plate": "WBN84X",
+    "plate_shown": "WBN8.."
+  },
+  {
+    "file": "TNR190835.md",
+    "id": "7S-238",
+    "tnr": "190835",
+    "tidpunkt": "2026-02-19T08:35:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190902.md",
+    "id": "7S-239",
+    "tnr": "190902",
+    "tidpunkt": "2026-02-19T09:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190932.md",
+    "id": "7S-240",
+    "tnr": "190932",
+    "tidpunkt": "2026-02-19T09:32:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR190950.md",
+    "id": "7S-241",
+    "tnr": "190950",
+    "tidpunkt": "2026-02-19T09:50:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ],
+    "plate": "PMR556",
+    "plate_shown": "PM..56"
+  },
+  {
+    "file": "TNR191108.md",
+    "id": "7S-242",
+    "tnr": "191108",
+    "tidpunkt": "2026-02-19T11:08:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191113.md",
+    "id": "7S-243",
+    "tnr": "191113",
+    "tidpunkt": "2026-02-19T11:13:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191155.md",
+    "id": "7S-244",
+    "tnr": "191155",
+    "tidpunkt": "2026-02-19T11:55:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ],
+    "plate": "PMR556",
+    "plate_shown": "PMR556",
+    "image_corroborates_plate": "PMR556"
+  },
+  {
+    "file": "TNR191212.md",
+    "id": "7S-245",
+    "tnr": "191212",
+    "tidpunkt": "2026-02-19T12:12:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191355.md",
+    "id": "7S-246",
+    "tnr": "191355",
+    "tidpunkt": "2026-02-19T13:55:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag"
+    ]
+  },
+  {
+    "file": "TNR191432.md",
+    "id": "7S-247",
+    "tnr": "191432",
+    "tidpunkt": "2026-02-19T14:32:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191524.md",
+    "id": "7S-248",
+    "tnr": "191524",
+    "tidpunkt": "2026-02-19T15:24:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191541.md",
+    "id": "7S-249",
+    "tnr": "191541",
+    "tidpunkt": "2026-02-19T15:41:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191550.md",
+    "id": "7S-250",
+    "tnr": "191550",
+    "tidpunkt": "2026-02-19T15:50:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191559.md",
+    "id": "7S-251",
+    "tnr": "191559",
+    "tidpunkt": "2026-02-19T15:59:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR191613.md",
+    "id": "7S-252",
+    "tnr": "191613",
+    "tidpunkt": "2026-02-19T16:13:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR191739.md",
+    "id": "7S-253",
+    "tnr": "191739",
+    "tidpunkt": "2026-02-19T17:39:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191752.md",
+    "id": "7S-254",
+    "tnr": "191752",
+    "tidpunkt": "2026-02-19T17:52:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191801.md",
+    "id": "7S-255",
+    "tnr": "191801",
+    "tidpunkt": "2026-02-19T18:01:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191814.md",
+    "id": "7S-256",
+    "tnr": "191814",
+    "tidpunkt": "2026-02-19T18:14:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR191828.md",
+    "id": "7S-257",
+    "tnr": "191828",
+    "tidpunkt": "2026-02-19T18:28:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191840.md",
+    "id": "7S-258",
+    "tnr": "191840",
+    "tidpunkt": "2026-02-19T18:40:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191854.md",
+    "id": "7S-259",
+    "tnr": "191854",
+    "tidpunkt": "2026-02-19T18:54:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191904.md",
+    "id": "7S-260",
+    "tnr": "191904",
+    "tidpunkt": "2026-02-19T19:04:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191912.md",
+    "id": "7S-261",
+    "tnr": "191912",
+    "tidpunkt": "2026-02-19T19:12:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191914.md",
+    "id": "7S-262",
+    "tnr": "191914",
+    "tidpunkt": "2026-02-19T19:14:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR191949.md",
+    "id": "7S-263",
+    "tnr": "191949",
+    "tidpunkt": "2026-02-19T19:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR192046.md",
+    "id": "7S-264",
+    "tnr": "192046",
+    "tidpunkt": "2026-02-19T20:46:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200115.md",
+    "id": "7S-265",
+    "tnr": "200115",
+    "tidpunkt": "2026-02-20T01:15:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200438.md",
+    "id": "7S-266",
+    "tnr": "200438",
+    "tidpunkt": "2026-02-20T04:38:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200546.md",
+    "id": "7S-267",
+    "tnr": "200546",
+    "tidpunkt": "2026-02-20T05:46:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200732.md",
+    "id": "7S-268",
+    "tnr": "200732",
+    "tidpunkt": "2026-02-20T07:32:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR200744.md",
+    "id": "7S-269",
+    "tnr": "200744",
+    "tidpunkt": "2026-02-20T07:44:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200802.md",
+    "id": "7S-270",
+    "tnr": "200802",
+    "tidpunkt": "2026-02-20T08:02:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR200811.md",
+    "id": "7S-271",
+    "tnr": "200811",
+    "tidpunkt": "2026-02-20T08:11:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR200814.md",
+    "id": "7S-272",
+    "tnr": "200814",
+    "tidpunkt": "2026-02-20T08:14:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200816.md",
+    "id": "7S-273",
+    "tnr": "200816",
+    "tidpunkt": "2026-02-20T08:16:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR200901.md",
+    "id": "7S-274",
+    "tnr": "200901",
+    "tidpunkt": "2026-02-20T09:01:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR201021.md",
+    "id": "7S-275",
+    "tnr": "201021",
+    "tidpunkt": "2026-02-20T10:21:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201028.md",
+    "id": "7S-276",
+    "tnr": "201028",
+    "tidpunkt": "2026-02-20T10:28:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201040.md",
+    "id": "7S-277",
+    "tnr": "201040",
+    "tidpunkt": "2026-02-20T10:40:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201509.md",
+    "id": "7S-278",
+    "tnr": "201509",
+    "tidpunkt": "2026-02-20T15:09:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201519.md",
+    "id": "7S-279",
+    "tnr": "201519",
+    "tidpunkt": "2026-02-20T15:19:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201532.md",
+    "id": "7S-280",
+    "tnr": "201532",
+    "tidpunkt": "2026-02-20T15:32:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201612.md",
+    "id": "7S-281",
+    "tnr": "201612",
+    "tidpunkt": "2026-02-20T16:12:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201622.md",
+    "id": "7S-282",
+    "tnr": "201622",
+    "tidpunkt": "2026-02-20T16:22:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR201637.md",
+    "id": "7S-283",
+    "tnr": "201637",
+    "tidpunkt": "2026-02-20T16:37:00",
+    "truth": "POI",
+    "tells": [
+      "tell_logo"
+    ],
+    "plate": "PMR556",
+    "plate_shown": "PMR5.6"
+  },
+  {
+    "file": "TNR201639.md",
+    "id": "7S-284",
+    "tnr": "201639",
+    "tidpunkt": "2026-02-20T16:39:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR201702.md",
+    "id": "7S-285",
+    "tnr": "201702",
+    "tidpunkt": "2026-02-20T17:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201710.md",
+    "id": "7S-286",
+    "tnr": "201710",
+    "tidpunkt": "2026-02-20T17:10:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR201723.md",
+    "id": "7S-287",
+    "tnr": "201723",
+    "tidpunkt": "2026-02-20T17:23:00",
+    "truth": "POI",
+    "tells": [
+      "tell_bag",
+      "tell_cap"
+    ]
+  },
+  {
+    "file": "TNR201755.md",
+    "id": "7S-288",
+    "tnr": "201755",
+    "tidpunkt": "2026-02-20T17:55:00",
+    "truth": "POI",
+    "tells": [
+      "tell_cap"
+    ],
+    "plate": "RJK241",
+    "plate_shown": "RJK241",
+    "image_corroborates_plate": "RJK241"
+  },
+  {
+    "file": "TNR201811.md",
+    "id": "7S-289",
+    "tnr": "201811",
+    "tidpunkt": "2026-02-20T18:11:00",
+    "truth": "commuter"
+  },
+  {
+    "file": "TNR201823.md",
+    "id": "7S-290",
+    "tnr": "201823",
+    "tidpunkt": "2026-02-20T18:23:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201843.md",
+    "id": "7S-291",
+    "tnr": "201843",
+    "tidpunkt": "2026-02-20T18:43:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR201958.md",
+    "id": "7S-292",
+    "tnr": "201958",
+    "tidpunkt": "2026-02-20T19:58:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202105.md",
+    "id": "7S-293",
+    "tnr": "202105",
+    "tidpunkt": "2026-02-20T21:05:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202122.md",
+    "id": "7S-294",
+    "tnr": "202122",
+    "tidpunkt": "2026-02-20T21:22:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202134.md",
+    "id": "7S-295",
+    "tnr": "202134",
+    "tidpunkt": "2026-02-20T21:34:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202149.md",
+    "id": "7S-296",
+    "tnr": "202149",
+    "tidpunkt": "2026-02-20T21:49:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202202.md",
+    "id": "7S-297",
+    "tnr": "202202",
+    "tidpunkt": "2026-02-20T22:02:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202211.md",
+    "id": "7S-298",
+    "tnr": "202211",
+    "tidpunkt": "2026-02-20T22:11:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202215.md",
+    "id": "7S-299",
+    "tnr": "202215",
+    "tidpunkt": "2026-02-20T22:15:00",
+    "truth": "noise"
+  },
+  {
+    "file": "TNR202328.md",
+    "id": "7S-300",
+    "tnr": "202328",
+    "tidpunkt": "2026-02-20T23:28:00",
+    "truth": "noise"
+  }
+]

@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Built plugin artifacts (run `npm run build` in plugin/)
+main.js
+main.js.map
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+
+# Claude Code local settings
+.claude/

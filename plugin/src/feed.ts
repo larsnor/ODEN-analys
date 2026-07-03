@@ -1,0 +1,92 @@
+/*
+ * Live event/alarm feed (pure) — DERIVED from what already exists in the vault
+ * (reports + ODEN's own entity/larm notes). No separate log is written; the feed
+ * is recomputed each render. Operator language only (no architecture meta).
+ *
+ * main.ts gathers raw FeedItem[] from the analysis bundle (each carries an
+ * observation time in ms) and calls buildFeed() to dedup, sort newest-first,
+ * label, and cap.
+ */
+export type FeedKind =
+  | "mottaget"
+  | "fordon"
+  | "kännetecken"
+  | "aktör"
+  | "larm"
+  | "förslag-aktör"
+  | "förslag-märke"
+  | "namnge-plats";
+
+export interface FeedItem {
+  /** Vault path of the file this event refers to (the click target). */
+  path: string;
+  kind: FeedKind;
+  /** Sort key — observation time in ms (Date.parse of tidpunkt). */
+  time: number;
+  tnr?: string;
+  plats?: string;
+  tid?: string; // human-readable time for reports
+  label?: string; // entity/actor display name
+  count?: number; // observations for an entity
+  level?: string; // larm severity word (Hög/Förhöjd/Att bevaka)
+  reasons?: string[]; // larm reasons (already operator-phrased)
+  pending?: number; // number of suggestions awaiting review
+  /** Clicking a suggestion row opens a review screen / action instead of a note. */
+  review?: "actors" | "marks" | "place";
+  /** For a "namnge-plats" row: the MGRS grid to name. */
+  place?: string;
+}
+
+export interface FeedRow {
+  kind: FeedKind;
+  text: string;
+  stem: string; // note stem for [[..]] / open
+  severity: "larm" | "info" | "review";
+  review?: "actors" | "marks" | "place";
+  place?: string;
+}
+
+function stemOf(path: string): string {
+  return path.replace(/^.*\//, "").replace(/\.md$/, "");
+}
+
+function label(item: FeedItem): string {
+  switch (item.kind) {
+    case "mottaget":
+      return `Meddelande TNR${item.tnr} mottaget${item.plats ? " — " + item.plats : ""}${item.tid ? ", " + item.tid : ""}`;
+    case "fordon":
+      return `Fordon ${item.label} identifierat${item.count ? ` (${item.count} observationer)` : ""}`;
+    case "kännetecken":
+      return `Kännetecken bekräftat: ${item.label}`;
+    case "aktör":
+      return `Aktör bekräftad: ${item.label}`;
+    case "larm":
+      return `⚠ Misstänkt aktivitet${item.plats ? " — " + item.plats : ""}${item.reasons && item.reasons.length ? " (" + item.reasons.join(", ") + ")" : ""}`;
+    case "förslag-aktör":
+      return `🔗 ${item.pending} aktörsförslag att granska →`;
+    case "förslag-märke":
+      return `🎒 ${item.pending} kopplingsförslag att granska →`;
+    case "namnge-plats":
+      return `📍 Namnge plats ${item.place} →`;
+  }
+}
+
+/** Dedup by path (keep newest), sort newest-first, label, cap. */
+export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
+  const byPath = new Map<string, FeedItem>();
+  for (const it of items) {
+    const prev = byPath.get(it.path);
+    if (!prev || it.time > prev.time) byPath.set(it.path, it);
+  }
+  return [...byPath.values()]
+    .sort((a, b) => b.time - a.time)
+    .slice(0, limit)
+    .map((it): FeedRow => ({
+      kind: it.kind,
+      text: label(it),
+      stem: stemOf(it.path),
+      severity: it.review ? "review" : it.kind === "larm" ? "larm" : "info",
+      review: it.review,
+      place: it.place,
+    }));
+}
