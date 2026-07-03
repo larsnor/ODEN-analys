@@ -48,13 +48,33 @@ export const DEFAULT_SUSPICION: SuspicionOpts = {
  * prose ("parkerade kort", "passerade") does NOT match. The LLM (later) lifts
  * the open-vocabulary ceiling this list cannot reach.
  */
+// Matching is SUBSTRING (a poor-man's stemmer: "iaktt" catches iakttog/iakttar).
+// So every stem must be safe INSIDE benign words too — prefer verb roots and
+// multi-word phrases, and never a stem a civilian template contains (e.g. "under
+// uppsikt av" is benign → require "uppsikt mot/över"; a bare "längs staketet" is
+// out because a civilian "promenerade längs staketet" exists).
 export const RECON_INDICATORS: Array<{ key: string; label: string; stems: string[] }> = [
-  // "uppsikt mot/över" = surveillance; NOT "under uppsikt av" (benign supervision).
-  { key: "observation", label: "övervakning/spaning", stems: ["betrakta", "iaktt", "uppsikt mot", "uppsikt över", "spana", "observera", "övervaka"] },
-  { key: "optik", label: "optik/foto", stems: ["kikare", "teleobjektiv", "fotografera", "kamera"] },
-  { key: "registrering", label: "registrering/kartläggning", stems: ["antecknade", "block", "stegräknare", "kartlägg", "mätte"] },
-  { key: "kontraspaning", label: "kontraspaning", stems: ["kontraspaning", "drog sig undan", "undvek ögonkontakt", "tittade bakåt"] },
-  { key: "dröjande", label: "dröjande/upprepning", stems: ["stod stilla länge", "andra varvet", "långsam passage", "upprepat"] },
+  { key: "observation", label: "övervakning/spaning", stems: [
+    "betrakta", "iaktt", "uppsikt mot", "uppsikt över", "höll uppsikt", "höll utkik",
+    "höll koll", "spana", "rekognos", "rekade", "observera", "övervaka", "bevakade"] },
+  { key: "optik", label: "optik/foto", stems: [
+    "kikare", "teleobjektiv", "fotografera", "kamera", "filmade", "zoomade", "drönar",
+    "nattkikare", "värmekamera", "mörkerkikare"] },
+  { key: "registrering", label: "registrering/kartläggning", stems: [
+    "antecknade", "block", "stegräknare", "kartlägg", "mätte", "koordinater", "gps",
+    "positionerade", "märkte ut", "skiss", "tidtog", "prickade av", "räknade fordon",
+    "räknade passager"] },
+  { key: "kontraspaning", label: "kontraspaning", stems: [
+    "kontraspaning", "drog sig undan", "undvek ögonkontakt", "tittade bakåt", "sänkte blicken",
+    "väjde undan", "gömde sig", "maskerade", "vände tvärt", "cirklade", "bytte riktning"] },
+  { key: "dröjande", label: "dröjande/upprepning", stems: [
+    "stod stilla länge", "andra varvet", "tredje varvet", "långsam passage", "upprepat",
+    "dröjde kvar"] },
+  { key: "perimeter", label: "närmande/rekognosering av objekt", stems: [
+    "kände på staketet", "kände på grinden", "testade grinden", "testade låset",
+    "klättrade över", "kröp", "forcerade", "trängde in", "tog sig in", "tog sig över"] },
+  { key: "teknik", label: "teknisk inhämtning", stems: [
+    "antenn", "sändare", "störsändare", "avlyssning", "signalspaning", "pejlade", "pejl"] },
 ];
 
 const R = 6371000; // earth radius (m)

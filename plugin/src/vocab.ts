@@ -112,17 +112,24 @@ export const EXCLUSIONS: string[] = [
   "ungdom",
   "cyklist",
   "motionär",
+  "joggare",
+  "hundrastare",
   "hund",
+  "koppel",
   "barnvagn",
+  "rullator",
+  "rollator",
   "käpp",
   "ensam",
+  "picknick",
+  "fika",
 ];
 
 /** Negation cues — a clause containing one (over an object) emits no mark. */
-export const NEGATION_CUES: string[] = ["inga", "ingen", "inget", "utan", "saknar", " ej "];
+export const NEGATION_CUES: string[] = ["inga", "ingen", "inget", "utan", "saknar", "avsaknad", " ej "];
 
 /** Coreference cues — flagged (surfaced) but NOT resolved (§6.2). */
-export const COREF_CUES: string[] = ["samma", "som igår", "tidigare sedd", "som ovan", "igen"];
+export const COREF_CUES: string[] = ["samma", "som igår", "tidigare sedd", "som ovan", "igen", "återigen", "känns igen"];
 
 /**
  * Identity-bearing dimensions per category — these form the matching
