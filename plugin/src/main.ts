@@ -33,7 +33,7 @@ import { EmbeddedPlateVision, corroboratePlate, PlateVision } from "./vision";
 import { isOverwritable, isPluginOwned, renderAll, safeFilename } from "./entity_notes";
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
 import { markFilename, renderMarkNote } from "./mark_notes";
-import { KB, QueryAnswer } from "./query";
+import { KB } from "./query";
 import { ActorHypothesis, ActorResult, buildActorHypotheses } from "./actor";
 import { actorFilename, renderActorNote } from "./actor_notes";
 import { analyzeSuspicion, DEFAULT_SUSPICION, SuspicionAnalysis } from "./suspicion";
@@ -212,6 +212,7 @@ export default class SevenSPlugin extends Plugin {
     this.app.workspace.onLayoutReady(async () => {
       // Rewrite confirmed actors in the current format/name and prune stale twins
       // (self-heals notes written by an older version), then baseline the watcher.
+      await this.cleanupDialogNote();
       await this.reconcileActorNodes();
       await this.baselineAlerts();
     });
@@ -685,8 +686,7 @@ export default class SevenSPlugin extends Plugin {
     if (!trimmed) return;
     try {
       const kb = await this.buildKB();
-      const { answer, prose } = await converse(this.engine, trimmed, kb);
-      await this.logDialogue(answer);
+      const { prose } = await converse(this.engine, trimmed, kb);
       await this.revealPanel();
       const view = this.getView();
       if (view) await view.addChat(trimmed, prose);
@@ -696,45 +696,16 @@ export default class SevenSPlugin extends Plugin {
     }
   }
 
-  /** Append the turn (query + interpreted query + answer) to a plugin-owned
-   *  dialog note — the §7.1 "loggad dialog" audit trail. */
-  private async logDialogue(answer: QueryAnswer): Promise<void> {
+  /** Best-effort: remove a stale `7s-dialog.md` audit note from earlier versions
+   *  (the chat is shown live in the panel; it is no longer persisted as a note,
+   *  since it cluttered the graph with a "7s-dialog" node linked to reports). */
+  private async cleanupDialogNote(): Promise<void> {
     const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
     const path = normalizePath(folder === "" ? "7s-dialog.md" : `${folder}/7s-dialog.md`);
-    const vault = this.app.vault;
-    const stamp = new Date().toISOString().replace("T", " ").slice(0, 19);
-    const turn = [
-      `## ${stamp}`,
-      `**Fråga:** ${answer.query.raw}`,
-      `**Tolkad query:** \`${answer.query.echo}\``,
-      `**Träffar:** ${answer.rowCount}`,
-      "",
-      answer.markdown,
-      "",
-      "---",
-      "",
-    ].join("\n");
-
-    const existing = vault.getAbstractFileByPath(path);
-    if (existing instanceof TFile) {
-      const cur = await vault.read(existing);
-      if (!isPluginOwned(cur)) return; // never clobber a non-owned file
-      await vault.modify(existing, cur + "\n" + turn);
-    } else if (!existing) {
-      if (folder !== "" && !vault.getAbstractFileByPath(folder)) await vault.createFolder(folder).catch(() => {});
-      const header = [
-        "---",
-        "typ: dialog",
-        "källa: 7s-plugin",
-        "generator: 7s-plugin",
-        "metod: dialog",
-        "taggar: [dialog]",
-        "---",
-        "",
-        "# ODEN — fråge-dialog (granskningsspår)",
-        "",
-      ].join("\n");
-      await vault.create(path, header + turn);
+    const f = this.app.vault.getAbstractFileByPath(path);
+    if (f instanceof TFile) {
+      const cur = await this.app.vault.read(f);
+      if (isPluginOwned(cur)) await this.app.vault.delete(f);
     }
   }
 
