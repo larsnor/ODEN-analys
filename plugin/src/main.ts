@@ -43,6 +43,7 @@ import { renderSuspectNotes } from "./suspect_notes";
 import { buildLocations, renderLocationNotes, LocationCluster } from "./location_notes";
 import { isMgrsGrid, placeLabel } from "./places";
 import { mgrsToLatLon } from "./mgrs";
+import { renderObservation } from "./observation";
 import { buildFeed, FeedItem, FeedRow } from "./feed";
 import { suspicionLevel, reasonPhrases } from "./present";
 import { Conversation, converse, DeterministicConversation } from "./conversation";
@@ -82,6 +83,12 @@ interface SevenSSettings {
   /** MGRS grids the operator has already been asked to name (named or skipped),
    *  so the "Namnge plats" feed nudge doesn't keep reappearing. */
   locationNameAsked: Record<string, true>;
+  /** Operation / area-of-interest name (the protected object). */
+  operationName: string;
+  /** Default sägesman (callsign) for observations the operator authors. */
+  operatorCallsign: string;
+  /** First-run flag — false until the operator sets the area of interest. */
+  setupComplete: boolean;
 }
 
 const DEFAULT_SETTINGS: SevenSSettings = {
@@ -99,6 +106,9 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   engine: "deterministic",
   locationNicknames: {},
   locationNameAsked: {},
+  operationName: "",
+  operatorCallsign: "OP",
+  setupComplete: false,
 };
 
 const VIEW_TYPE_7S = "7s-analys-text";
@@ -129,6 +139,18 @@ export default class SevenSPlugin extends Plugin {
 
     addIcon(ODEN_ICON_ID, ODEN_ICON_SVG);
     this.registerView(VIEW_TYPE_7S, (leaf) => new SevenSTextView(leaf, this));
+
+    this.addCommand({
+      id: "setup-operation",
+      name: "ODEN: Konfigurera operationsområde",
+      callback: () => this.openOperationSetup(),
+    });
+
+    this.addCommand({
+      id: "new-observation",
+      name: "ODEN: Ny observation (mall)",
+      callback: () => this.openNewObservation(),
+    });
 
     this.addCommand({
       id: "index-and-summarise",
@@ -494,6 +516,97 @@ export default class SevenSPlugin extends Plugin {
     ).open();
   }
 
+  // --- Operation setup (area of interest) + operator observations -------------
+
+  /** First-run / reconfigure: set the protected area of interest (the object the
+   *  suspicion proximity signal measures against), centre the map on it, and drop
+   *  a permanent AOI marker note in the graph. */
+  openOperationSetup(): void {
+    new SetupOperationModal(
+      this.app,
+      { name: this.settings.operationName, lat: this.settings.protectedLat, lon: this.settings.protectedLon },
+      async (res) => {
+        this.settings.operationName = res.name;
+        this.settings.protectedLat = res.lat;
+        this.settings.protectedLon = res.lon;
+        this.settings.setupComplete = true;
+        await this.saveSettings();
+        await this.writeAoiNote();
+        this.focusMapOn(res.lat, res.lon); // point the map at the area now
+        await this.refreshPanel();
+        new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
+      },
+    ).open();
+  }
+
+  /** ODEN's own marker note for the protected object (idempotent, own-note). */
+  private async writeAoiNote(): Promise<void> {
+    const { protectedLat: lat, protectedLon: lon } = this.settings;
+    const name = this.settings.operationName || "Skyddsobjekt";
+    const md = [
+      "---",
+      "typ: skyddsobjekt",
+      `namn: "${name.replace(/"/g, "'")}"`,
+      "källa: 7s-plugin",
+      "generator: 7s-plugin",
+      "metod: skyddsobjekt",
+      "tags: [skyddsobjekt]",
+      `lat: ${lat}`,
+      `lon: ${lon}`,
+      `location: "${lat},${lon}"`,
+      "---",
+      "",
+      `# 🎯 Skyddsobjekt: ${name}`,
+      "",
+      `**Koordinat:** ${lat}, ${lon}`,
+      "",
+      "_Operationens område av intresse. ODEN mäter närhet mot denna punkt._",
+      "",
+    ].join("\n");
+    await this.writeOwnedNotes([{ name: "Skyddsobjekt.md", body: md }], "skyddsobjekt");
+  }
+
+  /** Guided dialog → a COMPLETE operator-authored 7S observation (all fields). */
+  openNewObservation(): void {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const iso =
+      `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` +
+      `T${pad(now.getHours())}:${pad(now.getMinutes())}:00`;
+    new NewObservationModal(
+      this.app,
+      { tidpunkt: iso, sagesman: this.settings.operatorCallsign },
+      async (obs) => {
+        const id = `7S-${crypto.randomUUID()}`;
+        const note = renderObservation({ id, ...obs });
+        const path = await this.writeOperatorNote(note.filename, note.markdown);
+        if (path) {
+          await this.app.workspace.openLinkText(path.replace(/\.md$/, ""), "", false);
+          new Notice(`ODEN: observation ${note.filename} skapad.`);
+        }
+      },
+    ).open();
+  }
+
+  /** Write an OPERATOR message file (not plugin-owned). Never clobbers an existing
+   *  file — appends a suffix on TNR collision. Returns the vault path, or null. */
+  private async writeOperatorNote(filename: string, body: string): Promise<string | null> {
+    const folder = this.settings.reportsFolder.replace(/\/+$/, "");
+    let name = filename;
+    for (let i = 2; this.app.vault.getAbstractFileByPath(folder ? `${folder}/${name}` : name); i++) {
+      name = filename.replace(/\.md$/, `_${i}.md`);
+    }
+    const path = normalizePath(folder ? `${folder}/${name}` : name);
+    try {
+      await this.app.vault.create(path, body);
+      return path;
+    } catch (err) {
+      console.error("ODEN: could not create observation", err);
+      new Notice("ODEN: kunde inte skapa observationen (se konsolen).");
+      return null;
+    }
+  }
+
   /** ⋯ menu / command: pick any relevant MGRS location to name or rename. */
   async openLocationNamer(): Promise<void> {
     const { reports } = await this.readReports();
@@ -854,6 +967,9 @@ export default class SevenSPlugin extends Plugin {
   /** The ⋯ menu — occasional actions, in operator language. */
   openPanelMenu(evt: MouseEvent): void {
     const menu = new Menu();
+    menu.addItem((i) => i.setTitle("Ny observation…").setIcon("file-plus").onClick(() => this.openNewObservation()));
+    menu.addItem((i) => i.setTitle("Konfigurera operationsområde…").setIcon("target").onClick(() => this.openOperationSetup()));
+    menu.addSeparator();
     menu.addItem((i) => i.setTitle("Uppdatera lägesbild").setIcon("refresh-cw").onClick(() => void this.refreshPanel()));
     menu.addItem((i) => i.setTitle("Granska kopplingsförslag").setIcon("link").onClick(() => void this.runMarkNominations()));
     menu.addItem((i) => i.setTitle("Granska aktörsförslag").setIcon("git-fork").onClick(() => void this.runDeriveActors()));
@@ -1078,6 +1194,9 @@ class SevenSTextView extends ItemView {
       "display:flex;align-items:center;gap:8px;padding:4px 8px;border-bottom:1px solid var(--background-modifier-border);";
     header.createEl("strong", { text: "ODEN" });
     header.createDiv().style.flex = "1";
+    const obs = header.createEl("button", { text: "＋ Obs" });
+    obs.setAttribute("aria-label", "Ny observation");
+    obs.onclick = () => this.plugin.openNewObservation();
     const eng = header.createEl("button");
     const setEng = () => eng.setText(this.plugin.settings.engine === "llm" ? "LLM" : "Deterministisk");
     setEng();
@@ -1128,6 +1247,20 @@ class SevenSTextView extends ItemView {
     if (this.mode === "review") return;
     const el = this.feedEl;
     el.empty();
+
+    // First-run: guide the operator to set the area of interest before anything else.
+    if (!this.plugin.settings.setupComplete) {
+      const card = el.createDiv();
+      card.style.cssText =
+        "padding:10px 12px;margin-bottom:10px;border-radius:6px;border:1px solid var(--interactive-accent);background:var(--background-secondary-alt);";
+      card.createEl("div", { text: "🎯 Kom igång" }).style.cssText = "font-weight:700;margin-bottom:4px;";
+      card.createEl("div", {
+        text: "Ange operationens område av intresse (skyddsobjektet). ODEN mäter närhet mot denna punkt och centrerar kartan där.",
+      }).style.cssText = "font-size:.9em;opacity:.85;margin-bottom:8px;";
+      const btn = card.createEl("button", { text: "Konfigurera operationsområde", cls: "mod-cta" });
+      btn.onclick = () => this.plugin.openOperationSetup();
+    }
+
     el.createEl("div", { text: "Händelser & larm" }).style.cssText = "font-weight:600;opacity:.7;margin-bottom:4px;";
     if (!rows.length) {
       el.createEl("div", { text: "Inga händelser ännu." }).style.opacity = ".6";
@@ -1350,10 +1483,23 @@ class SevenSSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
+      .setName("Sägesman (din signal)")
+      .setDesc("Förvald sägesman/callsign för observationer du själv skapar.")
+      .addText((text) =>
+        text
+          .setPlaceholder("OP")
+          .setValue(this.plugin.settings.operatorCallsign)
+          .onChange(async (value) => {
+            this.plugin.settings.operatorCallsign = value.trim() || "OP";
+            await this.plugin.saveSettings();
+          }),
+      );
+
+    new Setting(containerEl)
       .setName("Skyddsobjekt — koordinat")
       .setDesc(
-        "Lat,lon för skyddsobjektet (HvSS Vällinge). Används av misstankeanalysen " +
-          "för närhets-signalen (haversine). Format: \"lat,lon\".",
+        "Lat,lon för skyddsobjektet. Används av misstankeanalysen för närhets-" +
+          "signalen (haversine). Sätts enklast via \"Konfigurera operationsområde\". Format: \"lat,lon\".",
       )
       .addText((text) =>
         text
@@ -1494,5 +1640,149 @@ class PickLocationModal extends FuzzySuggestModal<LocationCluster> {
 
   onChooseItem(c: LocationCluster): void {
     this.onPick(c.key);
+  }
+}
+
+/** Parse "lat,lon" or an MGRS grid into coordinates. */
+function parseCoord(s: string): { lat: number; lon: number } | null {
+  const t = s.trim();
+  const g = mgrsToLatLon(t);
+  if (g) return { lat: Math.round(g.lat * 1e5) / 1e5, lon: Math.round(g.lon * 1e5) / 1e5 };
+  const m = t.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+  if (m) {
+    const lat = parseFloat(m[1]);
+    const lon = parseFloat(m[2]);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
+  }
+  return null;
+}
+
+/** Setup dialog: name the operation + set the protected object's coordinate. */
+class SetupOperationModal extends Modal {
+  constructor(
+    app: App,
+    private init: { name: string; lat: number; lon: number },
+    private onDone: (res: { name: string; lat: number; lon: number }) => void | Promise<void>,
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Operationsområde" });
+    contentEl.createEl("p", {
+      text: "Ange skyddsobjektet/området som ska bevakas. ODEN mäter närhet mot denna punkt och centrerar kartan där.",
+    }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
+
+    const nameIn = contentEl.createEl("input", { type: "text" });
+    nameIn.placeholder = "Namn, t.ex. HvSS Vällinge";
+    nameIn.value = this.init.name;
+    nameIn.style.cssText = "width:100%;margin:0 0 8px;";
+
+    const coordIn = contentEl.createEl("input", { type: "text" });
+    coordIn.placeholder = "Koordinat: 59.2622,17.712  eller  33VXF5453072480";
+    coordIn.value = this.init.lat && this.init.lon ? `${this.init.lat},${this.init.lon}` : "";
+    coordIn.style.cssText = "width:100%;margin:0 0 6px;";
+
+    const err = contentEl.createEl("div");
+    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin-bottom:8px;";
+
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
+    const save = btns.createEl("button", { text: "Spara", cls: "mod-cta" });
+    btns.createEl("button", { text: "Avbryt" }).onclick = () => this.close();
+    save.onclick = () => {
+      const c = parseCoord(coordIn.value);
+      if (!c) {
+        err.setText("Kunde inte tolka koordinaten — ange lat,lon eller en MGRS-ruta.");
+        return;
+      }
+      this.close();
+      void this.onDone({ name: nameIn.value.trim(), lat: c.lat, lon: c.lon });
+    };
+    window.setTimeout(() => nameIn.focus(), 0);
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
+/** Guided template dialog → a complete operator-authored 7S observation. */
+class NewObservationModal extends Modal {
+  constructor(
+    app: App,
+    private init: { tidpunkt: string; sagesman: string },
+    private onDone: (obs: {
+      tidpunkt: string; plats: string; sagesman: string; handelse: string; symbol?: string;
+    }) => void | Promise<void>,
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Ny observation" });
+
+    const field = (label: string, hint = "") => {
+      const l = contentEl.createEl("div", { text: label });
+      l.style.cssText = "font-weight:600;font-size:.85em;margin:8px 0 2px;";
+      if (hint) {
+        const h = contentEl.createEl("div", { text: hint });
+        h.style.cssText = "opacity:.6;font-size:.8em;margin-bottom:2px;";
+      }
+    };
+
+    field("Tidpunkt");
+    const time = contentEl.createEl("input", { type: "datetime-local" });
+    time.value = this.init.tidpunkt.slice(0, 16);
+    time.style.cssText = "width:100%;";
+
+    field("Ställe", "Platsnamn och/eller MGRS-ruta (koordinat härleds från rutan)");
+    const plats = contentEl.createEl("input", { type: "text" });
+    plats.placeholder = "t.ex. Vid grindarna  ·  33VXF5453072480";
+    plats.style.cssText = "width:100%;";
+
+    field("Sägesman");
+    const cs = contentEl.createEl("input", { type: "text" });
+    cs.value = this.init.sagesman;
+    cs.style.cssText = "width:100%;";
+
+    field("Händelse", "Vad observerades?");
+    const hand = contentEl.createEl("textarea");
+    hand.rows = 3;
+    hand.style.cssText = "width:100%;resize:vertical;";
+
+    field("Kännetecken (Symbol)", "Utmärkande drag — valfritt");
+    const sym = contentEl.createEl("textarea");
+    sym.rows = 2;
+    sym.style.cssText = "width:100%;resize:vertical;";
+
+    const err = contentEl.createEl("div");
+    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin:6px 0;";
+
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;margin-top:6px;";
+    const save = btns.createEl("button", { text: "Skapa", cls: "mod-cta" });
+    btns.createEl("button", { text: "Avbryt" }).onclick = () => this.close();
+    save.onclick = () => {
+      const platsVal = plats.value.trim();
+      const handelse = hand.value.trim();
+      if (!platsVal || !handelse) {
+        err.setText("Fyll i minst Ställe och Händelse.");
+        return;
+      }
+      const t = time.value ? `${time.value}:00` : this.init.tidpunkt;
+      this.close();
+      void this.onDone({
+        tidpunkt: t, plats: platsVal, sagesman: cs.value.trim() || this.init.sagesman,
+        handelse, symbol: sym.value.trim() || undefined,
+      });
+    };
+    window.setTimeout(() => plats.focus(), 0);
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
   }
 }
