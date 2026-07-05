@@ -16,6 +16,7 @@
 import { Report } from "./parse";
 import { SuspicionAnalysis } from "./suspicion";
 import { plateIdentifiers } from "./ids";
+import { safeFilename } from "./entity_notes";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
 
@@ -48,12 +49,28 @@ export interface LocationCluster {
 /** Group reports by `plats`; keep locations tied to suspicion or a vehicle, and
  *  link only the RELEVANT observations there (elevated or plate-bearing) so the
  *  graph hub stays focused instead of pulling in every benign report. */
-export function buildLocations(reports: Report[], suspicion: SuspicionAnalysis): LocationCluster[] {
+/** Resolve a raw `plats` grid to its canonical survivor through operator merges
+ *  (cycle-safe). Exported so callers can link an observation's place to the right
+ *  (possibly merged) location note. */
+export function resolveLocationKey(plats: string, merges?: Record<string, string>): string {
+  const k = (plats ?? "").trim();
+  if (!merges) return k;
+  const seen = new Set<string>();
+  let cur = k;
+  while (merges[cur] && !seen.has(cur)) { seen.add(cur); cur = merges[cur]; }
+  return cur;
+}
+
+export function buildLocations(
+  reports: Report[],
+  suspicion: SuspicionAnalysis,
+  merges?: Record<string, string>,
+): LocationCluster[] {
   const elevatedFiles = new Set(suspicion.elevated.map((e) => e.file));
   const map = new Map<string, LocationCluster>();
 
   for (const r of reports) {
-    const key = (r.plats ?? "").trim();
+    const key = resolveLocationKey((r.plats ?? "").trim(), merges);
     if (!key) continue;
     const plates = plateIdentifiers(r)
       .filter((p) => !p.partial)
@@ -86,11 +103,17 @@ export function buildLocations(reports: Report[], suspicion: SuspicionAnalysis):
 }
 
 export function locationFilename(c: LocationCluster, nicks?: Nicknames): string {
-  // Display uses the nickname; the file hash stays keyed to the grid identity.
-  return safeAgentFilename(`Plats ${placeLabel(c.label, nicks)}`, "plats:" + c.key);
+  // Display uses the nickname; the file hash stays keyed to the grid identity. The
+  // 📍 emoji marks the type (the word "Plats" stays in metadata only).
+  return safeAgentFilename(`📍 ${placeLabel(c.label, nicks)}`, "plats:" + c.key);
 }
 
-export function renderLocationNote(c: LocationCluster, nicks?: Nicknames): RenderedNote {
+/** For a plate at this location, the stem of the recurrence node to link INSTEAD
+ *  of the vehicle (when the plate was seen here 2+ times), or undefined. Routing
+ *  the pair through the recurrence node avoids a redundant direct edge. */
+export type RecurrenceLinker = (placeKey: string, plate: string) => string | undefined;
+
+export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recStem?: RecurrenceLinker): RenderedNote {
   const name = placeLabel(c.label, nicks);
   const named = name !== c.key; // a nickname is set → keep the grid visible too
   const fm: string[] = [
@@ -112,18 +135,28 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames): Rende
   fm.push("---");
 
   const body: string[] = [];
-  body.push(`# 📍 Plats: ${name}`);
+  body.push(`# 📍 ${name}`);
   if (named) body.push(`_MGRS: ${c.key}_`);
   body.push("");
+  // Link the plate to its vehicle entity note → a DIRECT place↔fordon graph edge
+  // (so the link survives even when message nodes are filtered out of the graph).
+  // If the plate recurs here (2+ visits), link the recurrence node instead, so the
+  // pair is one labelled hop rather than a plain edge.
+  const plateLink = (p: string) => {
+    const rec = recStem?.(c.key, p);
+    const stem = rec ?? safeFilename(p).replace(/\.md$/, "");
+    return `[[${stem}|${p}]]`;
+  };
   body.push(`**Rapporter:** ${c.reports.length}  `);
   body.push(`**Misstänkta observationer:** ${c.elevatedCount}`);
-  if (c.plates.length) body.push(`  \n**Fordon här:** ${c.plates.join(", ")}`);
+  if (c.plates.length) body.push(`  \n**Fordon här:** ${c.plates.map(plateLink).join(", ")}`);
   body.push("");
   body.push("## Observationer");
   for (const o of c.reports) {
     const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
     const mark = o.elevated ? "⚠ " : "";
-    const plate = o.plates.length ? ` — ${o.plates.join(", ")}` : "";
+    // Keep the message link (data/traceability) AND link the vehicle directly.
+    const plate = o.plates.length ? ` — ${o.plates.map(plateLink).join(", ")}` : "";
     body.push(`- ${mark}[[${stem}|TNR${o.tnr}]] — ${o.tidpunkt}${plate}`);
   }
   body.push("");
@@ -132,6 +165,6 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames): Rende
   return { filename: locationFilename(c, nicks), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
 }
 
-export function renderLocationNotes(clusters: LocationCluster[], nicks?: Nicknames): RenderedNote[] {
-  return clusters.map((c) => renderLocationNote(c, nicks));
+export function renderLocationNotes(clusters: LocationCluster[], nicks?: Nicknames, recStem?: RecurrenceLinker): RenderedNote[] {
+  return clusters.map((c) => renderLocationNote(c, nicks, recStem));
 }

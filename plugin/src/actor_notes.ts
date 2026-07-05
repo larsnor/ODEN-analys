@@ -23,11 +23,12 @@ export interface RenderedNote {
   markdown: string;
 }
 
-/** Readable graph label. Uses the facet labels ("Aktör RJK241 + ryggsäck"),
- *  disambiguated by the stable hypothesis id. */
-export function actorFilename(h: ActorHypothesis): string {
-  const desc = h.facets.map((f) => f.label).join(" + ") || `${h.vehicleCount}f ${h.markCount}k`;
-  return safeAgentFilename(`Aktör ${desc}`, h.id);
+/** Readable graph label. The 🕸️ emoji marks the type (the word "Aktör" stays in
+ *  metadata only); the label is the operator's name if set, else the facet labels
+ *  ("🕸️ RJK241 + ryggsäck"), disambiguated by the stable hypothesis id. */
+export function actorFilename(h: ActorHypothesis, name?: string): string {
+  const desc = name?.trim() || h.facets.map((f) => f.label).join(" + ") || `${h.vehicleCount}f ${h.markCount}k`;
+  return safeAgentFilename(`🕸️ ${desc}`, h.id);
 }
 
 function tnrLink(s: { file: string; tnr: string }): string {
@@ -35,8 +36,24 @@ function tnrLink(s: { file: string; tnr: string }): string {
   return `[[${stem}|TNR${s.tnr}]]`;
 }
 
-export function renderActorNote(h: ActorHypothesis, label?: string, nicks?: Nicknames): RenderedNote {
-  const name = label ?? `Aktör (${h.vehicleCount} fordon, ${h.markCount} kännetecken)`;
+/** Given an observation's raw `plats`, the stem of the location note to link to
+ *  (or undefined if that place has no location node). Enables a direct actor↔plats
+ *  graph edge that survives message-node filtering. */
+export type LocationLinker = (plats: string) => string | undefined;
+
+/** For a place in this actor's chain, the stem of the recurrence node to link
+ *  INSTEAD of the location note (when this actor was seen there 2+ times). */
+export type RecurrenceLinker = (plats: string) => string | undefined;
+
+export function renderActorNote(
+  h: ActorHypothesis,
+  label?: string,
+  nicks?: Nicknames,
+  fileName?: string,
+  locStemOf?: LocationLinker,
+  recStemOf?: RecurrenceLinker,
+): RenderedNote {
+  const name = label ?? `${h.vehicleCount} fordon, ${h.markCount} kännetecken`;
   const fm = [
     "---",
     "typ: entitet",
@@ -61,7 +78,7 @@ export function renderActorNote(h: ActorHypothesis, label?: string, nicks?: Nick
   fm.push("tags: [aktör]", "---");
 
   const body: string[] = [];
-  body.push(`# ${name}`);
+  body.push(`# 🕸️ ${name}`);
   body.push("");
   body.push(h.explanation);
   body.push("");
@@ -73,7 +90,12 @@ export function renderActorNote(h: ActorHypothesis, label?: string, nicks?: Nick
   body.push("");
   body.push("## Evidenskedja (inget enskilt meddelande binder alla kännetecken)");
   for (const step of h.chain) {
-    body.push(`- ${tnrLink(step)} — ${step.tidpunkt} — ${placeLabel(step.plats, nicks)} — _kopplar:_ ${step.facets.join(" + ")}`);
+    // Link the place to its location note → a direct actor↔plats graph edge; keep
+    // the message link (tnrLink) for traceability. If the actor recurs at this
+    // place, route through the recurrence node instead (one labelled hop).
+    const stem = recStemOf?.(step.plats) ?? locStemOf?.(step.plats);
+    const place = stem ? `[[${stem}|${placeLabel(step.plats, nicks)}]]` : placeLabel(step.plats, nicks);
+    body.push(`- ${tnrLink(step)} — ${step.tidpunkt} — ${place} — _kopplar:_ ${step.facets.join(" + ")}`);
   }
   body.push("");
   body.push(
@@ -82,5 +104,5 @@ export function renderActorNote(h: ActorHypothesis, label?: string, nicks?: Nick
       "evidenskedjan ovan._",
   );
 
-  return { filename: actorFilename(h), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
+  return { filename: actorFilename(h, fileName), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
 }

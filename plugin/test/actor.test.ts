@@ -93,7 +93,7 @@ test("confirmed actor note is idempotent and provenance-marked", () => {
   assert.match(a.markdown, /tags: \[aktör\]/); // real Obsidian tag (not `taggar:`)
   assert.doesNotMatch(a.markdown, /taggar:/);
   // Readable graph label + colon-free filename.
-  assert.ok(a.filename.startsWith("Aktör ") && a.filename.endsWith(".md"));
+  assert.ok(a.filename.startsWith("🕸️ ") && a.filename.endsWith(".md"));
   assert.doesNotMatch(a.filename, /[:\\/]/);
 });
 

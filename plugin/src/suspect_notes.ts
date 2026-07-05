@@ -7,6 +7,7 @@
  * (Hög/Förhöjd/…) lives HERE (frontmatter `nivå` + a line), not in the feed/log.
  */
 import { Suspect } from "./suspects";
+import { safeFilename } from "./entity_notes";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
 
@@ -18,16 +19,21 @@ export interface RenderedNote {
   markdown: string;
 }
 
-/** Readable graph label ("Misstänkt fordon RJK241"), disambiguated by agent key. */
+/** Given an observation's raw `plats`, the stem of the location note to link to
+ *  (or undefined). Lets a larm node keep a direct edge to its place so it stays in
+ *  the graph even when message (TNR) nodes are filtered out. */
+export type LocationLinker = (plats: string) => string | undefined;
+
+/** Readable graph label ("⚠️ RJK241"), disambiguated by agent key. The ⚠️ emoji
+ *  marks the type (kind stays in the `agent:` metadata, not the note name). */
 export function suspectFilename(s: Suspect): string {
-  const kindWord = s.kind === "fordon" ? "fordon" : "person";
-  return safeAgentFilename(`Misstänkt ${kindWord} ${s.label}`, s.key);
+  return safeAgentFilename(`⚠️ ${s.label}`, s.key);
 }
 
-export function renderSuspectNote(s: Suspect, nicks?: Nicknames): RenderedNote {
+export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: LocationLinker): RenderedNote {
   const latest = s.obs[s.obs.length - 1];
   const kindWord = s.kind === "fordon" ? "fordon" : "person";
-  const name = `Misstänkt ${kindWord}: ${s.label}`;
+  const name = s.label;
 
   const fm: string[] = [
     "---",
@@ -47,16 +53,23 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames): RenderedNote {
   fm.push("---");
 
   const body: string[] = [];
-  body.push(`# ⚠ ${name}`);
+  body.push(`# ⚠️ ${name}`);
   body.push("");
   body.push(`**Bedömd nivå:** ${s.level}  `);
   body.push(`**Antal observationer:** ${s.obs.length}  `);
   body.push(`**Tidsspann:** ${s.firstSeen} → ${s.lastSeen}`);
+  // A vehicle suspect links straight to its vehicle entity node → a direct
+  // larm↔fordon edge (keeps the larm node connected when messages are hidden).
+  if (s.kind === "fordon") body.push(`  \n**Fordon:** [[${safeFilename(s.label).replace(/\.md$/, "")}|${s.label}]]`);
   body.push("");
   body.push("## Observationer");
   for (const o of s.obs) {
     const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
-    body.push(`- [[${stem}|TNR${o.tnr}]] — ${o.tidpunkt} — ${placeLabel(o.plats, nicks)}`);
+    // Keep the message link (traceability) AND link the place directly → the larm
+    // node stays in the graph (via a plats edge) even with TNR nodes filtered out.
+    const locStem = locStemOf?.(o.plats);
+    const place = locStem ? `[[${locStem}|${placeLabel(o.plats, nicks)}]]` : placeLabel(o.plats, nicks);
+    body.push(`- [[${stem}|TNR${o.tnr}]] — ${o.tidpunkt} — ${place}`);
   }
   body.push("");
   body.push(
@@ -67,8 +80,8 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames): RenderedNote {
   return { filename: suspectFilename(s), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
 }
 
-export function renderSuspectNotes(suspects: Suspect[], nicks?: Nicknames): RenderedNote[] {
+export function renderSuspectNotes(suspects: Suspect[], nicks?: Nicknames, locStemOf?: LocationLinker): RenderedNote[] {
   return [...suspects]
     .sort((a, b) => a.key.localeCompare(b.key))
-    .map((s) => renderSuspectNote(s, nicks));
+    .map((s) => renderSuspectNote(s, nicks, locStemOf));
 }

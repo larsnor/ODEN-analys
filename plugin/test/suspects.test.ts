@@ -5,7 +5,7 @@ import { test } from "node:test";
 import { Report } from "../src/parse.ts";
 import { analyzeSuspicion } from "../src/suspicion.ts";
 import { buildSuspects, suspectHypotheses, suspectHypId, isActorCandidate } from "../src/suspects.ts";
-import { suspectFilename } from "../src/suspect_notes.ts";
+import { suspectFilename, renderSuspectNote } from "../src/suspect_notes.ts";
 
 const PROT = { protectedLat: 59.0, protectedLon: 17.0, threshold: 5 };
 
@@ -110,9 +110,18 @@ test("suspectFilename is a readable, colon-free graph label; id matches decision
   const reports = [report({ tnr: "500000", handelse: "Fordon RJK241 passerar." })];
   const [s] = buildSuspects(reports, analyzeSuspicion(reports, PROT));
   const name = suspectFilename(s);
-  assert.match(name, /^Misstänkt fordon RJK241/);
+  assert.match(name, /^⚠️ RJK241/);
   assert.doesNotMatch(name, /[:\\/]/, "no filesystem-illegal chars");
   assert.ok(name.endsWith(".md"));
   // The marker's agent key maps to the same id used as the review-decision key.
   assert.equal(suspectHypId(s.key), suspectHypotheses([s])[0].id);
+});
+
+test("larm note links place + vehicle DIRECTLY so it survives message-node filtering", () => {
+  const reports = [report({ tnr: "500000", plats: "Grindarna", handelse: "Fordon RJK241 passerar." })];
+  const [s] = buildSuspects(reports, analyzeSuspicion(reports, PROT));
+  const note = renderSuspectNote(s, undefined, (p) => (p === "Grindarna" ? "📍 Grindarna" : undefined));
+  assert.match(note.markdown, /\[\[📍 Grindarna\|Grindarna\]\]/, "direct larm↔plats edge");
+  assert.match(note.markdown, /\*\*Fordon:\*\* \[\[RJK241\|RJK241\]\]/, "direct larm↔fordon edge");
+  assert.match(note.markdown, /\[\[TNR500000\|TNR500000\]\]/, "message link kept for traceability");
 });

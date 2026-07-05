@@ -51,12 +51,25 @@ test("rendered location note is provenance-marked, tagged #plats, and links its 
   const reports = [report({ tnr: "100000", handelse: "Person fotograferar med kamera." })];
   const [loc] = buildLocations(reports, analyzeSuspicion(reports, PROT));
   const note = renderLocationNote(loc);
-  assert.ok(note.filename.startsWith("Plats GRID-A"));
+  assert.ok(note.filename.startsWith("📍 GRID-A"));
   assert.match(note.markdown, /generator: 7s-plugin/);
   assert.match(note.markdown, /metod: plats/);
   assert.match(note.markdown, /tags: \[plats\]/);
   assert.match(note.markdown, /\[\[TNR100000\|TNR100000\]\]/, "links the report → graph edge");
   assert.match(note.markdown, /location: "59.001,17"/, "coords for the map");
+});
+
+test("location note links vehicles DIRECTLY (place↔fordon edge, survives message hiding)", () => {
+  const reports = [
+    report({ tnr: "200000", handelse: "Fordon RJK241 parkerat.", plats: "GRID-V" }),
+    report({ tnr: "200001", handelse: "Fordon RJK241 igen.", plats: "GRID-V" }),
+  ];
+  const [loc] = buildLocations(reports, analyzeSuspicion(reports, PROT));
+  const note = renderLocationNote(loc);
+  // A wikilink straight to the vehicle entity note, not just the message.
+  assert.match(note.markdown, /\*\*Fordon här:\*\* \[\[RJK241\|RJK241\]\]/, "summary links the vehicle node");
+  assert.match(note.markdown, /\[\[RJK241\|RJK241\]\]/, "observation line links the vehicle node");
+  assert.match(note.markdown, /\[\[TNR200000\|TNR200000\]\]/, "message link is kept for traceability");
 });
 
 test("a nickname renames the node (display) but keeps the grid as identity", () => {
@@ -66,9 +79,9 @@ test("a nickname renames the node (display) but keeps the grid as identity", () 
   const raw = renderLocationNote(loc);
   const named = renderLocationNote(loc, nicks);
 
-  assert.equal(raw.filename, "Plats 33VXF5490371882.md", "clean name, no hash suffix");
-  assert.equal(named.filename, "Plats Norra grinden.md", "graph label uses the nickname, clean");
-  assert.match(named.markdown, /# 📍 Plats: Norra grinden/);
+  assert.equal(raw.filename, "📍 33VXF5490371882.md", "clean name, no hash suffix");
+  assert.equal(named.filename, "📍 Norra grinden.md", "graph label uses the nickname, clean");
+  assert.match(named.markdown, /# 📍 Norra grinden/);
   assert.match(named.markdown, /MGRS: 33VXF5490371882/, "grid still shown for traceability");
   assert.match(named.markdown, /mgrs: "33VXF5490371882"/, "grid kept in frontmatter (identity)");
 });

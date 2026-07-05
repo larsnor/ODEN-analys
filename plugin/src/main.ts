@@ -34,13 +34,14 @@ import { isOverwritable, isPluginOwned, renderAll, safeFilename } from "./entity
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
 import { markFilename, renderMarkNote } from "./mark_notes";
 import { KB } from "./query";
-import { ActorHypothesis, ActorResult, buildActorHypotheses } from "./actor";
+import { ActorHypothesis, ActorResult, buildActorHypotheses, foldActorMerges } from "./actor";
 import { actorFilename, renderActorNote } from "./actor_notes";
 import { analyzeSuspicion, DEFAULT_SUSPICION, SuspicionAnalysis } from "./suspicion";
 import { Alert, AnalysisBundle, computeAlertItems, newAlerts } from "./alerts";
 import { buildSuspects, suspectHypotheses, suspectHypId, isActorCandidate } from "./suspects";
 import { renderSuspectNotes } from "./suspect_notes";
-import { buildLocations, renderLocationNotes, LocationCluster } from "./location_notes";
+import { buildLocations, renderLocationNotes, LocationCluster, locationFilename, resolveLocationKey } from "./location_notes";
+import { renderRecurrenceNote, recurrenceFilename, RecurrencePair } from "./recurrence_notes";
 import { isMgrsGrid, placeLabel } from "./places";
 import { mgrsToLatLon } from "./mgrs";
 import { renderObservation } from "./observation";
@@ -60,6 +61,14 @@ interface SevenSSettings {
   markDecisions: Record<string, MarkDecision>;
   /** Operator decisions on actor hypotheses (§6.4), keyed by hypothesis id. */
   actorDecisions: Record<string, ActorDecision>;
+  /** Operator free-text names for confirmed actors, keyed by hypothesis id.
+   *  Read at render time, so the name survives every owned-note reconcile. */
+  actorNames: Record<string, string>;
+  /** Operator "same actor" merges: absorbed hypothesis id → surviving id. Folded
+   *  into one combined node at render time (§6.4-follow-up). */
+  actorMerges: Record<string, string>;
+  /** Operator "same place" merges: absorbed `plats` grid key → surviving key. */
+  locationMerges: Record<string, string>;
   /** Evidence threshold for actor derivation (§9.3-A parameter request). */
   actorThreshold: number;
   /** Protected object (objektet) coords for the suspicion proximity signal. */
@@ -96,6 +105,9 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   entitiesFolder: "entities",
   markDecisions: {},
   actorDecisions: {},
+  actorNames: {},
+  actorMerges: {},
+  locationMerges: {},
   actorThreshold: 1,
   protectedLat: DEFAULT_SUSPICION.protectedLat,
   protectedLon: DEFAULT_SUSPICION.protectedLon,
@@ -198,6 +210,24 @@ export default class SevenSPlugin extends Plugin {
       id: "show-alerts",
       name: "ODEN: Visa larm",
       callback: () => void this.runShowAlerts(),
+    });
+
+    this.addCommand({
+      id: "merge-actors",
+      name: "ODEN: Slå ihop aktörer (samma person)",
+      callback: () => void this.mergeActorsFlow(),
+    });
+
+    this.addCommand({
+      id: "merge-locations",
+      name: "ODEN: Slå ihop platser (samma plats)",
+      callback: () => void this.mergeLocationsFlow(),
+    });
+
+    this.addCommand({
+      id: "unmerge-entities",
+      name: "ODEN: Ångra sammanslagning",
+      callback: () => void this.unmergeFlow(),
     });
 
     this.addRibbonIcon(ODEN_ICON_ID, "ODEN — indexera & sammanfatta", () =>
@@ -469,6 +499,51 @@ export default class SevenSPlugin extends Plugin {
     new Notice(`ODEN: nollställde ${n} aktörsbeslut, tog bort ${removed} aktörsnoter.`);
   }
 
+  /** True if the operator has made ANY judgement worth warning about before a wipe. */
+  private hasAnyJudgements(): boolean {
+    const s = this.settings;
+    return [
+      s.actorDecisions,
+      s.markDecisions,
+      s.locationNicknames,
+      s.locationNameAsked,
+      s.actorNames,
+      s.actorMerges,
+      s.locationMerges,
+      s.seenAlerts,
+    ].some((m) => Object.keys(m).length > 0);
+  }
+
+  /** Wipe EVERY operator judgement (decisions, names, nicknames, merges, seen-set)
+   *  and delete the decision-derived owned notes (metod aktor/jobb-b) + stray empty
+   *  files. Called when a new/changed operation area is set so nothing from the
+   *  previous operation lingers. Location/larm/objektet nodes re-derive on reconcile. */
+  async clearAllJudgements(): Promise<void> {
+    this.settings.actorDecisions = {};
+    this.settings.markDecisions = {};
+    this.settings.locationNicknames = {};
+    this.settings.locationNameAsked = {};
+    this.settings.actorNames = {};
+    this.settings.actorMerges = {};
+    this.settings.locationMerges = {};
+    this.settings.seenAlerts = {};
+    await this.saveSettings();
+
+    let removed = 0;
+    const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
+    const prefix = folder + "/";
+    for (const f of this.app.vault.getMarkdownFiles()) {
+      if (folder !== "" && !(f.path === folder || f.path.startsWith(prefix))) continue;
+      const text = await this.app.vault.read(f);
+      const metod = ownedMetod(text);
+      if (text.trim() === "" || (isPluginOwned(text) && (metod === "aktor" || metod === "jobb-b"))) {
+        await this.app.vault.delete(f);
+        removed++;
+      }
+    }
+    new Notice(`ODEN: raderade tidigare beslut, tog bort ${removed} noter.`);
+  }
+
   // --- Location nicknames (operator names for MGRS grids) --------------------
 
   /** Best-effort assist (bends §7.3 on explicit operator action only): center the
@@ -476,13 +551,13 @@ export default class SevenSPlugin extends Plugin {
    *  naming. Feature-detected + try/caught: if Map View is absent or its API
    *  changes, naming still works, just without the zoom. `dedicatedPane` reuses
    *  the open map leaf rather than replacing the active (ODEN) panel. */
-  private focusMapOn(lat: number, lon: number, query?: string): void {
+  private focusMapOn(lat: number, lon: number, query?: string, zoom?: number): void {
     try {
       const mv = (this.app as unknown as { plugins?: { plugins?: Record<string, unknown> } }).plugins?.plugins?.[
         "obsidian-map-view"
       ] as { openMapWithState?: (s: unknown, b: string, f: boolean) => unknown; settings?: { zoomOnGoFromNote?: number } } | undefined;
       if (!mv || typeof mv.openMapWithState !== "function") return;
-      const mapZoom = mv.settings?.zoomOnGoFromNote ?? 15;
+      const mapZoom = zoom ?? mv.settings?.zoomOnGoFromNote ?? 15;
       // Optionally override the query so a just-created marker (e.g. the AOI) is
       // visible even if the map's persisted query doesn't include its tag yet.
       const state: Record<string, unknown> = { mapCenter: { lat, lng: lon }, mapZoom };
@@ -499,14 +574,17 @@ export default class SevenSPlugin extends Plugin {
     const current = this.settings.locationNicknames[grid] ?? "";
     // Show the operator WHERE this grid is on the map, to help them pick a name.
     const ll = mgrsToLatLon(grid);
-    if (ll) this.focusMapOn(ll.lat, ll.lon);
+    // Zoom 13 keeps surrounding placenames/roads visible for context (map-view's
+    // own zoomOnGoFromNote of 15 is too tight — a bare marker on empty tiles).
+    const NAMING_ZOOM = 13;
+    if (ll) this.focusMapOn(ll.lat, ll.lon, undefined, NAMING_ZOOM);
     new NameLocationModal(
       this.app,
       grid,
       current,
       ll,
       () => {
-        if (ll) this.focusMapOn(ll.lat, ll.lon); // "visa på karta igen"
+        if (ll) this.focusMapOn(ll.lat, ll.lon, undefined, NAMING_ZOOM); // "visa på karta igen"
       },
       async (name) => {
         this.settings.locationNameAsked[grid] = true;
@@ -528,23 +606,52 @@ export default class SevenSPlugin extends Plugin {
    *  suspicion proximity signal measures against), centre the map on it, and drop
    *  a permanent AOI marker note in the graph. */
   openOperationSetup(): void {
+    const prevLat = this.settings.protectedLat;
+    const prevLon = this.settings.protectedLon;
     new SetupOperationModal(
       this.app,
-      { name: this.settings.operationName, lat: this.settings.protectedLat, lon: this.settings.protectedLon },
+      { name: this.settings.operationName, lat: prevLat, lon: prevLon },
       async (res) => {
-        this.settings.operationName = res.name;
-        this.settings.protectedLat = res.lat;
-        this.settings.protectedLon = res.lon;
-        this.settings.setupComplete = true;
-        await this.saveSettings();
-        await this.writeAoiNote();
-        // Point the map at the area AND include the AOI tag in the query so the
-        // marker shows now (the persisted map rule/query only reloads on restart).
-        this.focusMapOn(res.lat, res.lon, "tag:#objektet OR tag:#larm OR tag:#aktör");
-        await this.refreshPanel();
-        new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
+        const coordsChanged = res.lat !== prevLat || res.lon !== prevLon;
+        // A new/changed area wipes all prior judgements — warn first if there's
+        // anything to lose (a pure rename keeps everything).
+        if (coordsChanged && this.hasAnyJudgements()) {
+          new ConfirmModal(
+            this.app,
+            {
+              title: "Nytt operationsområde",
+              body:
+                "Ett nytt/ändrat operationsområde raderar alla tidigare beslut " +
+                "(bekräftade aktörer, kännetecken, platsnamn och sammanslagningar). Fortsätt?",
+              confirmText: "Radera och sätt område",
+            },
+            async () => {
+              await this.clearAllJudgements();
+              await this.applyOperationSetup(res);
+            },
+          ).open();
+          return;
+        }
+        if (coordsChanged) await this.clearAllJudgements(); // nothing to warn about
+        await this.applyOperationSetup(res);
       },
     ).open();
+  }
+
+  /** Persist the operation area, (re)write the AOI marker, centre the map. */
+  private async applyOperationSetup(res: { name: string; lat: number; lon: number }): Promise<void> {
+    this.settings.operationName = res.name;
+    this.settings.protectedLat = res.lat;
+    this.settings.protectedLon = res.lon;
+    this.settings.setupComplete = true;
+    await this.saveSettings();
+    await this.writeAoiNote();
+    // Point the map at the area AND include the AOI tag in the query so the marker
+    // shows now (the persisted map rule/query only reloads on restart).
+    this.focusMapOn(res.lat, res.lon, "tag:#objektet OR tag:#larm OR tag:#aktör");
+    await this.reconcileActorNodes(); // re-derive nodes for the (possibly wiped) state
+    await this.refreshPanel();
+    new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
   }
 
   /** ODEN's own marker note for the protected object (idempotent, own-note). */
@@ -738,13 +845,106 @@ export default class SevenSPlugin extends Plugin {
   async confirmActor(id: string): Promise<void> {
     const h = this.lastActors?.hypotheses.find((x) => x.id === id);
     if (!h) return;
-    this.settings.actorDecisions[id] = "confirmed";
-    await this.saveSettings();
-    // Write the WHOLE confirmed set (prune-safe) + drop any red marker for the now
-    // -confirmed agent so it appears as a single blue actor node (merge, not twin).
-    await this.reconcileActorNodes();
-    await this.revealActors();
-    new Notice(`ODEN: bekräftade aktör (${h.vehicleCount} fordon, ${h.markCount} kännetecken) → nod skapad.`);
+    // Offer a free-text name (the graph node's label) before confirming. The
+    // suggestion is any existing name, else the agent's facet label, else a count.
+    const suggested =
+      this.settings.actorNames[id] ??
+      (id.startsWith("suspect-") ? h.facets[0]?.label : undefined) ??
+      (h.facets.map((f) => f.label).join(" + ") || `${h.vehicleCount} fordon, ${h.markCount} kännetecken`);
+    new NameActorModal(this.app, suggested, async (name) => {
+      if (name === null) return; // avbröt → ingen bekräftelse
+      const n = name.trim();
+      if (n) this.settings.actorNames[id] = n;
+      else delete this.settings.actorNames[id];
+      this.settings.actorDecisions[id] = "confirmed";
+      await this.saveSettings();
+      // Write the WHOLE confirmed set (prune-safe) + drop any red marker for the now
+      // -confirmed agent so it appears as a single blue actor node (merge, not twin).
+      await this.reconcileActorNodes();
+      await this.revealActors();
+      new Notice(`ODEN: bekräftade aktör${n ? ` "${n}"` : ""} → nod skapad.`);
+    }).open();
+  }
+
+  // --- Operator merges: two nodes are the SAME actor / place (§6.4-follow-up) --
+
+  /** Confirmed actor hypotheses as the operator sees them (post merge-fold). */
+  private confirmedActorList(): ActorHypothesis[] {
+    if (!this.lastActors) return [];
+    const confirmed = this.lastActors.hypotheses.filter(
+      (h) => this.settings.actorDecisions[h.id] === "confirmed",
+    );
+    return foldActorMerges(confirmed, this.settings.actorMerges);
+  }
+
+  /** Pick two confirmed actors (A absorbed into B) → persist the merge, re-render. */
+  async mergeActorsFlow(): Promise<void> {
+    const actors = this.confirmedActorList();
+    if (actors.length < 2) {
+      new Notice("ODEN: behöver minst två bekräftade aktörer att slå ihop.");
+      return;
+    }
+    new PickActorModal(this.app, actors, this.settings.actorNames, "Välj aktör att slå ihop (A)…", (a) => {
+      const rest = actors.filter((x) => x.id !== a.id);
+      new PickActorModal(this.app, rest, this.settings.actorNames, "…in i vilken aktör? (B — överlevande)", async (b) => {
+        this.settings.actorMerges[a.id] = b.id;
+        // Keep a good label: carry A's name onto B if B is unnamed.
+        if (!this.settings.actorNames[b.id] && this.settings.actorNames[a.id]) {
+          this.settings.actorNames[b.id] = this.settings.actorNames[a.id];
+        }
+        await this.saveSettings();
+        await this.reconcileActorNodes();
+        await this.revealActors();
+        new Notice("ODEN: aktörer sammanslagna till en nod.");
+      }).open();
+    }).open();
+  }
+
+  /** Pick two location clusters (A absorbed into B) → persist the merge, re-render. */
+  async mergeLocationsFlow(): Promise<void> {
+    const { reports } = await this.readReports();
+    const s = analyzeSuspicion(reports, this.suspicionOpts());
+    const clusters = buildLocations(reports, s, this.settings.locationMerges);
+    if (clusters.length < 2) {
+      new Notice("ODEN: behöver minst två platser att slå ihop.");
+      return;
+    }
+    new PickLocationModal(this.app, clusters, this.settings.locationNicknames, (aKey) => {
+      const rest = clusters.filter((c) => c.key !== aKey);
+      new PickLocationModal(this.app, rest, this.settings.locationNicknames, async (bKey) => {
+        this.settings.locationMerges[aKey] = bKey;
+        await this.saveSettings();
+        await this.reconcileActorNodes();
+        await this.refreshPanel();
+        new Notice("ODEN: platser sammanslagna till en nod.");
+      }, "…in i vilken plats? (överlevande)").open();
+    }, "Välj plats att slå ihop (A)…").open();
+  }
+
+  /** Undo a single actor- or location-merge from a combined list. */
+  async unmergeFlow(): Promise<void> {
+    const items: { value: string; label: string }[] = [];
+    for (const [from, to] of Object.entries(this.settings.actorMerges)) {
+      const nm = (id: string) => this.settings.actorNames[id] ?? id;
+      items.push({ value: `aktor:${from}`, label: `Aktör: ${nm(from)} → ${nm(to)}` });
+    }
+    for (const [from, to] of Object.entries(this.settings.locationMerges)) {
+      const nm = (k: string) => placeLabel(k, this.settings.locationNicknames);
+      items.push({ value: `plats:${from}`, label: `Plats: ${nm(from)} → ${nm(to)}` });
+    }
+    if (!items.length) {
+      new Notice("ODEN: inga sammanslagningar att ångra.");
+      return;
+    }
+    new PickStringModal(this.app, items, "Välj sammanslagning att ångra…", async (value) => {
+      if (value.startsWith("aktor:")) delete this.settings.actorMerges[value.slice(6)];
+      else if (value.startsWith("plats:")) delete this.settings.locationMerges[value.slice(6)];
+      await this.saveSettings();
+      await this.reconcileActorNodes();
+      await this.revealActors();
+      await this.refreshPanel();
+      new Notice("ODEN: ångrade en sammanslagning.");
+    }).open();
   }
 
   async rejectActor(id: string): Promise<void> {
@@ -777,16 +977,121 @@ export default class SevenSPlugin extends Plugin {
    *  Called from baseline, the live watcher, suspicion, and the decision handlers
    *  so the two layers stay consistent no matter what triggered the recompute. */
   private async materializeAgents(reports: Report[], suspicion: SuspicionAnalysis): Promise<void> {
-    await this.writeOwnedNotes(this.confirmedActorNotesFrom(reports, suspicion), "aktor");
-    await this.writeSuspectNotes(reports, suspicion);
-    await this.writeLocationNotes(reports, suspicion);
+    // Build the location clusters ONCE so actors can link straight to the same
+    // location nodes (a direct actor↔plats edge, no message node in between).
+    const clusters = buildLocations(reports, suspicion, this.settings.locationMerges);
+    const locStemOf = this.locationLinker(clusters);
+    const confirmedActors = this.foldedConfirmedActors(reports, suspicion);
+
+    // Recurrence nodes: a vehicle or actor seen 2+ times at the same place gets a
+    // labelled node ON that pair (count as edge-weight is impossible in the core
+    // graph). The pair is ROUTED through it, so no redundant direct edge. Gated on
+    // the same toggle as the location/larm layer; an empty set still prunes stale.
+    const recs = this.settings.materializeAlerts
+      ? this.buildRecurrences(clusters, confirmedActors)
+      : { pairs: [] as RecurrencePair[], byVehicle: new Map<string, string>(), byActor: new Map<string, string>() };
+    const recForPlate = (placeKey: string, plate: string) =>
+      recs.byVehicle.get(`${safeFilename(plate).replace(/\.md$/, "")}@@${this.stemForKey(clusters, placeKey)}`);
+
+    await this.writeOwnedNotes(
+      this.confirmedActorNotesFrom(reports, suspicion, locStemOf, confirmedActors, recs),
+      "aktor",
+    );
+    await this.writeSuspectNotes(reports, suspicion, locStemOf);
+    await this.writeLocationNotes(clusters, recForPlate);
+    await this.writeOwnedNotes(
+      recs.pairs.map((p) => { const n = renderRecurrenceNote(p); return { name: n.filename, body: n.markdown }; }),
+      "aterkomst",
+    );
+  }
+
+  /** Confirmed actor hypotheses, after folding operator "same actor" merges. */
+  private foldedConfirmedActors(reports: Report[], suspicion: SuspicionAnalysis): ActorHypothesis[] {
+    const confirmed = this.mergedActors(reports, suspicion).hypotheses.filter(
+      (h) => this.settings.actorDecisions[h.id] === "confirmed",
+    );
+    return foldActorMerges(confirmed, this.settings.actorMerges);
+  }
+
+  /** The location-note stem for a canonical place key (or "" if it has no node). */
+  private stemForKey(clusters: LocationCluster[], key: string): string {
+    const c = clusters.find((x) => x.key === key);
+    return c ? locationFilename(c, this.settings.locationNicknames).replace(/\.md$/, "") : "";
+  }
+
+  /** Recurrence pairs (entity seen 2+ times at a place), plus lookup maps from an
+   *  `entityStem@@placeStem` key to the recurrence-note stem (for routing). */
+  private buildRecurrences(
+    clusters: LocationCluster[],
+    actors: ActorHypothesis[],
+  ): { pairs: RecurrencePair[]; byVehicle: Map<string, string>; byActor: Map<string, string> } {
+    const nicks = this.settings.locationNicknames;
+    const pairs: RecurrencePair[] = [];
+    const byVehicle = new Map<string, string>();
+    const byActor = new Map<string, string>();
+    const stemByKey = new Map<string, string>();
+    for (const c of clusters) stemByKey.set(c.key, locationFilename(c, nicks).replace(/\.md$/, ""));
+
+    const add = (p: RecurrencePair, into: Map<string, string>) => {
+      pairs.push(p);
+      into.set(p.key, recurrenceFilename(p).replace(/\.md$/, ""));
+    };
+
+    // Vehicles: count how many reports at each cluster carry a given plate.
+    for (const c of clusters) {
+      const placeStem = stemByKey.get(c.key)!;
+      const placeLbl = placeLabel(c.label, nicks);
+      const count = new Map<string, number>();
+      for (const o of c.reports) for (const p of o.plates) count.set(p, (count.get(p) ?? 0) + 1);
+      for (const [plate, n] of count) {
+        if (n < 2) continue;
+        const entityStem = safeFilename(plate).replace(/\.md$/, "");
+        add({ key: `${entityStem}@@${placeStem}`, entityKind: "fordon", entityStem, entityLabel: plate, placeStem, placeLabel: placeLbl, count: n }, byVehicle);
+      }
+    }
+
+    // Actors: count chain steps per place that has a location node.
+    for (const h of actors) {
+      const opName = this.settings.actorNames[h.id];
+      const entityStem = actorFilename(h, opName).replace(/\.md$/, "");
+      const entityLabel = opName ?? (h.facets.map((f) => f.label).join(" + ") || "aktör");
+      const count = new Map<string, number>();
+      for (const step of h.chain) {
+        const key = resolveLocationKey(step.plats, this.settings.locationMerges);
+        if (stemByKey.has(key)) count.set(key, (count.get(key) ?? 0) + 1);
+      }
+      for (const [placeKey, n] of count) {
+        if (n < 2) continue;
+        const placeStem = stemByKey.get(placeKey)!;
+        add({ key: `${entityStem}@@${placeStem}`, entityKind: "aktör", entityStem, entityLabel, placeStem, placeLabel: this.stemLabel(clusters, placeKey), count: n }, byActor);
+      }
+    }
+    return { pairs, byVehicle, byActor };
+  }
+
+  /** The display label for a place key (nickname-resolved). */
+  private stemLabel(clusters: LocationCluster[], key: string): string {
+    const c = clusters.find((x) => x.key === key);
+    return placeLabel(c ? c.label : key, this.settings.locationNicknames);
+  }
+
+  /** A resolver from a raw observation `plats` to the stem of its location note
+   *  (respecting operator merges), or undefined when that place has no node. */
+  private locationLinker(clusters: LocationCluster[]): (plats: string) => string | undefined {
+    const nicks = this.settings.locationNicknames;
+    const stemByKey = new Map<string, string>();
+    for (const c of clusters) stemByKey.set(c.key, locationFilename(c, nicks).replace(/\.md$/, ""));
+    return (plats: string) => stemByKey.get(resolveLocationKey(plats, this.settings.locationMerges));
   }
 
   /** One graph/map node per RELEVANT location (suspicious activity or a vehicle),
    *  linking the reports observed there so the place shows as a spatial hub. */
-  private async writeLocationNotes(reports: Report[], s: SuspicionAnalysis): Promise<void> {
+  private async writeLocationNotes(
+    clusters: LocationCluster[],
+    recForPlate?: (placeKey: string, plate: string) => string | undefined,
+  ): Promise<void> {
     if (!this.settings.materializeAlerts) return;
-    const notes = renderLocationNotes(buildLocations(reports, s), this.settings.locationNicknames).map((n) => ({ name: n.filename, body: n.markdown }));
+    const notes = renderLocationNotes(clusters, this.settings.locationNicknames, recForPlate).map((n) => ({ name: n.filename, body: n.markdown }));
     await this.writeOwnedNotes(notes, "plats");
   }
 
@@ -881,10 +1186,18 @@ export default class SevenSPlugin extends Plugin {
         items.push({ path: inFolder(markFilename(n)), kind: "kännetecken", time: ms(n.lastSeen), label: n.label });
       }
     }
-    for (const h of bundle.actors.hypotheses) {
-      if (this.settings.actorDecisions[h.id] === "confirmed") {
-        items.push({ path: inFolder(actorFilename(h)), kind: "aktör", time: ms(h.lastSeen), label: `${h.vehicleCount} fordon + ${h.markCount} kännetecken` });
-      }
+    const confirmedActors = foldActorMerges(
+      bundle.actors.hypotheses.filter((h) => this.settings.actorDecisions[h.id] === "confirmed"),
+      this.settings.actorMerges,
+    );
+    for (const h of confirmedActors) {
+      const opName = this.settings.actorNames[h.id];
+      items.push({
+        path: inFolder(actorFilename(h, opName)),
+        kind: "aktör",
+        time: ms(h.lastSeen),
+        label: opName ?? `${h.vehicleCount} fordon + ${h.markCount} kännetecken`,
+      });
     }
     // Alarms (link to the observation itself).
     for (const row of bundle.suspicion.elevated) {
@@ -955,6 +1268,10 @@ export default class SevenSPlugin extends Plugin {
     menu.addItem((i) => i.setTitle("Granska kopplingsförslag").setIcon("link").onClick(() => void this.runMarkNominations()));
     menu.addItem((i) => i.setTitle("Granska aktörsförslag").setIcon("git-fork").onClick(() => void this.runDeriveActors()));
     menu.addItem((i) => i.setTitle("Namnge plats…").setIcon("map-pin").onClick(() => void this.openLocationNamer()));
+    menu.addSeparator();
+    menu.addItem((i) => i.setTitle("Slå ihop aktörer…").setIcon("git-merge").onClick(() => void this.mergeActorsFlow()));
+    menu.addItem((i) => i.setTitle("Slå ihop platser…").setIcon("git-merge").onClick(() => void this.mergeLocationsFlow()));
+    menu.addItem((i) => i.setTitle("Ångra sammanslagning…").setIcon("undo-2").onClick(() => void this.unmergeFlow()));
     menu.addSeparator();
     menu.addItem((i) => i.setTitle("Nollställ kopplingsbeslut").setIcon("trash").onClick(() => void this.resetMarkDecisions()));
     menu.addItem((i) => i.setTitle("Nollställ aktörsbeslut").setIcon("trash-2").onClick(() => void this.resetActorDecisions()));
@@ -1036,12 +1353,16 @@ export default class SevenSPlugin extends Plugin {
    *  pruning removes agents that are no longer suspicious. Agents already CONFIRMED
    *  as actors are skipped — they live as a single blue actor node instead (no
    *  red marker twin), and the larm prune removes any stale marker. */
-  private async writeSuspectNotes(reports: Report[], s: SuspicionAnalysis): Promise<void> {
+  private async writeSuspectNotes(
+    reports: Report[],
+    s: SuspicionAnalysis,
+    locStemOf?: (plats: string) => string | undefined,
+  ): Promise<void> {
     if (!this.settings.materializeAlerts) return;
     const suspects = buildSuspects(reports, s).filter(
       (sp) => this.settings.actorDecisions[suspectHypId(sp.key)] !== "confirmed",
     );
-    const notes = renderSuspectNotes(suspects, this.settings.locationNicknames).map((n) => ({ name: n.filename, body: n.markdown }));
+    const notes = renderSuspectNotes(suspects, this.settings.locationNicknames, locStemOf).map((n) => ({ name: n.filename, body: n.markdown }));
     await this.writeOwnedNotes(notes, "larm");
   }
 
@@ -1063,14 +1384,25 @@ export default class SevenSPlugin extends Plugin {
   /** Render the FULL set of currently-confirmed actor notes from an analysis.
    *  Writing the whole set — rather than a single note — keeps the per-job prune
    *  correct: confirming/rejecting one actor never deletes the others. */
-  private confirmedActorNotesFrom(reports: Report[], suspicion: SuspicionAnalysis): { name: string; body: string }[] {
-    const hyps = this.mergedActors(reports, suspicion).hypotheses.filter(
-      (h) => this.settings.actorDecisions[h.id] === "confirmed",
-    );
-    return hyps.map((h) => {
-      // Single-observation suspects get titled by their agent (not "Aktör (…)").
-      const label = h.id.startsWith("suspect-") ? h.explanation : undefined;
-      const note = renderActorNote(h, label, this.settings.locationNicknames);
+  private confirmedActorNotesFrom(
+    reports: Report[],
+    suspicion: SuspicionAnalysis,
+    locStemOf?: (plats: string) => string | undefined,
+    folded?: ActorHypothesis[],
+    recs?: { byActor: Map<string, string> },
+  ): { name: string; body: string }[] {
+    const actors = folded ?? this.foldedConfirmedActors(reports, suspicion);
+    return actors.map((h) => {
+      const opName = this.settings.actorNames[h.id];
+      // Operator name wins; else a single-observation suspect is titled by its
+      // facet label (not the derived "(N fordon…)" default).
+      const label = opName ?? (h.id.startsWith("suspect-") ? h.facets[0]?.label : undefined);
+      // Route a place this actor recurs at through its recurrence node.
+      const entityStem = actorFilename(h, opName).replace(/\.md$/, "");
+      const recStemOf = recs
+        ? (plats: string) => recs.byActor.get(`${entityStem}@@${locStemOf?.(plats) ?? ""}`)
+        : undefined;
+      const note = renderActorNote(h, label, this.settings.locationNicknames, opName, locStemOf, recStemOf);
       return { name: note.filename, body: note.markdown };
     });
   }
@@ -1604,9 +1936,10 @@ class PickLocationModal extends FuzzySuggestModal<LocationCluster> {
     private locs: LocationCluster[],
     private nicks: Record<string, string>,
     private onPick: (grid: string) => void,
+    placeholder = "Välj plats att namnge…",
   ) {
     super(app);
-    this.setPlaceholder("Välj plats att namnge…");
+    this.setPlaceholder(placeholder);
   }
 
   getItems(): LocationCluster[] {
@@ -1621,6 +1954,135 @@ class PickLocationModal extends FuzzySuggestModal<LocationCluster> {
 
   onChooseItem(c: LocationCluster): void {
     this.onPick(c.key);
+  }
+}
+
+/** Free-text naming dialog for a confirmed actor (the graph node's label). */
+class NameActorModal extends Modal {
+  constructor(
+    app: App,
+    private suggested: string,
+    private onDone: (name: string | null) => void | Promise<void>,
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Namnge aktör" });
+    contentEl.createEl("p", {
+      text: "Ge aktören ett namn (visas som nodens etikett i grafen). Lämna tomt för att behålla det härledda namnet.",
+    }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
+    const input = contentEl.createEl("input", { type: "text" });
+    input.value = this.suggested;
+    input.placeholder = "t.ex. Spanare vid norra grinden";
+    input.style.cssText = "width:100%;margin:0 0 12px;";
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
+    const ok = btns.createEl("button", { text: "Bekräfta aktör", cls: "mod-cta" });
+    btns.createEl("button", { text: "Avbryt" }).onclick = () => {
+      this.close();
+      void this.onDone(null);
+    };
+    const done = () => {
+      this.close();
+      void this.onDone(input.value);
+    };
+    ok.onclick = done;
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") done();
+    });
+    window.setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 0);
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
+/** Fuzzy picker over actor hypotheses (used for the merge flow). */
+class PickActorModal extends FuzzySuggestModal<ActorHypothesis> {
+  constructor(
+    app: App,
+    private actors: ActorHypothesis[],
+    private names: Record<string, string>,
+    placeholder: string,
+    private onPick: (h: ActorHypothesis) => void,
+  ) {
+    super(app);
+    this.setPlaceholder(placeholder);
+  }
+
+  getItems(): ActorHypothesis[] {
+    return this.actors;
+  }
+
+  getItemText(h: ActorHypothesis): string {
+    const desc = h.facets.map((f) => f.label).join(" + ") || `${h.vehicleCount}f ${h.markCount}k`;
+    const nm = this.names[h.id];
+    return nm ? `${nm} — ${desc}` : desc;
+  }
+
+  onChooseItem(h: ActorHypothesis): void {
+    this.onPick(h);
+  }
+}
+
+/** Fuzzy picker over labelled string values (used for the undo-merge flow). */
+class PickStringModal extends FuzzySuggestModal<{ value: string; label: string }> {
+  constructor(
+    app: App,
+    private items: { value: string; label: string }[],
+    placeholder: string,
+    private onPick: (value: string) => void,
+  ) {
+    super(app);
+    this.setPlaceholder(placeholder);
+  }
+
+  getItems(): { value: string; label: string }[] {
+    return this.items;
+  }
+
+  getItemText(i: { value: string; label: string }): string {
+    return i.label;
+  }
+
+  onChooseItem(i: { value: string; label: string }): void {
+    this.onPick(i.value);
+  }
+}
+
+/** Generic confirm/cancel dialog for a destructive action. */
+class ConfirmModal extends Modal {
+  constructor(
+    app: App,
+    private opts: { title: string; body: string; confirmText?: string; cancelText?: string },
+    private onConfirm: () => void | Promise<void>,
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: this.opts.title });
+    contentEl.createEl("p", { text: this.opts.body }).style.cssText = "opacity:.85;margin:0 0 12px;";
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
+    const ok = btns.createEl("button", { text: this.opts.confirmText ?? "Fortsätt", cls: "mod-warning" });
+    btns.createEl("button", { text: this.opts.cancelText ?? "Avbryt" }).onclick = () => this.close();
+    ok.onclick = () => {
+      this.close();
+      void this.onConfirm();
+    };
+    window.setTimeout(() => ok.focus(), 0);
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
   }
 }
 
