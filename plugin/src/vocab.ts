@@ -12,10 +12,38 @@
  *   tell_logo -> fordon-dekal  (vehicle rear-window decal/logo)
  */
 
-export type ObjectCategory = "ryggsack" | "huvudbonad" | "fordon-dekal";
+export type ObjectCategory =
+  | "ryggsack"
+  | "huvudbonad"
+  | "fordon-dekal"
+  | "optik"
+  | "verktyg"
+  | "teknik";
 
 /** Attribute axes a mark can carry. */
-export type AttrDim = "farg" | "marking" | "synlighet" | "position" | "text";
+export type AttrDim = "farg" | "marking" | "synlighet" | "position" | "text" | "typ" | "item";
+
+/*
+ * ── The one distinctiveness principle (frozen boundary) ──────────────────────
+ * A descriptor is a usable RE-ID key by BASE RATE + SPECIFICITY, not by "military
+ * vs civilian". Two modes, applied consistently:
+ *
+ *   COMMON carriables (ryggsack, huvudbonad, fordon-dekal, optik) — everyone can
+ *   have one, so they are a re-id key ONLY with a distinguishing ATTRIBUTE. A plain
+ *   backpack / plain `kikare` is filtered; "dark backpack WITH an emblem" or "camera
+ *   WITH teleobjektiv" is the tell. (This is why the original three merged distinct
+ *   people in the OOD test — the shared base-rate weakness; the attribute is all
+ *   that saves them.)
+ *
+ *   RARE items (verktyg, teknik) — base rate ≈ 0 in benign traffic, so PRESENCE of
+ *   a specific item is a fair key on its own.
+ *
+ * This seed is FROZEN at these six families by design. Broader coverage is an
+ * open-vocabulary (LLM) problem — Phase B — NOT more list: a comprehensive
+ * deterministic vocab cannot converge (it spirals and breaks precision either way).
+ * Optics also raise the SUSPICION score independently (suspicion.ts
+ * THREAT_INDICATORS.optik); this layer only decides whether they LINK sightings.
+ */
 
 /** Surface object word (lowercase) -> canonical category.
  *  NB: fordon-dekal is NOT keyed here; it is detected structurally in marks.ts
@@ -27,6 +55,50 @@ export const OBJECT_SYNONYMS: Record<string, ObjectCategory> = {
   keps: "huvudbonad",
   mössa: "huvudbonad",
   huvudbonad: "huvudbonad",
+  // Optics (COMMON → the mark opens on any optics word, but stays non-distinctive
+  // without a specific sub-type in OPTIC_TYPES — so a birdwatcher's plain `kikare`
+  // or a tourist's plain `kamera` is filtered).
+  kikare: "optik",
+  kamera: "optik",
+  optik: "optik",
+  "långt objektiv": "optik",
+  teleobjektiv: "optik",
+  nattkikare: "optik",
+  mörkerkikare: "optik",
+  värmekamera: "optik",
+  drönar: "optik",
+};
+
+/** Distinctive optic SUB-TYPE surface form -> canonical `typ` (the identity dim for
+ *  `optik`). Only specialised, recon-leaning optics are here; plain binoculars /
+ *  cameras deliberately are NOT, so casual civilian optics never become a tell. */
+export const OPTIC_TYPES: Record<string, string> = {
+  teleobjektiv: "teleobjektiv",
+  "långt objektiv": "teleobjektiv",
+  nattkikare: "nattkikare",
+  mörkerkikare: "nattkikare",
+  värmekamera: "värmekamera",
+  drönar: "drönare",
+};
+
+/** RARE items — presence of the canonical item is itself the signature (no attribute
+ *  needed), because base rate ≈ 0 in benign traffic. Surface word -> {category,item}.
+ *  Concrete nouns only (no verb-colliding stems like bare "pejl"/"dyrk"). */
+export const ITEM_WORDS: Record<string, { category: ObjectCategory; item: string }> = {
+  // verktyg — breaching / tampering tools
+  bultsax: { category: "verktyg", item: "bultsax" },
+  avbitartång: { category: "verktyg", item: "bultsax" },
+  kofot: { category: "verktyg", item: "kofot" },
+  bräckjärn: { category: "verktyg", item: "kofot" },
+  kobräck: { category: "verktyg", item: "kofot" },
+  bågfil: { category: "verktyg", item: "bågfil" },
+  brytverktyg: { category: "verktyg", item: "brytverktyg" },
+  // teknik — signals / technical gear
+  antenn: { category: "teknik", item: "antenn" },
+  riktantenn: { category: "teknik", item: "antenn" },
+  störsändare: { category: "teknik", item: "sändare" },
+  sändare: { category: "teknik", item: "sändare" },
+  pejlutrustning: { category: "teknik", item: "pejl" },
 };
 
 /** Marking nouns — any present sets the `marking` dimension. Also the trigger
@@ -143,6 +215,11 @@ export const SIGNATURE_DIMS: Record<ObjectCategory, AttrDim[]> = {
   ryggsack: ["farg", "marking"],
   huvudbonad: ["farg", "marking"],
   "fordon-dekal": ["position", "marking"],
+  // COMMON → needs a distinguishing sub-type; plain optics stay non-distinctive.
+  optik: ["typ"],
+  // RARE → the specific item IS the identity (finer than family → no coarse merge).
+  verktyg: ["item"],
+  teknik: ["item"],
 };
 
 /** GT tell id -> object category (for scoring against ground_truth.json). */

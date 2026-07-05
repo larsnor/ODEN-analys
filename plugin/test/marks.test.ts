@@ -120,3 +120,76 @@ test("extraction is idempotent", () => {
   const r = mkReport("bar en mörk ryggsäck med ett delvis synligt märke");
   assert.deepEqual(extractMarks(r), extractMarks(r));
 });
+
+// ── Bounded expansion (§ base-rate/specificity): optik / verktyg / teknik ──────
+// COMMON optics are re-id keys ONLY with a distinctive sub-type; RARE tools/tech
+// key on presence. Held-out phrasings (NOT copied from the generator's marks).
+
+const OPTIK_DISTINCTIVE: Array<[string, string]> = [
+  ["mörk hoodie, kamera med kraftigt teleobjektiv", "teleobjektiv"],
+  ["fotograferade med systemkamera och långt objektiv", "teleobjektiv"],
+  ["grön jacka, nattkikare i handen", "nattkikare"],
+  ["höll en mörkerkikare mot infarten", "nattkikare"],
+  ["svart täckjacka, värmekamera mot staketet", "värmekamera"],
+  ["flög en drönare över området", "drönare"],
+];
+const VERKTYG_DISTINCTIVE: Array<[string, string]> = [
+  ["mörkblå arbetskläder, bultsax under jackan", "bultsax"],
+  ["hade en avbitartång i handen", "bultsax"],
+  ["svarta kläder, bräckjärn under armen", "kofot"],
+  ["bar en kofot mot grinden", "kofot"],
+  ["sågade med en bågfil vid staketet", "bågfil"],
+];
+const TEKNIK_DISTINCTIVE: Array<[string, string]> = [
+  ["mörk jacka, riktantenn mot objektet", "antenn"],
+  ["reste en antenn vid vägkanten", "antenn"],
+  ["bar en störsändare i väskan", "sändare"],
+  ["hade pejlutrustning framme", "pejl"],
+];
+
+// The signature of the first DISTINCTIVE mark of a given family (or "" if none).
+const distinctiveSig = (txt: string, obj: string) =>
+  extractMarks(mkReport(txt)).find((x) => x.object === obj && x.distinctive)?.signature ?? "";
+
+test("optik is distinctive ONLY with a recon-leaning sub-type (birdwatcher-safe)", () => {
+  for (const [txt, typ] of OPTIK_DISTINCTIVE) {
+    assert.equal(distinctiveSig(txt, "optik"), `optik#typ:${typ}`, `expected distinctive optik in: ${txt}`);
+  }
+  // plain optics = COMMON without a sub-type → never distinctive
+  for (const txt of ["regnjacka, kikare runt halsen", "ljus tröja, kamera på magen", "hade en handkikare"]) {
+    const m = extractMarks(mkReport(txt)).filter((x) => x.distinctive);
+    assert.equal(m.length, 0, `plain optics must NOT be distinctive: ${txt}`);
+  }
+});
+
+test("verktyg / teknik are distinctive on the specific item (fine signature, no merge)", () => {
+  for (const [txt, item] of VERKTYG_DISTINCTIVE) {
+    assert.equal(distinctiveSig(txt, "verktyg"), `verktyg#item:${item}`, `expected distinctive verktyg in: ${txt}`);
+  }
+  for (const [txt, item] of TEKNIK_DISTINCTIVE) {
+    assert.equal(distinctiveSig(txt, "teknik"), `teknik#item:${item}`, `expected distinctive teknik in: ${txt}`);
+  }
+  // a bolt-cutter person and a crowbar person get DIFFERENT signatures (no merge)
+  assert.notEqual(distinctiveSig("bultsax", "verktyg"), distinctiveSig("kofot", "verktyg"));
+});
+
+test("varied phrasings of one sub-type/item collapse to ONE signature (recall)", () => {
+  const sigs = (arr: Array<[string, string]>, obj: string, key: string) =>
+    new Set(arr.filter(([, k]) => k === key).map(([t]) => distinctiveSig(t, obj)));
+  assert.deepEqual([...sigs(OPTIK_DISTINCTIVE, "optik", "teleobjektiv")], ["optik#typ:teleobjektiv"]);
+  assert.deepEqual([...sigs(TEKNIK_DISTINCTIVE, "teknik", "antenn")], ["teknik#item:antenn"]);
+});
+
+test("benign near-misses do NOT fire the new families (precision guard)", () => {
+  const benign = [
+    "blå arbetsjacka, verktygsväska",          // tool BAG, not a breaching tool
+    "elektriker bytte en säkring i elskåpet",  // routine work, no tool noun
+    "tog en bild med mobilen",                 // phone snapshot, not distinctive optics
+    "bar en vanlig ryggsäck",                  // plain bag
+    "objektiv bedömning av läget",             // 'objektiv' as an adjective, not optics
+  ];
+  for (const txt of benign) {
+    const d = extractMarks(mkReport(txt)).filter((m) => m.distinctive);
+    assert.equal(d.length, 0, `benign phrasing falsely fired: ${txt} → ${d.map((m) => m.signature)}`);
+  }
+});

@@ -17,10 +17,12 @@ import {
   COLOUR_SYNONYMS,
   COREF_CUES,
   EXCLUSIONS,
+  ITEM_WORDS,
   MARKING_WORDS,
   NEGATION_CUES,
   ObjectCategory,
   OBJECT_SYNONYMS,
+  OPTIC_TYPES,
   POSITION_SYNONYMS,
   SIGNATURE_DIMS,
   VISIBILITY_WORDS,
@@ -115,6 +117,14 @@ function positionIn(lower: string): string | null {
   return null;
 }
 
+/** A RARE-item word (verktyg/teknik) in a clause → its {category,item}, else null. */
+function itemWordIn(lower: string): { category: ObjectCategory; item: string } | null {
+  for (const word of Object.keys(ITEM_WORDS)) {
+    if (lower.includes(word)) return ITEM_WORDS[word];
+  }
+  return null;
+}
+
 /** Collect canonical attribute values present in a clause. */
 function attrsIn(lower: string): Array<[AttrDim, string]> {
   const out: Array<[AttrDim, string]> = [];
@@ -124,6 +134,11 @@ function attrsIn(lower: string): Array<[AttrDim, string]> {
   }
   // marking presence (canonical value "ja")
   if (hasMarkingWord(lower)) out.push(["marking", "ja"]);
+  // distinctive optic sub-type (the identity dim for `optik`; plain kikare/kamera
+  // has none → non-distinctive)
+  for (const word of Object.keys(OPTIC_TYPES)) {
+    if (lower.includes(word)) out.push(["typ", OPTIC_TYPES[word]]);
+  }
   // visibility (multi-word forms first; any hit -> otydlig)
   if (VISIBILITY_WORDS.some((w) => lower.includes(w))) out.push(["synlighet", "otydlig"]);
   // position (rear window)
@@ -205,7 +220,17 @@ export function extractMarks(report: Report): NormalizedMark[] {
   for (const clause of clauses) {
     const lower = clause.lower;
 
-    // 1. Object clause (backpack/headwear) takes precedence.
+    // 1. Rare item (verktyg/teknik) takes precedence — a breaching tool / signals
+    //    gear is more salient than an incidental bag ("störsändare i väskan").
+    const item = itemWordIn(lower);
+    if (item) {
+      closeOpen();
+      open = { object: item.category, attrs: new Map(), rawClauses: [clause.text], negated: isNegation(lower) };
+      addAttrs(open, [["item", item.item]]);
+      continue;
+    }
+
+    // 2. Object clause (backpack/headwear/optics).
     const obj = objectWordIn(lower);
     if (obj) {
       closeOpen();
@@ -214,7 +239,7 @@ export function extractMarks(report: Report): NormalizedMark[] {
       continue;
     }
 
-    // 2. Vehicle decal: a marking noun + a rear-window position word.
+    // 3. Vehicle decal: a marking noun + a rear-window position word.
     if (hasMarkingWord(lower) && positionIn(lower)) {
       closeOpen();
       open = { object: "fordon-dekal", attrs: new Map(), rawClauses: [clause.text], negated: isNegation(lower) };
@@ -222,14 +247,14 @@ export function extractMarks(report: Report): NormalizedMark[] {
       continue;
     }
 
-    // 3. Trailing detail attaches to the open object mark.
+    // 4. Trailing detail attaches to the open object mark.
     if (open && isDetailClause(lower)) {
       open.rawClauses.push(clause.text);
       addAttrs(open, attrsIn(lower));
       continue;
     }
 
-    // 4. Anything else (exclusion / generic / negation) closes the open mark.
+    // 5. Anything else (exclusion / generic / negation) closes the open mark.
     closeOpen();
   }
   closeOpen();
@@ -273,12 +298,17 @@ export function markLabel(object: ObjectCategory, attrs: NormAttr[]): string {
     ryggsack: "ryggsäck",
     huvudbonad: "keps/mössa",
     "fordon-dekal": "fordonsdekal",
+    optik: "optik",
+    verktyg: "verktyg",
+    teknik: "teknik",
   };
   const farg = attrs.filter((a) => a.dim === "farg").map((a) => a.value).join("/");
   const extras: string[] = [];
   if (attrs.some((a) => a.dim === "marking")) extras.push("märke");
   if (attrs.some((a) => a.dim === "synlighet")) extras.push("otydligt");
   if (attrs.some((a) => a.dim === "position")) extras.push("bak");
+  // The specific sub-type / item IS the identity for optik/verktyg/teknik.
+  for (const a of attrs) if (a.dim === "typ" || a.dim === "item") extras.push(a.value);
   const text = attrs.filter((a) => a.dim === "text").map((a) => a.value);
   if (text.length) extras.push(text.join("/"));
   const head = [farg, noun[object]].filter(Boolean).join(" ");

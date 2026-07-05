@@ -1,0 +1,2167 @@
+[
+ {
+  "file": "TNR010653.md",
+  "id": "7S-7e75fe68-523b-402d-8e98-8aa9f99ebee7",
+  "tnr": "010653",
+  "tidpunkt": "2026-09-01T06:51:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H12",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR010653_2.md",
+  "id": "7S-fe28fcf7-c796-4002-bd14-915556fcc101",
+  "tnr": "010653_2",
+  "tidpunkt": "2026-09-01T06:51:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H24",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR010904.md",
+  "id": "7S-b8b1a0a3-29f1-480b-ae6b-48bcd56d67db",
+  "tnr": "010904",
+  "tidpunkt": "2026-09-01T09:02:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR010944.md",
+  "id": "7S-878d0fc8-ab5e-4e55-9acd-c447aac0e2e2",
+  "tnr": "010944",
+  "tidpunkt": "2026-09-01T09:43:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H9",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR011117.md",
+  "id": "7S-6f91b225-8407-4fbd-abff-88004c3ba77e",
+  "tnr": "011117",
+  "tidpunkt": "2026-09-01T11:17:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR011125.md",
+  "id": "7S-bb5bfbf2-c480-49db-b0c2-8e8fd7d72d6f",
+  "tnr": "011125",
+  "tidpunkt": "2026-09-01T11:24:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR011225.md",
+  "id": "7S-19b0c2f0-05c4-486f-8200-281f561bfb20",
+  "tnr": "011225",
+  "tidpunkt": "2026-09-01T12:23:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR011304.md",
+  "id": "7S-a56386e7-e427-42f0-9536-5cf796fd2bf9",
+  "tnr": "011304",
+  "tidpunkt": "2026-09-01T13:02:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR011551.md",
+  "id": "7S-e029e520-cf57-4aab-92ef-d8b776ba9183",
+  "tnr": "011551",
+  "tidpunkt": "2026-09-01T15:48:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR011639.md",
+  "id": "7S-34df22df-1e71-4a6c-a5d8-cd8c3c4c5d30",
+  "tnr": "011639",
+  "tidpunkt": "2026-09-01T16:37:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR011700.md",
+  "id": "7S-ae898af4-2c22-447b-bded-0e8da533190b",
+  "tnr": "011700",
+  "tidpunkt": "2026-09-01T16:57:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR012222.md",
+  "id": "7S-d6dbecc7-2144-4e90-a8fe-fffe45807060",
+  "tnr": "012222",
+  "tidpunkt": "2026-09-01T22:21:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H21",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR020045.md",
+  "id": "7S-68908021-6d1b-4f00-b15c-d212474a57a5",
+  "tnr": "020045",
+  "tidpunkt": "2026-09-02T00:42:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H2",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR020115.md",
+  "id": "7S-838e08cb-73b5-479a-b976-a151ef712a94",
+  "tnr": "020115",
+  "tidpunkt": "2026-09-02T01:14:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H5",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR020548.md",
+  "id": "7S-dcc8ad6b-c9d0-404f-a41a-da4b0b6f8439",
+  "tnr": "020548",
+  "tidpunkt": "2026-09-02T05:46:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H8",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR020708.md",
+  "id": "7S-50825d4a-d951-4393-a855-755dd5d52b62",
+  "tnr": "020708",
+  "tidpunkt": "2026-09-02T07:07:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR020856.md",
+  "id": "7S-c843f16f-b437-4875-a675-7d308008c173",
+  "tnr": "020856",
+  "tidpunkt": "2026-09-02T08:55:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR021153.md",
+  "id": "7S-84b90c40-d859-437f-a4fd-7aa1a1cab197",
+  "tnr": "021153",
+  "tidpunkt": "2026-09-02T11:52:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR021244.md",
+  "id": "7S-75cc8ada-5373-4202-bebd-0d167ef3aa26",
+  "tnr": "021244",
+  "tidpunkt": "2026-09-02T12:43:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR021317.md",
+  "id": "7S-c91b0008-7271-4538-8850-691d6890d72e",
+  "tnr": "021317",
+  "tidpunkt": "2026-09-02T13:14:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR021433.md",
+  "id": "7S-9c8b877b-71f6-4724-abe3-293c68fd3ce9",
+  "tnr": "021433",
+  "tidpunkt": "2026-09-02T14:31:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR021504.md",
+  "id": "7S-adeb8b92-344c-4131-84b6-a55d4287b513",
+  "tnr": "021504",
+  "tidpunkt": "2026-09-02T15:02:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR021725.md",
+  "id": "7S-5d2e2bcb-31a5-4b67-a1cd-1fc5de54a8a2",
+  "tnr": "021725",
+  "tidpunkt": "2026-09-02T17:22:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H13",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR021741.md",
+  "id": "7S-2da736c9-ab1b-42ef-981e-e9a5349009f8",
+  "tnr": "021741",
+  "tidpunkt": "2026-09-02T17:38:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR022146.md",
+  "id": "7S-d557e3ff-a3e6-4504-8caf-cbe50a1fe7f1",
+  "tnr": "022146",
+  "tidpunkt": "2026-09-02T21:44:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H24",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR022206.md",
+  "id": "7S-e73c63b3-96d2-4d59-a5e0-a4f69447515b",
+  "tnr": "022206",
+  "tidpunkt": "2026-09-02T22:04:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H18",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR022237.md",
+  "id": "7S-3969c07f-21df-485b-b579-1a6fc4c591f1",
+  "tnr": "022237",
+  "tidpunkt": "2026-09-02T22:34:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H15",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR022300.md",
+  "id": "7S-7f97d08e-11d4-45ab-bdad-3f77eb0bc515",
+  "tnr": "022300",
+  "tidpunkt": "2026-09-02T22:59:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H17",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR030452.md",
+  "id": "7S-a734dcc7-8e71-4225-8fdc-e773a4eb6cae",
+  "tnr": "030452",
+  "tidpunkt": "2026-09-03T04:51:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H1",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR030929.md",
+  "id": "7S-3c42962a-0fbc-4be0-acc2-22ce2ede3436",
+  "tnr": "030929",
+  "tidpunkt": "2026-09-03T09:27:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR030959.md",
+  "id": "7S-7dbadd0d-fca6-4dd1-a373-2fa2c54f1f6e",
+  "tnr": "030959",
+  "tidpunkt": "2026-09-03T09:57:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H21",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR031005.md",
+  "id": "7S-6887d5e7-45f3-4b0d-af92-6d7adca4271c",
+  "tnr": "031005",
+  "tidpunkt": "2026-09-03T10:04:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR031047.md",
+  "id": "7S-a3d6e0de-6e81-4bec-a1a3-f0773e1f68f7",
+  "tnr": "031047",
+  "tidpunkt": "2026-09-03T10:44:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR031100.md",
+  "id": "7S-0609b310-7308-4120-8d78-9952d28a304f",
+  "tnr": "031100",
+  "tidpunkt": "2026-09-03T10:57:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR031109.md",
+  "id": "7S-4942bbf7-8f46-4aec-a987-46efb1ff0e0f",
+  "tnr": "031109",
+  "tidpunkt": "2026-09-03T11:07:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR031130.md",
+  "id": "7S-eebf394e-12f6-4a9b-91a8-db7fb730ed18",
+  "tnr": "031130",
+  "tidpunkt": "2026-09-03T11:28:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR031146.md",
+  "id": "7S-27999d8d-a563-4567-9682-dd8e175c3a41",
+  "tnr": "031146",
+  "tidpunkt": "2026-09-03T11:44:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR031159.md",
+  "id": "7S-eaf8edcf-a7fc-4563-a8a6-8f707c5153d0",
+  "tnr": "031159",
+  "tidpunkt": "2026-09-03T11:59:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR031221.md",
+  "id": "7S-f8149f29-a681-42dd-91cc-f529bab1c8ab",
+  "tnr": "031221",
+  "tidpunkt": "2026-09-03T12:19:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR031457.md",
+  "id": "7S-7f748bf7-a619-4746-a98d-eecdc9cbd203",
+  "tnr": "031457",
+  "tidpunkt": "2026-09-03T14:55:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR031559.md",
+  "id": "7S-ebe33523-cf65-4bb9-8350-e7fe6b3b7c69",
+  "tnr": "031559",
+  "tidpunkt": "2026-09-03T15:58:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR031816.md",
+  "id": "7S-e5d758b6-ee55-4bdc-975e-baa779a95c3f",
+  "tnr": "031816",
+  "tidpunkt": "2026-09-03T18:14:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H10",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR031817.md",
+  "id": "7S-05b79b9b-a54c-4d38-820a-fd35b0efc24b",
+  "tnr": "031817",
+  "tidpunkt": "2026-09-03T18:16:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H5",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR032142.md",
+  "id": "7S-00e387c4-c854-4209-89d7-59a1d7444f53",
+  "tnr": "032142",
+  "tidpunkt": "2026-09-03T21:42:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H9",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR032215.md",
+  "id": "7S-f07ddea2-61c4-43d1-98af-fc134d443792",
+  "tnr": "032215",
+  "tidpunkt": "2026-09-03T22:14:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H6",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR032346.md",
+  "id": "7S-818407a2-f77f-4044-a5db-568429d4d3fc",
+  "tnr": "032346",
+  "tidpunkt": "2026-09-03T23:43:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H9",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR040514.md",
+  "id": "7S-d3e7568c-e167-4ffc-a049-16f5627ad33c",
+  "tnr": "040514",
+  "tidpunkt": "2026-09-04T05:11:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H23",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR040632.md",
+  "id": "7S-2c3d1ea2-d131-4a6d-9dcb-814d98776fbf",
+  "tnr": "040632",
+  "tidpunkt": "2026-09-04T06:31:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H11",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR040648.md",
+  "id": "7S-66e8f607-b79d-4f3f-81e2-af9cef9422a6",
+  "tnr": "040648",
+  "tidpunkt": "2026-09-04T06:46:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H4",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR040658.md",
+  "id": "7S-0d2bbf0b-bbe0-4938-ac04-8b1ee8134e4a",
+  "tnr": "040658",
+  "tidpunkt": "2026-09-04T06:57:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H22",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR041055.md",
+  "id": "7S-af2400bd-161c-477e-9443-cb6419b4d68d",
+  "tnr": "041055",
+  "tidpunkt": "2026-09-04T10:54:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR041147.md",
+  "id": "7S-5020a63b-8c82-440d-af70-5b967b26f003",
+  "tnr": "041147",
+  "tidpunkt": "2026-09-04T11:44:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H8",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR041259.md",
+  "id": "7S-d72b2bfb-d7da-4e84-b735-1485da20dd5c",
+  "tnr": "041259",
+  "tidpunkt": "2026-09-04T12:58:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR041310.md",
+  "id": "7S-3017d0eb-42f9-4c56-9618-8707013787aa",
+  "tnr": "041310",
+  "tidpunkt": "2026-09-04T13:09:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": "FLW13U",
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR041325.md",
+  "id": "7S-3eec2215-2323-4df1-92e8-d8fbc206b9df",
+  "tnr": "041325",
+  "tidpunkt": "2026-09-04T13:24:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR041332.md",
+  "id": "7S-b1bed0c3-3f25-4fab-85d0-d322fd7f51ff",
+  "tnr": "041332",
+  "tidpunkt": "2026-09-04T13:29:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR041343.md",
+  "id": "7S-40fcfcac-4cd4-4431-a121-70b93ea494f2",
+  "tnr": "041343",
+  "tidpunkt": "2026-09-04T13:42:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H22",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR041519.md",
+  "id": "7S-4f4a2605-5fe0-44dd-997d-770ac63454da",
+  "tnr": "041519",
+  "tidpunkt": "2026-09-04T15:19:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H23",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR041540.md",
+  "id": "7S-7d299cea-b047-4b86-b806-69bd8f980c9d",
+  "tnr": "041540",
+  "tidpunkt": "2026-09-04T15:38:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR041712.md",
+  "id": "7S-a9ff1b5f-1699-474b-a62c-0c9801a61848",
+  "tnr": "041712",
+  "tidpunkt": "2026-09-04T17:10:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H3",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR041731.md",
+  "id": "7S-f850fed3-6b18-4956-b09f-955887923a49",
+  "tnr": "041731",
+  "tidpunkt": "2026-09-04T17:28:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR042126.md",
+  "id": "7S-64af5f9b-2cb4-4ba3-aa52-b52b8a6553df",
+  "tnr": "042126",
+  "tidpunkt": "2026-09-04T21:24:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H6",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR042145.md",
+  "id": "7S-152fd2ca-861d-45ca-9b0a-5f8d12a86bfa",
+  "tnr": "042145",
+  "tidpunkt": "2026-09-04T21:45:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H4",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR050919.md",
+  "id": "7S-99659af9-b08c-4fd2-a698-1b7f7f73a783",
+  "tnr": "050919",
+  "tidpunkt": "2026-09-05T09:19:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR051054.md",
+  "id": "7S-af6aab3f-af71-4f03-8a92-25d831f3da51",
+  "tnr": "051054",
+  "tidpunkt": "2026-09-05T10:53:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H1",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR051113.md",
+  "id": "7S-9792df4b-4325-48f3-ac2f-6eb34db0a266",
+  "tnr": "051113",
+  "tidpunkt": "2026-09-05T11:12:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR051130.md",
+  "id": "7S-20b00245-7c96-48dd-8436-bacd611013b6",
+  "tnr": "051130",
+  "tidpunkt": "2026-09-05T11:28:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR051140.md",
+  "id": "7S-546f6963-4abc-4e78-a9aa-f4e588088a4e",
+  "tnr": "051140",
+  "tidpunkt": "2026-09-05T11:38:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR051220.md",
+  "id": "7S-db90ce2e-6e86-42d2-a25c-05b1ebcfc022",
+  "tnr": "051220",
+  "tidpunkt": "2026-09-05T12:17:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H2",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR051246.md",
+  "id": "7S-cf013969-9591-4968-a4ee-bc9fa9c20137",
+  "tnr": "051246",
+  "tidpunkt": "2026-09-05T12:45:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H18",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR910001.md",
+  "id": "7S-dec0dec0-0000-4000-8000-0000000910001",
+  "tnr": "910001",
+  "tidpunkt": "2026-09-05T14:30:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": null,
+  "callsign": "EQ",
+  "note": "Fågelskådare (plain binoculars)"
+ },
+ {
+  "file": "TNR910002.md",
+  "id": "7S-dec0dec0-0000-4000-8000-0000000910002",
+  "tnr": "910002",
+  "tidpunkt": "2026-09-05T14:30:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": null,
+  "callsign": "EQ",
+  "note": "Turist (plain camera)"
+ },
+ {
+  "file": "TNR910003.md",
+  "id": "7S-dec0dec0-0000-4000-8000-0000000910003",
+  "tnr": "910003",
+  "tidpunkt": "2026-09-05T14:30:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": null,
+  "callsign": "EQ",
+  "note": "Hantverkare (tool bag)"
+ },
+ {
+  "file": "TNR910004.md",
+  "id": "7S-dec0dec0-0000-4000-8000-0000000910004",
+  "tnr": "910004",
+  "tidpunkt": "2026-09-05T14:30:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": null,
+  "callsign": "EQ",
+  "note": "Elektriker (routine work)"
+ },
+ {
+  "file": "TNR910005.md",
+  "id": "7S-dec0dec0-0000-4000-8000-0000000910005",
+  "tnr": "910005",
+  "tidpunkt": "2026-09-05T14:30:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": null,
+  "callsign": "EQ",
+  "note": "Motionär (phone)"
+ },
+ {
+  "file": "TNR052050.md",
+  "id": "7S-9a391744-3712-487a-b72f-a6cd8eb99868",
+  "tnr": "052050",
+  "tidpunkt": "2026-09-05T20:47:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H16",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR052207.md",
+  "id": "7S-299274e0-f9fa-44dc-a18d-be93f982e08d",
+  "tnr": "052207",
+  "tidpunkt": "2026-09-05T22:06:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H13",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR060159.md",
+  "id": "7S-4e6eaf2b-2ad4-4c59-b991-02e79fbc017e",
+  "tnr": "060159",
+  "tidpunkt": "2026-09-06T01:59:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H9",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR060433.md",
+  "id": "7S-3132d6b3-577d-4852-a6c2-706afec16fbb",
+  "tnr": "060433",
+  "tidpunkt": "2026-09-06T04:33:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H21",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR060441.md",
+  "id": "7S-adbd2622-c05c-438b-8beb-6a42262fccef",
+  "tnr": "060441",
+  "tidpunkt": "2026-09-06T04:38:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H7",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR060557.md",
+  "id": "7S-90451307-6f52-4490-897b-2c318dbb3ac2",
+  "tnr": "060557",
+  "tidpunkt": "2026-09-06T05:54:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H17",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR061211.md",
+  "id": "7S-54ec436c-860a-42a2-bd4e-74933eccd13a",
+  "tnr": "061211",
+  "tidpunkt": "2026-09-06T12:10:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": "GHF90W",
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR061211_2.md",
+  "id": "7S-0fa64627-6df7-4b2d-8608-99c385211dd3",
+  "tnr": "061211_2",
+  "tidpunkt": "2026-09-06T12:11:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR061218.md",
+  "id": "7S-271874bb-488a-4534-92fc-bdf3f0e2a946",
+  "tnr": "061218",
+  "tidpunkt": "2026-09-06T12:17:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR061227.md",
+  "id": "7S-964f87ad-4294-48cf-a1b6-cce4054d6660",
+  "tnr": "061227",
+  "tidpunkt": "2026-09-06T12:25:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR061247.md",
+  "id": "7S-01c2e1ad-38ed-4cc8-be6a-14a2c80d5790",
+  "tnr": "061247",
+  "tidpunkt": "2026-09-06T12:45:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR061316.md",
+  "id": "7S-1abc4d45-7dfb-4c01-8b4f-e0cd9b020639",
+  "tnr": "061316",
+  "tidpunkt": "2026-09-06T13:13:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR061620.md",
+  "id": "7S-bb36bb87-7dff-451c-a276-0d5b55c9367a",
+  "tnr": "061620",
+  "tidpunkt": "2026-09-06T16:17:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR061756.md",
+  "id": "7S-3038c080-0578-40b4-aad6-d9c96b5440ea",
+  "tnr": "061756",
+  "tidpunkt": "2026-09-06T17:54:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR062147.md",
+  "id": "7S-1003e809-4137-4a1c-b35e-3b31281c93b1",
+  "tnr": "062147",
+  "tidpunkt": "2026-09-06T21:47:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H16",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR062152.md",
+  "id": "7S-e3eee9a0-b699-43f8-ae97-c517d3d3682a",
+  "tnr": "062152",
+  "tidpunkt": "2026-09-06T21:49:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H6",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR062259.md",
+  "id": "7S-a0b573a1-58e7-4907-a373-9af38190c58d",
+  "tnr": "062259",
+  "tidpunkt": "2026-09-06T22:58:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H15",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR070510.md",
+  "id": "7S-b3e1be90-6572-4cea-a4cd-a18ce9c49c4d",
+  "tnr": "070510",
+  "tidpunkt": "2026-09-07T05:09:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H22",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR070703.md",
+  "id": "7S-a1a16a28-ff68-48bf-b495-43dece8d7ba3",
+  "tnr": "070703",
+  "tidpunkt": "2026-09-07T07:03:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H15",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR070724.md",
+  "id": "7S-3973b85b-4ba7-46bd-9e5f-fb8a04328747",
+  "tnr": "070724",
+  "tidpunkt": "2026-09-07T07:21:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR070930.md",
+  "id": "7S-653a825e-fc28-42ca-acac-8bdc8be62867",
+  "tnr": "070930",
+  "tidpunkt": "2026-09-07T09:29:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR071044.md",
+  "id": "7S-7da07e7e-5355-453c-8330-7938dd9a13a3",
+  "tnr": "071044",
+  "tidpunkt": "2026-09-07T10:42:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR071053.md",
+  "id": "7S-f8058496-76a1-46f2-adc3-b06541409fc4",
+  "tnr": "071053",
+  "tidpunkt": "2026-09-07T10:51:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR071152_2.md",
+  "id": "7S-33a1a6f1-d21c-4c84-bae6-b99784b422f7",
+  "tnr": "071152_2",
+  "tidpunkt": "2026-09-07T11:49:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR071152.md",
+  "id": "7S-7c06e2e5-dd34-4334-9c82-e4fba33bff68",
+  "tnr": "071152",
+  "tidpunkt": "2026-09-07T11:51:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR071245.md",
+  "id": "7S-c0f6846a-af1e-4863-8416-753612435598",
+  "tnr": "071245",
+  "tidpunkt": "2026-09-07T12:45:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR071250.md",
+  "id": "7S-a502f93f-713f-4b57-85be-b710b0c90032",
+  "tnr": "071250",
+  "tidpunkt": "2026-09-07T12:47:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR071256.md",
+  "id": "7S-cd12b626-5ea9-4416-8315-69ab1188e79e",
+  "tnr": "071256",
+  "tidpunkt": "2026-09-07T12:55:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR071345.md",
+  "id": "7S-59b79500-bf5b-4d74-9a34-6341faefe7fb",
+  "tnr": "071345",
+  "tidpunkt": "2026-09-07T13:44:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR071351.md",
+  "id": "7S-d1b8b9ee-c97d-4901-9aad-bc6d1095b1e5",
+  "tnr": "071351",
+  "tidpunkt": "2026-09-07T13:48:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR071403.md",
+  "id": "7S-cb12b6cc-347a-4ea7-93cd-7e6faa5ce5e4",
+  "tnr": "071403",
+  "tidpunkt": "2026-09-07T14:00:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR071411.md",
+  "id": "7S-c2b1b19c-53da-4876-ae89-1ee6fb1231b3",
+  "tnr": "071411",
+  "tidpunkt": "2026-09-07T14:08:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR071425.md",
+  "id": "7S-d7135899-c21a-482d-9304-9f92f0f6e511",
+  "tnr": "071425",
+  "tidpunkt": "2026-09-07T14:23:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR071444.md",
+  "id": "7S-f60106b7-fa83-4b94-849b-3da049e07752",
+  "tnr": "071444",
+  "tidpunkt": "2026-09-07T14:43:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR072307.md",
+  "id": "7S-81d31bab-c9e1-4d25-af83-3a6075291d61",
+  "tnr": "072307",
+  "tidpunkt": "2026-09-07T23:04:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H19",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR080728.md",
+  "id": "7S-9d63142a-6349-4479-b92a-66f78188062c",
+  "tnr": "080728",
+  "tidpunkt": "2026-09-08T07:25:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H14",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR081000.md",
+  "id": "7S-013cff00-8b83-441a-a5f2-f274c49e54b8",
+  "tnr": "081000",
+  "tidpunkt": "2026-09-08T10:00:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR081004.md",
+  "id": "7S-0d899632-72a4-48f1-b04b-1a745e768b92",
+  "tnr": "081004",
+  "tidpunkt": "2026-09-08T10:01:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR081136.md",
+  "id": "7S-1622bc58-4875-4ee7-bd9b-c314d78ff4be",
+  "tnr": "081136",
+  "tidpunkt": "2026-09-08T11:34:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR081214.md",
+  "id": "7S-afb62814-002c-47a9-a288-d259cef3113a",
+  "tnr": "081214",
+  "tidpunkt": "2026-09-08T12:13:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": "SBF53Y",
+  "sector": 1,
+  "callsign": "BQ"
+ },
+ {
+  "file": "TNR081252.md",
+  "id": "7S-a8535c5a-be30-4ead-a8c1-64c8d108b455",
+  "tnr": "081252",
+  "tidpunkt": "2026-09-08T12:52:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR081255.md",
+  "id": "7S-b675be8e-40e6-4ebb-b882-ed7ecc91c3a2",
+  "tnr": "081255",
+  "tidpunkt": "2026-09-08T12:52:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR081317.md",
+  "id": "7S-8d46fdbc-3f14-4bb2-9088-297ff8afbd55",
+  "tnr": "081317",
+  "tidpunkt": "2026-09-08T13:15:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR081330.md",
+  "id": "7S-156a12f5-edd6-47a9-b179-b65d10edfb92",
+  "tnr": "081330",
+  "tidpunkt": "2026-09-08T13:29:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H10",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR081455.md",
+  "id": "7S-991132c0-1e12-4ef9-be8f-f4f86b9cca5c",
+  "tnr": "081455",
+  "tidpunkt": "2026-09-08T14:52:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR081511.md",
+  "id": "7S-db9221c0-2e94-4795-9e77-70360ef930e8",
+  "tnr": "081511",
+  "tidpunkt": "2026-09-08T15:08:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR081547.md",
+  "id": "7S-fdd112eb-c02b-42e4-ac58-e7eaf2fd320c",
+  "tnr": "081547",
+  "tidpunkt": "2026-09-08T15:45:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR081929.md",
+  "id": "7S-956d23f9-2fc4-441a-ac0e-b72691ac195a",
+  "tnr": "081929",
+  "tidpunkt": "2026-09-08T19:28:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H14",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR081941.md",
+  "id": "7S-04fd9988-0fd4-4c2b-98b6-19f7501eaa5c",
+  "tnr": "081941",
+  "tidpunkt": "2026-09-08T19:40:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H12",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR082135.md",
+  "id": "7S-c76fde89-1f95-42e4-a480-47dd787a7c7e",
+  "tnr": "082135",
+  "tidpunkt": "2026-09-08T21:34:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H20",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR082237.md",
+  "id": "7S-e49fd886-8559-41e5-a0fc-313543e9cb42",
+  "tnr": "082237",
+  "tidpunkt": "2026-09-08T22:35:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H13",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR082304.md",
+  "id": "7S-daa45f3c-08e4-4d2a-b817-31df4bedabab",
+  "tnr": "082304",
+  "tidpunkt": "2026-09-08T23:03:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H21",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR082320.md",
+  "id": "7S-1d90c051-793c-4ffc-a50f-45ef5ab6c713",
+  "tnr": "082320",
+  "tidpunkt": "2026-09-08T23:20:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H14",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR090039.md",
+  "id": "7S-129832e2-a85f-4555-9eff-898671568235",
+  "tnr": "090039",
+  "tidpunkt": "2026-09-09T00:36:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H10",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR090052.md",
+  "id": "7S-4f6853f6-50e6-4438-bf73-4045bd9429f9",
+  "tnr": "090052",
+  "tidpunkt": "2026-09-09T00:51:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H23",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR090503.md",
+  "id": "7S-d097cca3-5ee4-4944-8e5b-1cf360b756aa",
+  "tnr": "090503",
+  "tidpunkt": "2026-09-09T05:01:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H12",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_cap"
+  ]
+ },
+ {
+  "file": "TNR090559.md",
+  "id": "7S-f4e8dd5b-e026-4b40-b0da-86b7a6f7666c",
+  "tnr": "090559",
+  "tidpunkt": "2026-09-09T05:59:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H8",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR091154.md",
+  "id": "7S-d7395a64-65d9-4755-b5dd-0a505bac7965",
+  "tnr": "091154",
+  "tidpunkt": "2026-09-09T11:51:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR091205.md",
+  "id": "7S-3e525f6d-dea8-4432-b51a-cf4364c0cd52",
+  "tnr": "091205",
+  "tidpunkt": "2026-09-09T12:05:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR091210.md",
+  "id": "7S-be6f3cef-64e9-4897-ad95-6370553b234f",
+  "tnr": "091210",
+  "tidpunkt": "2026-09-09T12:09:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR091304.md",
+  "id": "7S-47eaceb8-d7cf-46a3-a96e-12c974cef79c",
+  "tnr": "091304",
+  "tidpunkt": "2026-09-09T13:02:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR091309.md",
+  "id": "7S-49cefc6a-87a0-49d5-8590-f7e92cdeaf26",
+  "tnr": "091309",
+  "tidpunkt": "2026-09-09T13:08:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR091335.md",
+  "id": "7S-0cae8376-2ea8-4326-9b41-130fe2aeba83",
+  "tnr": "091335",
+  "tidpunkt": "2026-09-09T13:34:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR091401.md",
+  "id": "7S-344f69fe-3501-464a-a1ba-8237e382ed05",
+  "tnr": "091401",
+  "tidpunkt": "2026-09-09T13:59:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR091410.md",
+  "id": "7S-827c8470-fddc-47b0-ab6d-4a25dcb9b91b",
+  "tnr": "091410",
+  "tidpunkt": "2026-09-09T14:07:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR091421.md",
+  "id": "7S-fd6678a6-0eb0-43ed-aaad-59f88094159b",
+  "tnr": "091421",
+  "tidpunkt": "2026-09-09T14:20:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR091516.md",
+  "id": "7S-24ffc688-0405-422e-9aa0-ec1a199072f2",
+  "tnr": "091516",
+  "tidpunkt": "2026-09-09T15:14:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR091548.md",
+  "id": "7S-17c65a06-d6f5-4a0a-a21b-0c3594198d0d",
+  "tnr": "091548",
+  "tidpunkt": "2026-09-09T15:48:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H11",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR091809.md",
+  "id": "7S-e438ed7a-6699-45d2-a323-d47aaa5d48fe",
+  "tnr": "091809",
+  "tidpunkt": "2026-09-09T18:06:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H11",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR100404.md",
+  "id": "7S-6f00498f-6c34-4183-b25c-03a1729c45e4",
+  "tnr": "100404",
+  "tidpunkt": "2026-09-10T04:01:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H5",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_optics"
+  ]
+ },
+ {
+  "file": "TNR100533.md",
+  "id": "7S-c6d3c20e-346b-4027-bc3b-62dbba95f777",
+  "tnr": "100533",
+  "tidpunkt": "2026-09-10T05:32:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H13",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR100720.md",
+  "id": "7S-986241a2-cddd-4703-b7bc-91c4f2628cb5",
+  "tnr": "100720",
+  "tidpunkt": "2026-09-10T07:17:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H19",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR100840.md",
+  "id": "7S-f577382b-f1ba-4c05-9fa4-dcf6ba256c6e",
+  "tnr": "100840",
+  "tidpunkt": "2026-09-10T08:38:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H3",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_bag"
+  ]
+ },
+ {
+  "file": "TNR101100.md",
+  "id": "7S-4e56fd11-60ed-45b0-b8af-d63a0b972607",
+  "tnr": "101100",
+  "tidpunkt": "2026-09-10T10:58:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ"
+ },
+ {
+  "file": "TNR101107.md",
+  "id": "7S-3827eac6-d825-48b9-9caa-91f6404fd92d",
+  "tnr": "101107",
+  "tidpunkt": "2026-09-10T11:06:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR101125.md",
+  "id": "7S-d67cc0bc-57f2-49b8-b873-367675eb16c7",
+  "tnr": "101125",
+  "tidpunkt": "2026-09-10T11:22:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR101133.md",
+  "id": "7S-e3cf8493-888f-4e67-a371-933ee455ec57",
+  "tnr": "101133",
+  "tidpunkt": "2026-09-10T11:31:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR101142.md",
+  "id": "7S-512fa913-6d61-4719-a0d4-d814023ec7d9",
+  "tnr": "101142",
+  "tidpunkt": "2026-09-10T11:39:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": "DZY59G",
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR101143.md",
+  "id": "7S-2b4dfe56-26ea-43c3-afc6-a07087c6d943",
+  "tnr": "101143",
+  "tidpunkt": "2026-09-10T11:41:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H20",
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ",
+  "tells": [
+   "tell_case"
+  ]
+ },
+ {
+  "file": "TNR101201.md",
+  "id": "7S-54608e6c-0ebe-4be7-bdf6-fb35bc154133",
+  "tnr": "101201",
+  "tidpunkt": "2026-09-10T12:00:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR101230.md",
+  "id": "7S-875b6eff-3759-429a-b6cf-e8355d6e1742",
+  "tnr": "101230",
+  "tidpunkt": "2026-09-10T12:28:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR101358.md",
+  "id": "7S-0b939d7e-54ca-469d-91f8-6dcd5af39085",
+  "tnr": "101358",
+  "tidpunkt": "2026-09-10T13:58:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 0,
+  "callsign": "AQ"
+ },
+ {
+  "file": "TNR101421.md",
+  "id": "7S-09f2a5ad-41d6-4418-97a5-48949c96233c",
+  "tnr": "101421",
+  "tidpunkt": "2026-09-10T14:20:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H7",
+  "plate": null,
+  "sector": 1,
+  "callsign": "BQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR101458.md",
+  "id": "7S-d695421f-de0b-429c-b502-bc210723d53f",
+  "tnr": "101458",
+  "tidpunkt": "2026-09-10T14:56:00",
+  "truth": "civil",
+  "subtype": null,
+  "member": null,
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ"
+ },
+ {
+  "file": "TNR101529.md",
+  "id": "7S-1b08c967-0ac5-4202-b139-6b1f7c74e141",
+  "tnr": "101529",
+  "tidpunkt": "2026-09-10T15:28:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H1",
+  "plate": null,
+  "sector": 2,
+  "callsign": "CQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR102128.md",
+  "id": "7S-91c61694-5298-4107-964d-e8462fb675aa",
+  "tnr": "102128",
+  "tidpunkt": "2026-09-10T21:27:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H22",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_vest"
+  ]
+ },
+ {
+  "file": "TNR102153.md",
+  "id": "7S-395546b8-f638-4da2-a8a5-ac9f8f0c96fc",
+  "tnr": "102153",
+  "tidpunkt": "2026-09-10T21:50:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H7",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ },
+ {
+  "file": "TNR102211.md",
+  "id": "7S-576d6f1b-e1eb-44b6-9ad0-e3430e0d2a60",
+  "tnr": "102211",
+  "tidpunkt": "2026-09-10T22:10:00",
+  "truth": "hostile",
+  "subtype": "recon",
+  "member": "H7",
+  "plate": null,
+  "sector": 3,
+  "callsign": "DQ",
+  "tells": [
+   "tell_tattoo"
+  ]
+ }
+]
