@@ -58,45 +58,67 @@ export const DEFAULT_SUSPICION: SuspicionOpts = {
  * uppsikt av" is benign → require "uppsikt mot/över"; "klippte gräs" is benign →
  * a saboteur "klippte upp" the fence, never bare "klippte").
  */
+// Bounded, precision-gated expansion (validated on a held-out blind corpus — see
+// docs/BEHAVIOUR_VALIDATION.md). The original stems were PAST-TENSE-locked to the
+// generator's phrasings (recall ~24% on independently-authored prose); the additions
+// below are principled TENSE/CONJUGATION coverage (present + supine of the same
+// hostile verbs) plus a few unambiguous hostile phrases, each checked to fire on 0
+// benign sentences. Ambiguous concepts that cannot be separated from benign life by
+// a keyword (filming/photographing, measuring, leaving-a-package vs a delivery) are
+// deliberately LEFT to the geo+time weighting and to Phase B — not forced in. FROZEN.
 export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: number; stems: string[] }> = [
   // --- Reconnaissance: surveillance / optics / counter-surveillance ----------
   { key: "observation", label: "övervakning/spaning", stems: [
     "betrakta", "iaktt", "uppsikt mot", "uppsikt över", "höll uppsikt", "höll utkik",
-    "höll koll", "spana", "rekognos", "rekade", "observera", "övervaka", "bevakade"] },
+    "höll koll", "håller koll", "hålla koll", "håller utkik", "spana", "rekognos", "rekade",
+    "observera", "övervaka", "bevakade", "bevakar", "glor mot", "kollar mot vakt"] },
   { key: "optik", label: "optik/foto", stems: [
     "kikare", "teleobjektiv", "fotografera", "kamera", "filmade", "zoomade", "drönar",
-    "nattkikare", "värmekamera", "mörkerkikare"] },
+    "nattkikare", "värmekamera", "mörkerkikare", "kikarsikte", "systemkamera"] },
   { key: "registrering", label: "registrering/kartläggning", stems: [
-    "antecknade", "block", "stegräknare", "kartlägg", "mätte", "koordinater", "gps",
-    "positionerade", "märkte ut", "skiss", "tidtog", "prickade av", "räknade fordon",
-    "räknade passager"] },
+    "antecknade", "antecknar", "block", "stegräknare", "kartlägg", "mätte", "koordinater", "gps",
+    "positionerade", "märkte ut", "skiss", "tidtog", "prickade av", "prickar av",
+    "räknade fordon", "räknade passager", "räknar fordon", "räknar bilar", "räknar vakter",
+    "räknar passager", "noterar tider", "noterar tidpunkter", "stegar upp", "stegar av"] },
   { key: "kontraspaning", label: "kontraspaning", stems: [
-    "kontraspaning", "drog sig undan", "undvek ögonkontakt", "tittade bakåt", "sänkte blicken",
-    "väjde undan", "gömde sig", "maskerade", "vände tvärt", "cirklade", "bytte riktning"] },
+    "kontraspaning", "drog sig undan", "undvek ögonkontakt", "tittade bakåt", "tittar bakåt",
+    "tittar över axeln", "över axeln", "sänkte blicken", "väjde undan", "gömde sig", "gömmer",
+    "maskerade", "vände tvärt", "vänder tvärt", "cirklade", "bytte riktning",
+    "försvinner så fort", "bryter av och"] },
   { key: "dröjande", label: "dröjande/upprepning", stems: [
     "stod stilla länge", "andra varvet", "tredje varvet", "långsam passage", "upprepat",
-    "dröjde kvar"] },
+    "dröjde kvar", "för tredje gången", "tredje gången", "kör sakta förbi", "kör långsamt förbi",
+    "flera varv", "runt kvarteret", "ett varv till", "upprepade gånger"] },
   { key: "perimeter", label: "närmande/rekognosering av objekt", stems: [
     "kände på staketet", "kände på grinden", "testade grinden", "testade låset",
-    "klättrade över", "kröp", "forcerade", "trängde in", "tog sig in", "tog sig över"] },
+    "klättrade över", "klättrar över", "kröp", "kryper", "forcerade", "forcerar",
+    "trängde in", "tog sig in", "tog sig över", "rycker i handtaget", "rycker i grinden"] },
   { key: "teknik", label: "teknisk inhämtning", stems: [
     "antenn", "sändare", "störsändare", "avlyssning", "signalspaning", "pejlade", "pejl"] },
   // --- Sabotage: breaching + tampering (high confidence → weight 3) -----------
   { key: "sabotage", label: "sabotage/åverkan", weight: 3, stems: [
-    "manipulera", "bände upp", "bröt sig in", "kopplade bort", "saboterade", "sabotage",
-    "klippte upp", "klippte hål", "sågade av", "dyrkade", "bultsax", "kofot", "bågfil",
-    "sprängmedel", "brytverktyg"] },
+    "manipulera", "bände upp", "bänder upp", "bröt sig in", "bryter sig in", "bryter loss",
+    "bryter upp", "kopplade bort", "kopplar bort", "saboterade", "saboterar", "sabotage",
+    "klippte upp", "klippte hål", "klipper upp", "klipper hål", "sågade av", "sågar av",
+    "dyrkade", "dyrkar", "bultsax", "avbitartång", "kofot", "bågfil", "sprängmedel",
+    "brytverktyg", "brutit sönder"] },
   // --- Terrorism: unattended object + vehicle probing (weight 3) --------------
   { key: "attentat", label: "attentatsindikator", weight: 3, stems: [
     "oidentifierad väska", "kvarlämnad", "herrelöst", "lämnade en väska", "lämnade ett paket",
-    "obevakad väska", "misstänkt föremål", "misstänkt paket", "placerade ett föremål",
-    "placerade ett paket", "grävde ned", "fordonsspärr", "körde långsamt förbi",
+    "obevakad väska", "övergiven väska", "övergiven ryggsäck", "misstänkt föremål",
+    "misstänkt paket", "placerade ett föremål", "placerade ett paket",
+    "ställer ifrån sig en väska", "ställer ifrån sig ett paket", "ställer ifrån sig en ryggsäck",
+    "grävde ned", "gräver ner", "gräver ned", "fordonsspärr", "körde långsamt förbi",
     "upprepade förbifarter", "rammade"] },
   // --- Infiltration: unauthorised access + pretext + tailing ------------------
   { key: "infiltration", label: "infiltration/tillträde", stems: [
-    "obehörig", "smet in", "gled in vid", "utgav sig för", "låtsades vara", "falsk arbetsorder",
-    "saknade arbetsorder", "förfalskad", "skuggade en", "skuggade personal",
-    "följde efter personal", "testade en dörr", "testade dörren"] },
+    "obehörig", "utan behörighet", "smet in", "smiter in", "gled in vid", "glider in",
+    "utgav sig för", "utger sig för", "utger sig", "påstår sig vara", "säger sig vara",
+    "uppger sig", "låtsades vara", "falsk arbetsorder", "saknade arbetsorder",
+    "saknar arbetsorder", "fel firmanamn", "kan inte visa legitimation", "förfalskad",
+    "skuggade en", "skuggade personal", "skuggar", "följde efter personal", "följer efter",
+    "går tätt bakom", "testade en dörr", "testade dörren", "testar dörren", "testar en dörr",
+    "testar dörrhandtaget"] },
 ];
 
 const R = 6371000; // earth radius (m)

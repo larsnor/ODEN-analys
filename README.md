@@ -75,13 +75,16 @@ Detaljerad design finns i [`docs/PLUGIN_DESIGN.md`](docs/PLUGIN_DESIGN.md) och
 meddelandeformatet i [`docs/FORMAT_SPEC.md`](docs/FORMAT_SPEC.md).
 
 ## Detekteringens räckvidd (ärligt)
-Den **plåtbaserade** re-identifieringen (exakt matchning) och den transparenta
-**misstankepoängen** (närhet + tid + beteende) är robusta. Den **mjuka
-kännetecken-baserade** re-identifieringen är ett *högprecisions-frö*: den hittar-på
-aldrig ett kännetecken på en civil, men dess täckning på riktiga rapporter är
-begränsad av en fast vokabulär och ovaliderad. Öppen vokabulär är framtida
-(språkmodell-)arbete. Mätningen och gränsdragningen finns i
-[`docs/RE-ID_VALIDATION.md`](docs/RE-ID_VALIDATION.md).
+Den **plåtbaserade** re-identifieringen (exakt matchning) och **geometrin/tiden**
+(närhet + tid på dygnet) är robusta. De två **fasta vokabulärerna** är
+högprecisions-*frön* med validerad men begränsad täckning på oberoende formulerad
+prosa — de hittar aldrig på bevis mot en civil, men missar mycket:
+- **kännetecken-baserad re-identifiering** (`vocab.ts`) — mätt i
+  [`docs/RE-ID_VALIDATION.md`](docs/RE-ID_VALIDATION.md);
+- **beteendevokabulären** (`suspicion.ts THREAT_INDICATORS`) — mätt i
+  [`docs/BEHAVIOUR_VALIDATION.md`](docs/BEHAVIOUR_VALIDATION.md) (~24 % → ~62–74 %
+  recall efter en avgränsad, precisionsspärrad utökning; resten är öppen vokabulär =
+  framtida språkmodellsarbete).
 
 ## Licens
 MIT — se [`LICENSE`](LICENSE).

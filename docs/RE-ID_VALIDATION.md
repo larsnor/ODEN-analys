@@ -5,7 +5,9 @@ layer (Job B / `vocab.ts` + `marks.ts`) — the part that links two report sight
 of the same person by a distinctive *kännetecken* (a marked backpack, a night-vision
 optic, a bolt-cutter). It does **not** concern plate-based re-id (Job A, exact
 string match — robust) or the suspicion scoring (proximity + time + behaviour — a
-separate, broader layer).
+separate, broader layer). The behaviour keyword vocabulary of that suspicion layer
+has its own out-of-distribution measurement in
+[`BEHAVIOUR_VALIDATION.md`](BEHAVIOUR_VALIDATION.md).
 
 ## The finding
 The layer's original in-distribution scores were ~100% precision and recall. That
