@@ -14,6 +14,7 @@ import { ActorResult } from "./actor";
 import { JobAResult } from "./reid";
 import { Report } from "./parse";
 import { reasonPhrases } from "./present";
+import { noteStem } from "./notes_common";
 import { Nicknames, placeLabel } from "./places";
 
 export type AlertKind = "förhöjd" | "aktör" | "märke" | "fordon";
@@ -27,10 +28,6 @@ export interface Alert {
   pointer: string;
   citations: string[]; // note stems for [[..]] links
   rank: number; // higher = more salient (for ordering / notice priority)
-}
-
-function stem(file: string): string {
-  return file.replace(/^.*\//, "").replace(/\.md$/, "");
 }
 
 export interface AnalysisBundle {
@@ -48,7 +45,7 @@ export function computeAlertItems(b: AnalysisBundle, nicks?: Nicknames): Alert[]
   // Elevated observations — the directly-actionable pointer (the report + the
   // Map View location both already exist, no build step needed).
   for (const r of b.suspicion.elevated) {
-    const s = stem(r.file);
+    const s = noteStem(r.file);
     const near = r.reasons.some((x) => x.key === "proximity" && x.weight === 3);
     const place = placeLabel(r.plats, nicks);
     out.push({
@@ -72,7 +69,7 @@ export function computeAlertItems(b: AnalysisBundle, nicks?: Nicknames): Alert[]
       pointer:
         "Granska aktörsförslagen i ODEN-panelen och bekräfta; " +
         "aktörsnoden visas sedan i grafvyn.",
-      citations: h.chain.slice(0, 6).map((c) => stem(c.file)),
+      citations: h.chain.slice(0, 6).map((c) => noteStem(c.file)),
       rank: 80 + h.facets.length,
     });
   }
@@ -86,7 +83,7 @@ export function computeAlertItems(b: AnalysisBundle, nicks?: Nicknames): Alert[]
       pointer:
         "Granska kännetecken-förslagen i ODEN-panelen och bekräfta; " +
         "därefter syns kännetecken-noden i grafen.",
-      citations: n.members.slice(0, 6).map((m) => stem(m.file)),
+      citations: n.members.slice(0, 6).map((m) => noteStem(m.file)),
       rank: 60 + n.count,
     });
   }
@@ -100,7 +97,7 @@ export function computeAlertItems(b: AnalysisBundle, nicks?: Nicknames): Alert[]
       pointer:
         `Noden [[${e.canonical}]] länkar alla observationer i grafen; ` +
         "på kartan visas observationsplatserna.",
-      citations: e.observations.slice(0, 6).map((o) => stem(o.file)),
+      citations: e.observations.slice(0, 6).map((o) => noteStem(o.file)),
       rank: 40 + e.count,
     });
   }

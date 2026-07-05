@@ -13,16 +13,9 @@
  */
 import { ActorHypothesis } from "./actor";
 import { mdText } from "./mdsafe";
+import { GENERATOR, METOD, RenderedNote, StemLinker, noteStem } from "./notes_common";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
-
-export const GENERATOR = "7s-plugin";
-export const ACTOR_METOD = "aktor";
-
-export interface RenderedNote {
-  filename: string;
-  markdown: string;
-}
 
 /** Readable graph label. The 🕸️ emoji marks the type (the word "Aktör" stays in
  *  metadata only); the label is the operator's name if set, else the facet labels
@@ -33,26 +26,16 @@ export function actorFilename(h: ActorHypothesis, name?: string): string {
 }
 
 function tnrLink(s: { file: string; tnr: string }): string {
-  const stem = s.file.replace(/^.*\//, "").replace(/\.md$/, "");
-  return `[[${stem}|TNR${mdText(s.tnr)}]]`;
+  return `[[${noteStem(s.file)}|TNR${mdText(s.tnr)}]]`;
 }
-
-/** Given an observation's raw `plats`, the stem of the location note to link to
- *  (or undefined if that place has no location node). Enables a direct actor↔plats
- *  graph edge that survives message-node filtering. */
-export type LocationLinker = (plats: string) => string | undefined;
-
-/** For a place in this actor's chain, the stem of the recurrence node to link
- *  INSTEAD of the location note (when this actor was seen there 2+ times). */
-export type RecurrenceLinker = (plats: string) => string | undefined;
 
 export function renderActorNote(
   h: ActorHypothesis,
   label?: string,
   nicks?: Nicknames,
   fileName?: string,
-  locStemOf?: LocationLinker,
-  recStemOf?: RecurrenceLinker,
+  locStemOf?: StemLinker,
+  recStemOf?: StemLinker,
 ): RenderedNote {
   const name = label ?? `${h.vehicleCount} fordon, ${h.markCount} kännetecken`;
   const fm = [
@@ -64,7 +47,7 @@ export function renderActorNote(
     `generator: ${GENERATOR}`,
     "föreslagen-av: deterministisk",
     "bekräftad-av: operatör",
-    `metod: ${ACTOR_METOD}`,
+    `metod: ${METOD.aktor}`,
     `facetter: ${h.facets.length}`,
     `fordon: ${h.vehicleCount}`,
     `kännetecken: ${h.markCount}`,

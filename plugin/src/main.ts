@@ -30,7 +30,8 @@ import { ParseIssue, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
 import { EmbeddedPlateVision, corroboratePlate, PlateVision } from "./vision";
-import { isOverwritable, isPluginOwned, renderAll, safeFilename } from "./entity_notes";
+import { isOverwritable, isPluginOwned, ownedMetod, renderAll, safeFilename } from "./entity_notes";
+import { METOD, noteStem } from "./notes_common";
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
 import { markFilename, renderMarkNote } from "./mark_notes";
 import { KB } from "./query";
@@ -43,7 +44,7 @@ import { renderSuspectNotes } from "./suspect_notes";
 import { buildLocations, renderLocationNotes, LocationCluster, locationFilename, resolveLocationKey } from "./location_notes";
 import { renderRecurrenceNote, recurrenceFilename, RecurrencePair } from "./recurrence_notes";
 import { isMgrsGrid, placeLabel } from "./places";
-import { mgrsToLatLon } from "./mgrs";
+import { mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
 import { buildFeed, FeedItem, FeedRow } from "./feed";
 import { suspicionLevel, reasonPhrases } from "./present";
@@ -132,13 +133,6 @@ const ODEN_ICON_SVG =
   '<path fill="currentColor" fill-rule="evenodd" d="M70 41 C69 30 57 23 46 27 ' +
   'C39 30 34 36 27 40 L12 46 L28 50 C32 59 41 64 51 62 C63 60 70 51 70 41 Z ' +
   'M55 39 a3 3 0 1 0 -6 0 a3 3 0 1 0 6 0 Z"/>';
-
-/** Read the `metod:` tag from a plugin-owned note's frontmatter (for per-job
- *  pruning). Returns "" if absent. */
-function ownedMetod(text: string): string {
-  const m = text.slice(0, 600).match(/(^|\n)metod:\s*([^\n]+)/);
-  return m ? m[2].trim() : "";
-}
 
 export default class SevenSPlugin extends Plugin {
   settings: SevenSSettings = DEFAULT_SETTINGS;
@@ -306,7 +300,7 @@ export default class SevenSPlugin extends Plugin {
       const notes = renderAll(result.entities, confirmed);
       const write = await this.writeOwnedNotes(
         notes.map((n) => ({ name: n.filename, body: n.markdown })),
-        "jobb-a",
+        METOD.jobbA,
       );
       await this.revealPanel();
       await this.refreshPanel();
@@ -421,7 +415,7 @@ export default class SevenSPlugin extends Plugin {
     const nom = this.lastJobB?.nominations.find((n) => n.signature === signature);
     if (!nom) return;
     const note = renderMarkNote(nom);
-    const res = await this.writeOwnedNotes([{ name: note.filename, body: note.markdown }], "jobb-b");
+    const res = await this.writeOwnedNotes([{ name: note.filename, body: note.markdown }], METOD.jobbB);
     if (res.skipped.length) {
       new Notice("ODEN: kunde inte skriva märkesnot (ej plugin-ägd fil på samma namn).");
       return;
@@ -457,7 +451,7 @@ export default class SevenSPlugin extends Plugin {
     for (const f of this.app.vault.getMarkdownFiles()) {
       if (folder !== "" && !(f.path === folder || f.path.startsWith(prefix))) continue;
       const text = await this.app.vault.read(f);
-      if (isPluginOwned(text) && ownedMetod(text) === "jobb-b") {
+      if (isPluginOwned(text) && ownedMetod(text) === METOD.jobbB) {
         await this.app.vault.delete(f);
         removed++;
       }
@@ -485,7 +479,7 @@ export default class SevenSPlugin extends Plugin {
     for (const f of this.app.vault.getMarkdownFiles()) {
       if (folder !== "" && !(f.path === folder || f.path.startsWith(prefix))) continue;
       const text = await this.app.vault.read(f);
-      if (text.trim() === "" || (isPluginOwned(text) && ownedMetod(text) === "aktor")) {
+      if (text.trim() === "" || (isPluginOwned(text) && ownedMetod(text) === METOD.aktor)) {
         await this.app.vault.delete(f);
         removed++;
       }
@@ -533,7 +527,7 @@ export default class SevenSPlugin extends Plugin {
       if (folder !== "" && !(f.path === folder || f.path.startsWith(prefix))) continue;
       const text = await this.app.vault.read(f);
       const metod = ownedMetod(text);
-      if (text.trim() === "" || (isPluginOwned(text) && (metod === "aktor" || metod === "jobb-b"))) {
+      if (text.trim() === "" || (isPluginOwned(text) && (metod === METOD.aktor || metod === METOD.jobbB))) {
         await this.app.vault.delete(f);
         removed++;
       }
@@ -678,7 +672,7 @@ export default class SevenSPlugin extends Plugin {
       "_Operationens område av intresse. ODEN mäter närhet mot denna punkt._",
       "",
     );
-    await this.writeOwnedNotes([{ name: "Objektet.md", body: body.join("\n") }], "objektet");
+    await this.writeOwnedNotes([{ name: "Objektet.md", body: body.join("\n") }], METOD.objektet);
   }
 
   /** Guided dialog → a COMPLETE operator-authored 7S observation (all fields). */
@@ -998,7 +992,7 @@ export default class SevenSPlugin extends Plugin {
     await this.writeLocationNotes(clusters, recForPlate);
     await this.writeOwnedNotes(
       recs.pairs.map((p) => { const n = renderRecurrenceNote(p); return { name: n.filename, body: n.markdown }; }),
-      "aterkomst",
+      METOD.aterkomst,
     );
   }
 
@@ -1089,7 +1083,7 @@ export default class SevenSPlugin extends Plugin {
   ): Promise<void> {
     if (!this.settings.materializeAlerts) return;
     const notes = renderLocationNotes(clusters, this.settings.locationNicknames, recForPlate).map((n) => ({ name: n.filename, body: n.markdown }));
-    await this.writeOwnedNotes(notes, "plats");
+    await this.writeOwnedNotes(notes, METOD.plats);
   }
 
   private async revealActors(): Promise<void> {
@@ -1291,7 +1285,7 @@ export default class SevenSPlugin extends Plugin {
     if (!this.settings.autoBuildEntities) return;
     const confirmed = await this.computePlateCorroboration(bundle.reports);
     const notes = renderAll(bundle.jobA.entities, confirmed).map((n) => ({ name: n.filename, body: n.markdown }));
-    await this.writeOwnedNotes(notes, "jobb-a");
+    await this.writeOwnedNotes(notes, METOD.jobbA);
   }
 
   // --- §6.7 image corroboration: a photo confirms a plate typed in the text ----
@@ -1352,7 +1346,7 @@ export default class SevenSPlugin extends Plugin {
       (sp) => this.settings.actorDecisions[suspectHypId(sp.key)] !== "confirmed",
     );
     const notes = renderSuspectNotes(suspects, this.settings.locationNicknames, locStemOf).map((n) => ({ name: n.filename, body: n.markdown }));
-    await this.writeOwnedNotes(notes, "larm");
+    await this.writeOwnedNotes(notes, METOD.larm);
   }
 
   /** Actors = transitive hypotheses (§6.4) PLUS single-observation suspect agents
@@ -1661,7 +1655,7 @@ class SevenSTextView extends ItemView {
       const chain = det.createEl("ul");
       for (const step of h.chain) {
         const li = chain.createEl("li");
-        const stem = step.file.replace(/^.*\//, "").replace(/\.md$/, "");
+        const stem = noteStem(step.file);
         const a = li.createEl("a", { text: `TNR${step.tnr}` });
         a.onclick = () => this.plugin.app.workspace.openLinkText(stem, "", false);
         li.appendText(` — ${step.tidpunkt} — kopplar: ${step.facets.join(" + ")}`);
@@ -1708,7 +1702,7 @@ class SevenSTextView extends ItemView {
       const obs = card.createEl("ul");
       for (const m of nom.members) {
         const li = obs.createEl("li");
-        const stem = m.file.replace(/^.*\//, "").replace(/\.md$/, "");
+        const stem = noteStem(m.file);
         const a = li.createEl("a", { text: `TNR${m.tnr}` });
         a.onclick = () => this.plugin.app.workspace.openLinkText(stem, "", false);
         li.appendText(` — ${m.tidpunkt} — ${m.plats}`);
@@ -2067,18 +2061,6 @@ class ConfirmModal extends Modal {
 }
 
 /** Parse "lat,lon" or an MGRS grid into coordinates. */
-function parseCoord(s: string): { lat: number; lon: number } | null {
-  const t = s.trim();
-  const g = mgrsToLatLon(t);
-  if (g) return { lat: Math.round(g.lat * 1e5) / 1e5, lon: Math.round(g.lon * 1e5) / 1e5 };
-  const m = t.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
-  if (m) {
-    const lat = parseFloat(m[1]);
-    const lon = parseFloat(m[2]);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
-  }
-  return null;
-}
 
 /** Setup dialog: name the operation + set the protected object's coordinate. */
 class SetupOperationModal extends Modal {

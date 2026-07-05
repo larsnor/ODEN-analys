@@ -156,3 +156,18 @@ export function findMgrsLatLon(text: string): LatLon | null {
   const m = /\b\d{1,2}[C-X][A-Z]{2}\s?\d{2,5}\s?\d{2,5}\b/.exec(text);
   return m ? mgrsToLatLon(m[0]) : null;
 }
+
+/** Parse an operator-entered coordinate — either an MGRS grid or a `lat,lon` pair —
+ *  into WGS84, or null if it is neither. Used by the operation-setup dialog. */
+export function parseCoord(s: string): LatLon | null {
+  const t = s.trim();
+  const g = mgrsToLatLon(t);
+  if (g) return { lat: Math.round(g.lat * 1e5) / 1e5, lon: Math.round(g.lon * 1e5) / 1e5 };
+  const m = t.match(/^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/);
+  if (m) {
+    const lat = parseFloat(m[1]);
+    const lon = parseFloat(m[2]);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) return { lat, lon };
+  }
+  return null;
+}

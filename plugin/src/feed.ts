@@ -7,6 +7,8 @@
  * observation time in ms) and calls buildFeed() to dedup, sort newest-first,
  * label, and cap.
  */
+import { noteStem } from "./notes_common";
+
 export type FeedKind =
   | "mottaget"
   | "fordon"
@@ -48,10 +50,6 @@ export interface FeedRow {
   place?: string;
 }
 
-function stemOf(path: string): string {
-  return path.replace(/^.*\//, "").replace(/\.md$/, "");
-}
-
 function label(item: FeedItem): string {
   switch (item.kind) {
     case "mottaget":
@@ -86,7 +84,7 @@ export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
     .map((it): FeedRow => ({
       kind: it.kind,
       text: label(it),
-      stem: stemOf(it.path),
+      stem: noteStem(it.path),
       severity: it.review ? "review" : it.kind === "larm" ? "larm" : "info",
       review: it.review,
       place: it.place,

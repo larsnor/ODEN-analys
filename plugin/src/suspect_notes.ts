@@ -10,20 +10,8 @@ import { Suspect } from "./suspects";
 import { safeFilename } from "./entity_notes";
 import { safeAgentFilename } from "./notenames";
 import { mdText } from "./mdsafe";
+import { GENERATOR, METOD, RenderedNote, StemLinker, noteStem } from "./notes_common";
 import { Nicknames, placeLabel } from "./places";
-
-export const GENERATOR = "7s-plugin";
-export const LARM_METOD = "larm";
-
-export interface RenderedNote {
-  filename: string;
-  markdown: string;
-}
-
-/** Given an observation's raw `plats`, the stem of the location note to link to
- *  (or undefined). Lets a larm node keep a direct edge to its place so it stays in
- *  the graph even when message (TNR) nodes are filtered out. */
-export type LocationLinker = (plats: string) => string | undefined;
 
 /** Readable graph label ("⚠️ RJK241"), disambiguated by agent key. The ⚠️ emoji
  *  marks the type (kind stays in the `agent:` metadata, not the note name). */
@@ -31,7 +19,7 @@ export function suspectFilename(s: Suspect): string {
   return safeAgentFilename(`⚠️ ${s.label}`, s.key);
 }
 
-export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: LocationLinker): RenderedNote {
+export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: StemLinker): RenderedNote {
   const latest = s.obs[s.obs.length - 1];
   const kindWord = s.kind === "fordon" ? "fordon" : "person";
   const name = s.label;
@@ -41,7 +29,7 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Loc
     "typ: misstänkt",
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
-    `metod: ${LARM_METOD}`,
+    `metod: ${METOD.larm}`,
     "tags: [larm]",
     `agent: ${kindWord}`,
     `namn: "${s.label.replace(/"/g, "'")}"`,
@@ -65,7 +53,7 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Loc
   body.push("");
   body.push("## Observationer");
   for (const o of s.obs) {
-    const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
+    const stem = noteStem(o.file);
     // Keep the message link (traceability) AND link the place directly → the larm
     // node stays in the graph (via a plats edge) even with TNR nodes filtered out.
     const locStem = locStemOf?.(o.plats);
@@ -82,7 +70,7 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Loc
   return { filename: suspectFilename(s), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
 }
 
-export function renderSuspectNotes(suspects: Suspect[], nicks?: Nicknames, locStemOf?: LocationLinker): RenderedNote[] {
+export function renderSuspectNotes(suspects: Suspect[], nicks?: Nicknames, locStemOf?: StemLinker): RenderedNote[] {
   return [...suspects]
     .sort((a, b) => a.key.localeCompare(b.key))
     .map((s) => renderSuspectNote(s, nicks, locStemOf));

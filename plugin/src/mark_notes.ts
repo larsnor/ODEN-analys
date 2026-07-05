@@ -10,22 +10,14 @@
 import { markLabel } from "./marks";
 import { MarkNomination } from "./jobb";
 import { mdText } from "./mdsafe";
-
-export const GENERATOR = "7s-plugin";
-export const JOBB_METOD = "jobb-b";
-
-export interface RenderedNote {
-  filename: string;
-  markdown: string;
-}
+import { GENERATOR, METOD, RenderedNote, noteStem } from "./notes_common";
 
 export function markFilename(nom: MarkNomination): string {
   return nom.id.replace(/[\\/:*?"<>|.\s]/g, "_") + ".md";
 }
 
 function tnrLink(o: { file: string; tnr: string }): string {
-  const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
-  return `[[${stem}|TNR${mdText(o.tnr)}]]`;
+  return `[[${noteStem(o.file)}|TNR${mdText(o.tnr)}]]`;
 }
 
 /** Render a CONFIRMED mark nomination as a provenance-marked entity note. */
@@ -42,7 +34,7 @@ export function renderMarkNote(nom: MarkNomination): RenderedNote {
     `generator: ${GENERATOR}`,
     "föreslagen-av: deterministisk",
     "bekräftad-av: operatör",
-    `metod: ${JOBB_METOD}`,
+    `metod: ${METOD.jobbB}`,
     `antal_observationer: ${nom.count}`,
     `forsta_observation: "${nom.firstSeen}"`,
     `sista_observation: "${nom.lastSeen}"`,

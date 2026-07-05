@@ -16,6 +16,7 @@ import { Report } from "./parse";
 import { SuspicionAnalysis, Signal } from "./suspicion";
 import { plateIdentifiers } from "./ids";
 import { ActorHypothesis, ChainStep, Facet } from "./actor";
+import { noteStem } from "./notes_common";
 import { suspicionLevel } from "./present";
 
 export interface SuspectObs {
@@ -107,7 +108,7 @@ export function isActorCandidate(s: Suspect): boolean {
 /** Convert suspects to single-facet ActorHypotheses for the actor review. */
 export function suspectHypotheses(suspects: Suspect[]): ActorHypothesis[] {
   return suspects.map((s): ActorHypothesis => {
-    const stem = s.obs[0]?.file.replace(/^.*\//, "").replace(/\.md$/, "") ?? "";
+    const stem = s.obs[0] ? noteStem(s.obs[0].file) : "";
     const latest = s.obs[s.obs.length - 1]; // most recent observation → map position
     const facet: Facet = {
       id: s.key,

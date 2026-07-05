@@ -15,15 +15,7 @@
  */
 import { PlateEntity } from "./reid";
 import { mdText } from "./mdsafe";
-
-/** Marker used to recognise plugin-owned files on disk (§5.2). */
-export const GENERATOR = "7s-plugin";
-
-export interface RenderedNote {
-  /** Vault-relative filename WITHIN the entities folder (no folder prefix). */
-  filename: string;
-  markdown: string;
-}
+import { GENERATOR, METOD, RenderedNote, noteStem } from "./notes_common";
 
 /** Filesystem-safe filename from a plate (dots/illegal chars → underscore). */
 export function safeFilename(canonical: string): string {
@@ -32,8 +24,7 @@ export function safeFilename(canonical: string): string {
 
 function tnrLink(o: { file: string; tnr: string }): string {
   // Link by file stem (the note title), label with the TNR for readability.
-  const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
-  return `[[${stem}|TNR${mdText(o.tnr)}]]`;
+  return `[[${noteStem(o.file)}|TNR${mdText(o.tnr)}]]`;
 }
 
 function frontmatter(e: PlateEntity, corroborated: number): string {
@@ -45,7 +36,7 @@ function frontmatter(e: PlateEntity, corroborated: number): string {
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
     "föreslagen-av: deterministisk",
-    "metod: jobb-a",
+    `metod: ${METOD.jobbA}`,
     `antal_observationer: ${e.count}`,
   ];
   if (corroborated > 0) lines.push(`bild_styrkt: ${corroborated}`);
@@ -130,6 +121,13 @@ export function isPluginOwned(fileText: string): boolean {
   // Cheap frontmatter check: a `generator: 7s-plugin` line in the YAML head.
   const head = fileText.slice(0, 600);
   return new RegExp(`(^|\\n)generator:\\s*${GENERATOR}\\b`).test(head);
+}
+
+/** Read the `metod:` tag from a plugin-owned note's frontmatter (drives the per-job
+ *  write-contract prune). Returns "" if absent. */
+export function ownedMetod(fileText: string): string {
+  const m = fileText.slice(0, 600).match(/(^|\n)metod:\s*([^\n]+)/);
+  return m ? m[2].trim() : "";
 }
 
 /**

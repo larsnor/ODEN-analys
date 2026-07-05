@@ -13,15 +13,8 @@
  * a `#återkomst` tag for the graph colour group.
  */
 import { mdText } from "./mdsafe";
+import { GENERATOR, METOD, RenderedNote } from "./notes_common";
 import { safeAgentFilename } from "./notenames";
-
-export const GENERATOR = "7s-plugin";
-export const RECURRENCE_METOD = "aterkomst";
-
-export interface RenderedNote {
-  filename: string;
-  markdown: string;
-}
 
 export interface RecurrencePair {
   /** Stable identity: `${entityStem}@@${placeStem}` (count-independent). */
@@ -47,7 +40,7 @@ export function renderRecurrenceNote(p: RecurrencePair): RenderedNote {
     "typ: återkomst",
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
-    `metod: ${RECURRENCE_METOD}`,
+    `metod: ${METOD.aterkomst}`,
     "tags: [återkomst]",
     `slag: ${p.entityKind}`,
     `entitet: "${p.entityLabel.replace(/"/g, "'")}"`,

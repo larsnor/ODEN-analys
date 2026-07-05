@@ -18,6 +18,7 @@ import { Report } from "./parse";
 import { PlateEntity } from "./reid";
 import { MarkNomination } from "./jobb";
 import { mdText } from "./mdsafe";
+import { noteStem } from "./notes_common";
 
 /** Snapshot of current knowledge (reflects gradual vault buildup). */
 export interface KB {
@@ -197,12 +198,9 @@ function reportMatchesFilters(r: Report, q: StructuredQuery): boolean {
   return true;
 }
 
-function stem(file: string): string {
-  return file.replace(/^.*\//, "").replace(/\.md$/, "");
-}
 function cite(r: { file: string; tnr: string }): string {
   // tnr is attacker-controlled report content inside a wikilink alias — escape it.
-  return `[[${stem(r.file)}|TNR${mdText(r.tnr)}]]`;
+  return `[[${noteStem(r.file)}|TNR${mdText(r.tnr)}]]`;
 }
 
 function echoBlock(q: StructuredQuery): string {

@@ -6,7 +6,7 @@
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { isPluginOwned, isOverwritable, renderEntityNote } from "../src/entity_notes.ts";
+import { isPluginOwned, isOverwritable, ownedMetod, renderEntityNote } from "../src/entity_notes.ts";
 import { PlateEntity } from "../src/reid.ts";
 
 const ENTITY: PlateEntity = {
@@ -72,4 +72,11 @@ test("image corroboration (§6.7) surfaces on the entity note, and is opt-in", (
   assert.match(withPhoto.markdown, /📷 Bildstyrkt:\*\* 1 observation/);
   assert.match(withPhoto.markdown, /TNR100000\]\] — .* 📷/);
   assert.doesNotMatch(withPhoto.markdown, /TNR100100\]\] — [^\n]*📷/, "uncorroborated obs unmarked");
+});
+
+test("ownedMetod reads the metod tag (drives the per-job prune)", () => {
+  assert.equal(ownedMetod("---\ngenerator: 7s-plugin\nmetod: aktor\ntags: [aktör]\n---\n# x"), "aktor");
+  assert.equal(ownedMetod("---\nmetod:   plats  \n---"), "plats");
+  assert.equal(ownedMetod("---\ntyp: entitet\n---\nno metod here"), "");
+  assert.equal(ownedMetod(""), "");
 });

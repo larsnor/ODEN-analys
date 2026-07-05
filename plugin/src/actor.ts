@@ -28,6 +28,7 @@ import { Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { buildMarkNominations } from "./jobb";
 import { markLabel } from "./marks";
+import { resolveMerge } from "./notes_common";
 
 export type FacetKind = "fordon" | "kannetecken";
 
@@ -277,17 +278,6 @@ export function buildActorHypotheses(reports: Report[], opts: ActorOpts = {}): A
 // the hypotheses into ONE combined node at render time. Pure + idempotent so the
 // owned-note rewrite keeps the merge; a plain [[link]] would be pruned away.
 
-/** Resolve an id to its canonical survivor, following the merge chain (cycle-safe). */
-export function resolveActor(id: string, merges: Record<string, string>): string {
-  const seen = new Set<string>();
-  let cur = id;
-  while (merges[cur] && !seen.has(cur)) {
-    seen.add(cur);
-    cur = merges[cur];
-  }
-  return cur;
-}
-
 /** Combine several hypotheses (that the operator merged) into one: union facets,
  *  merge the evidence chain per file, widen the time span, recount fordon/kännetecken. */
 function combineHypotheses(id: string, base: ActorHypothesis, group: ActorHypothesis[]): ActorHypothesis {
@@ -341,7 +331,7 @@ export function foldActorMerges(hyps: ActorHypothesis[], merges: Record<string, 
   const groups = new Map<string, ActorHypothesis[]>();
   const order: string[] = [];
   for (const h of hyps) {
-    const canon = resolveActor(h.id, merges);
+    const canon = resolveMerge(h.id, merges);
     if (!groups.has(canon)) { groups.set(canon, []); order.push(canon); }
     groups.get(canon)!.push(h);
   }

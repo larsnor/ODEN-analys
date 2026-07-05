@@ -18,16 +18,9 @@ import { SuspicionAnalysis } from "./suspicion";
 import { plateIdentifiers } from "./ids";
 import { safeFilename } from "./entity_notes";
 import { mdText } from "./mdsafe";
+import { GENERATOR, METOD, RenderedNote, noteStem, resolveMerge } from "./notes_common";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
-
-export const GENERATOR = "7s-plugin";
-export const LOCATION_METOD = "plats";
-
-export interface RenderedNote {
-  filename: string;
-  markdown: string;
-}
 
 export interface LocationReportRef {
   tnr: string;
@@ -52,14 +45,9 @@ export interface LocationCluster {
  *  graph hub stays focused instead of pulling in every benign report. */
 /** Resolve a raw `plats` grid to its canonical survivor through operator merges
  *  (cycle-safe). Exported so callers can link an observation's place to the right
- *  (possibly merged) location note. */
+ *  (possibly merged) location note. Trims first (grids carry surrounding spaces). */
 export function resolveLocationKey(plats: string, merges?: Record<string, string>): string {
-  const k = (plats ?? "").trim();
-  if (!merges) return k;
-  const seen = new Set<string>();
-  let cur = k;
-  while (merges[cur] && !seen.has(cur)) { seen.add(cur); cur = merges[cur]; }
-  return cur;
+  return resolveMerge((plats ?? "").trim(), merges);
 }
 
 export function buildLocations(
@@ -109,12 +97,13 @@ export function locationFilename(c: LocationCluster, nicks?: Nicknames): string 
   return safeAgentFilename(`📍 ${placeLabel(c.label, nicks)}`, "plats:" + c.key);
 }
 
-/** For a plate at this location, the stem of the recurrence node to link INSTEAD
- *  of the vehicle (when the plate was seen here 2+ times), or undefined. Routing
- *  the pair through the recurrence node avoids a redundant direct edge. */
-export type RecurrenceLinker = (placeKey: string, plate: string) => string | undefined;
+/** For a (place, plate) pair seen 2+ times, the stem of the recurrence node to link
+ *  INSTEAD of the vehicle, or undefined. Two args (unlike the actor/suspect
+ *  `StemLinker`), so it has its own name to avoid confusion. Routing the pair through
+ *  the recurrence node avoids a redundant direct edge. */
+export type PlateRecurrenceLinker = (placeKey: string, plate: string) => string | undefined;
 
-export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recStem?: RecurrenceLinker): RenderedNote {
+export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recStem?: PlateRecurrenceLinker): RenderedNote {
   const name = placeLabel(c.label, nicks);
   const named = name !== c.key; // a nickname is set → keep the grid visible too
   const fm: string[] = [
@@ -122,7 +111,7 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
     "typ: plats",
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
-    `metod: ${LOCATION_METOD}`,
+    `metod: ${METOD.plats}`,
     "tags: [plats]",
     `namn: "${name.replace(/"/g, "'")}"`,
     `mgrs: "${c.key}"`,
@@ -154,7 +143,7 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
   body.push("");
   body.push("## Observationer");
   for (const o of c.reports) {
-    const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
+    const stem = noteStem(o.file);
     const mark = o.elevated ? "⚠ " : "";
     // Keep the message link (data/traceability) AND link the vehicle directly.
     const plate = o.plates.length ? ` — ${o.plates.map(plateLink).join(", ")}` : "";
@@ -166,6 +155,6 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
   return { filename: locationFilename(c, nicks), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
 }
 
-export function renderLocationNotes(clusters: LocationCluster[], nicks?: Nicknames, recStem?: RecurrenceLinker): RenderedNote[] {
+export function renderLocationNotes(clusters: LocationCluster[], nicks?: Nicknames, recStem?: PlateRecurrenceLinker): RenderedNote[] {
   return clusters.map((c) => renderLocationNote(c, nicks, recStem));
 }
