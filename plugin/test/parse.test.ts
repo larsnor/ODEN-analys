@@ -121,7 +121,6 @@ test("coordinate-less report omits lat/lon/location cleanly", () => {
   const r = parseReport(text, "x.md");
   assert.equal(r.lat, undefined);
   assert.equal(r.lon, undefined);
-  assert.equal(r.location, undefined);
   assert.equal(r.symbol, "inga särskilda kännetecken.");
   assert.equal(r.links.length, 0);
 });

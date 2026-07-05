@@ -144,12 +144,9 @@ function attrsIn(lower: string): Array<[AttrDim, string]> {
   // position (rear window)
   const pos = positionIn(lower);
   if (pos) out.push(["position", pos]);
-  // text content (-TAC / DGE) — corroborating only
-  const txt = lower.match(/-?\b([a-zåäö]{2,4})\b(?=\s*$)/);
-  // (text capture is best-effort and not part of the signature; see normalize)
+  // text content (-TAC / DGE) — corroborating only, not part of the signature
   if (/\b-?tac\b/.test(lower)) out.push(["text", "TAC"]);
   if (/\bdge\b/.test(lower)) out.push(["text", "DGE"]);
-  void txt;
   return out;
 }
 

@@ -163,9 +163,6 @@ export interface SuspicionAnalysis {
   elevated: SuspicionRow[]; // score >= threshold
   threshold: number;
   nearObjectElevated: number;
-  nightElevated: number;
-  byLocation: Array<{ plats: string; count: number }>;
-  byDay: Array<{ day: string; count: number }>;
 }
 
 
@@ -190,17 +187,6 @@ export function analyzeSuspicion(reports: Report[], opts: SuspicionOpts = DEFAUL
   const elevated = rows.filter((r) => r.score >= threshold);
 
   const nearObjectElevated = elevated.filter((r) => r.reasons.some((x) => x.key === "proximity" && x.weight === 3)).length;
-  const nightElevated = elevated.filter((r) => r.reasons.some((x) => x.key === "natt")).length;
 
-  const locCount = new Map<string, number>();
-  const dayCount = new Map<string, number>();
-  for (const r of elevated) {
-    locCount.set(r.plats, (locCount.get(r.plats) ?? 0) + 1);
-    const day = r.tidpunkt.slice(0, 10);
-    dayCount.set(day, (dayCount.get(day) ?? 0) + 1);
-  }
-  const byLocation = [...locCount.entries()].map(([plats, count]) => ({ plats, count })).sort((a, b) => b.count - a.count);
-  const byDay = [...dayCount.entries()].map(([day, count]) => ({ day, count })).sort((a, b) => a.day.localeCompare(b.day));
-
-  return { rows, elevated, threshold, nearObjectElevated, nightElevated, byLocation, byDay };
+  return { rows, elevated, threshold, nearObjectElevated };
 }

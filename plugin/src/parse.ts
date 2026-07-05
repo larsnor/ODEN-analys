@@ -31,7 +31,6 @@ export interface Report {
   plats: string;
   lat?: number;
   lon?: number;
-  location?: string;
   sagesman: string;
   /** Provenance (§2). Optional: present on bin1-intag data, not yet in spec. */
   källa?: string;
@@ -242,14 +241,12 @@ export function parseReport(text: string, file: string, issues?: ParseIssue[]): 
   const plats = asString(f.get("plats")) ?? "";
   let lat = asNumber(f.get("lat"));
   let lon = asNumber(f.get("lon"));
-  let location = asString(f.get("location"));
   let coordsFromMgrs = false;
   if (lat === undefined || lon === undefined) {
     const ll = findMgrsLatLon(fields.stalle ?? "") ?? findMgrsLatLon(plats);
     if (ll) {
       lat = Math.round(ll.lat * 1e5) / 1e5;
       lon = Math.round(ll.lon * 1e5) / 1e5;
-      location = `${lat},${lon}`;
       coordsFromMgrs = true;
     }
   }
@@ -262,7 +259,6 @@ export function parseReport(text: string, file: string, issues?: ParseIssue[]): 
     plats,
     lat,
     lon,
-    location,
     coordsFromMgrs,
     sagesman: asString(f.get("sagesman")) ?? "",
     källa: asString(f.get("källa")),

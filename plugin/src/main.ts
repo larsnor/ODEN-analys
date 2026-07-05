@@ -37,7 +37,7 @@ import { KB } from "./query";
 import { ActorHypothesis, ActorResult, buildActorHypotheses, foldActorMerges } from "./actor";
 import { actorFilename, renderActorNote } from "./actor_notes";
 import { analyzeSuspicion, DEFAULT_SUSPICION, SuspicionAnalysis } from "./suspicion";
-import { Alert, AnalysisBundle, computeAlertItems, newAlerts } from "./alerts";
+import { AnalysisBundle, computeAlertItems, newAlerts } from "./alerts";
 import { buildSuspects, suspectHypotheses, suspectHypId, isActorCandidate } from "./suspects";
 import { renderSuspectNotes } from "./suspect_notes";
 import { buildLocations, renderLocationNotes, LocationCluster, locationFilename, resolveLocationKey } from "./location_notes";
@@ -84,8 +84,6 @@ interface SevenSSettings {
   /** Materialize elevated suspicion observations as `larm-*` marker notes so
    *  they show in the graph + Map View (red). Deterministic finding → safe. */
   materializeAlerts: boolean;
-  /** Chat engine: deterministic keyword parser, or local LLM (Ollama, later). */
-  engine: "deterministic" | "llm";
   /** Operator nicknames for locations, keyed by the raw `plats` (MGRS) string.
    *  Display-only (never written into message files); the grid stays the identity. */
   locationNicknames: Record<string, string>;
@@ -115,7 +113,6 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   seenAlerts: {},
   autoBuildEntities: true,
   materializeAlerts: true,
-  engine: "deterministic",
   locationNicknames: {},
   locationNameAsked: {},
   operationName: "",
@@ -793,7 +790,7 @@ export default class SevenSPlugin extends Plugin {
     if (!trimmed) return;
     try {
       const kb = await this.buildKB();
-      const { prose } = await converse(this.engine, trimmed, kb);
+      const { prose } = await converse(this.conversation, trimmed, kb);
       await this.revealPanel();
       const view = this.getView();
       if (view) await view.addChat(trimmed, prose);
@@ -1122,7 +1119,6 @@ export default class SevenSPlugin extends Plugin {
   // --- Step 5: vault watcher + alerts-with-pointer (§7.2/§9.1) ---------------
 
   private debounceTimer: number | null = null;
-  private lastAlerts: Alert[] = [];
 
   private suspicionOpts() {
     return {
@@ -1147,7 +1143,9 @@ export default class SevenSPlugin extends Plugin {
 
   // --- Panel glue: feed + chat + engine + menu (operator UI) -----------------
 
-  private engine: Conversation = new DeterministicConversation();
+  /** The chat query engine. Deterministic today; the `Conversation` seam lets a
+   *  local LLM drop in later (Phase B) without changing callers. */
+  private conversation: Conversation = new DeterministicConversation();
 
   /** The open ODEN view, if any. */
   private getView(): SevenSTextView | null {
@@ -1246,15 +1244,6 @@ export default class SevenSPlugin extends Plugin {
       }
     } catch (err) {
       console.error("ODEN: refreshPanel failed", err);
-    }
-  }
-
-  /** Flip the chat engine (LLM not yet available → graceful fallback). */
-  async toggleEngine(): Promise<void> {
-    this.settings.engine = this.settings.engine === "llm" ? "deterministic" : "llm";
-    await this.saveSettings();
-    if (this.settings.engine === "llm") {
-      new Notice("LLM-läge ännu ej tillgängligt — använder deterministisk tolkning.");
     }
   }
 
@@ -1416,7 +1405,6 @@ export default class SevenSPlugin extends Plugin {
       await this.autoBuildJobA(bundle);
       await this.materializeAgents(bundle.reports, bundle.suspicion);
       const items = computeAlertItems(bundle, this.settings.locationNicknames);
-      this.lastAlerts = items;
       let changed = false;
       for (const a of items) if (!(a.key in this.settings.seenAlerts)) { this.settings.seenAlerts[a.key] = true; changed = true; }
       if (changed) await this.saveSettings();
@@ -1434,7 +1422,6 @@ export default class SevenSPlugin extends Plugin {
       await this.autoBuildJobA(bundle);
       await this.materializeAgents(bundle.reports, bundle.suspicion);
       const items = computeAlertItems(bundle, this.settings.locationNicknames);
-      this.lastAlerts = items;
       const fresh = newAlerts(items, this.settings.seenAlerts);
       for (const a of fresh) this.settings.seenAlerts[a.key] = true;
       if (fresh.length) await this.saveSettings();
@@ -1510,13 +1497,6 @@ class SevenSTextView extends ItemView {
     const obs = header.createEl("button", { text: "＋ Obs" });
     obs.setAttribute("aria-label", "Ny observation");
     obs.onclick = () => this.plugin.openNewObservation();
-    const eng = header.createEl("button");
-    const setEng = () => eng.setText(this.plugin.settings.engine === "llm" ? "LLM" : "Deterministisk");
-    setEng();
-    eng.onclick = async () => {
-      await this.plugin.toggleEngine();
-      setEng();
-    };
     header.createEl("button", { text: "⋯" }).onclick = (e) => this.plugin.openPanelMenu(e);
 
     // Feed (top, scrollable) — live events + alarms, also hosts review screens.

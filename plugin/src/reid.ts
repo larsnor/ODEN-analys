@@ -53,7 +53,6 @@ export interface PlateEntity {
 
 export interface JobAResult {
   entities: PlateEntity[];
-  observedFulls: string[];
   /** Ambiguous partials kept as candidates (never auto-merged). */
   ambiguous: { partial: string; candidates: string[] }[];
   /** Partials with no observed full match (their own partial entities). */
@@ -213,7 +212,6 @@ export function buildPlateEntities(reports: Report[]): JobAResult {
 
   return {
     entities,
-    observedFulls,
     ambiguous: ambiguous.sort((a, b) => a.partial.localeCompare(b.partial)),
     unresolvedPartials: [...unresolved].sort(),
   };

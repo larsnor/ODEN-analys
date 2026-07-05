@@ -34,13 +34,6 @@ export interface Identifier {
   source: IdentifierSource;
 }
 
-const ROLE: Record<IdentifierType, IdentifierRole> = {
-  plate: "actor",
-  personnummer: "actor",
-  mgrs: "location",
-  sender: "source",
-};
-
 // Swedish plate in prose: 3 letters (excl I O Q V) + optional space + 2 digits +
 // 1 digit/letter. Matches "RJK241" and "RJK 241".
 const PLATE_PROSE = /\b([ABCDEFGHJKLMNPRSTUWXYZ]{3})\s?([0-9]{2}[0-9ABCDEFGHJKLMNPRSTUWXYZ])\b/g;
