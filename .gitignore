@@ -6,6 +6,9 @@ main.js
 main.js.map
 *.log
 
+# Release zips (run `npm run package`)
+dist/
+
 # Python
 __pycache__/
 *.pyc

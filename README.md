@@ -18,7 +18,14 @@ byggd för att kunna granskas och valideras rad för rad.
 | [`docs/`](docs/) | Format-spec, plugin-design, överlämningsanteckningar och frontmatter-schema. |
 | [`archive/`](archive/) | Avvecklat/referens: äldre generator, tidig Python-prototyp, dataset-zip. Ingår inte i pipelinen. |
 
-## Snabbstart
+## Installation
+Steg-för-steg (installera Obsidian → Map View-pluginet → ODEN → applicera
+konfigurationen): se **[`INSTALL.md`](INSTALL.md)**. Obsidian och Map View är
+tredjepartsprogram som operatören installerar själv (de ingår inte). Distribueras
+som en zip (`npm run package` → `dist/ODEN-<version>.zip`), inte via Obsidians
+community-katalog.
+
+## Snabbstart (utveckling)
 
 ### Bygg och testa pluginet
 ```bash
@@ -27,6 +34,7 @@ npm install
 npm run typecheck   # inga typfel
 npm test            # kör hela testsviten mot fixturerna
 npm run build       # skapar main.js
+npm run package     # bygger + paketerar dist/ODEN-<version>.zip
 ```
 Kopiera sedan `plugin/main.js` + `plugin/manifest.json` till
 `<din-vault>/.obsidian/plugins/7s-analys/` och aktivera pluginet i Obsidian.
@@ -65,3 +73,15 @@ kartinställningarna behöver skrivas medan Obsidian är **stängt** (Obsidian s
 
 Detaljerad design finns i [`docs/PLUGIN_DESIGN.md`](docs/PLUGIN_DESIGN.md) och
 meddelandeformatet i [`docs/FORMAT_SPEC.md`](docs/FORMAT_SPEC.md).
+
+## Detekteringens räckvidd (ärligt)
+Den **plåtbaserade** re-identifieringen (exakt matchning) och den transparenta
+**misstankepoängen** (närhet + tid + beteende) är robusta. Den **mjuka
+kännetecken-baserade** re-identifieringen är ett *högprecisions-frö*: den hittar-på
+aldrig ett kännetecken på en civil, men dess täckning på riktiga rapporter är
+begränsad av en fast vokabulär och ovaliderad. Öppen vokabulär är framtida
+(språkmodell-)arbete. Mätningen och gränsdragningen finns i
+[`docs/RE-ID_VALIDATION.md`](docs/RE-ID_VALIDATION.md).
+
+## Licens
+MIT — se [`LICENSE`](LICENSE).

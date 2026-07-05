@@ -14,9 +14,15 @@ and hides the cloud of unconnected message dots:
 | Misstänkta (pending suspects) | `tag:#larm` | red |
 | Aktörer (confirmed actors) | `tag:#aktör` | blue |
 | Platser (relevant locations) | `tag:#plats` | amber |
+| Återkomst (same entity 2+× at a place) | `tag:#återkomst` | magenta |
 | Kännetecken (mark entities) | `file:marke-` | violet |
-| Fordon (vehicle entities) | `path:entities -tag:#objektet -tag:#aktör -tag:#plats -file:marke- -tag:#larm` | green |
-| Meddelanden (raw 7S reports) | `file:TNR` | grey |
+| Fordon (vehicle entities) | `path:entities -tag:#objektet -tag:#aktör -tag:#plats -tag:#återkomst -file:marke- -tag:#larm` | green |
+| Meddelanden (raw 7S reports) | `file:TNR` | grey (hidden by default — see below) |
+
+The graph **search filter is `-file:TNR`**, so raw message nodes are hidden by
+default — the plugin writes direct links (place↔vehicle, actor↔place, larm↔place,
+and a 🔁 recurrence node when the same entity recurs at a place) so the entity graph
+stays connected without them. Clear the filter box to see the messages again.
 
 The **objektet** (gold) node is the operation's area of interest, created by
 ODEN's "Konfigurera operationsområde" — the suspicion proximity signal measures
@@ -29,18 +35,24 @@ them the markers/actors at that spot).
 
 Plus `showOrphans: false` so only entities and their linked reports show.
 
-Actor/suspect nodes are colored by **tag** (`#larm` red = pending, `#aktör`
-blue = confirmed) rather than filename, so their human-readable names
-("Misstänkt fordon RJK241", "Aktör RJK241") don't need a machine prefix. Mark
-notes still use the `marke-` filename prefix. Reports are `TNR*.md` at the
-vault root, in the **`entities/`** folder (default `Entitetsmapp`).
+Nodes are colored by **tag** (`#larm` red = pending, `#aktör` blue = confirmed,
+`#plats` amber, `#återkomst` magenta) rather than filename. Node names carry an
+**emoji type-cue instead of a type word** — `🕸️ …` (actor), `📍 …` (place),
+`⚠️ …` (suspect), `🔁 … ×N · place` (recurrence) — so the graph label reads as the
+entity's name, with the type in metadata/colour only. Mark notes still use the
+`marke-` filename prefix. Reports are `TNR*.md`; entity notes live in the
+**`entities/`** folder (default).
 
-## `obsidian-map-view` display rules (in the vault only)
+## `map-view-data.json` — Map View config
 
-Map View is set (`plugins/obsidian-map-view/data.json`) so the default query is
-`tag:#larm OR tag:#aktör` and markers are colored to match the graph:
-**red triangle = pending suspect (`#larm`)**, **blue spy icon = confirmed actor
-(`#aktör`)**. A confirmed agent thus stays on the map, just recolored.
+Copy to `<vault>/.obsidian/plugins/obsidian-map-view/data.json` (Map View is a
+separate community plugin the operator installs; it is NOT bundled). It sets the
+default query to `tag:#larm OR tag:#aktör OR tag:#objektet` and colors markers to
+match the graph: **gold bullseye = objektet**, **red triangle = pending suspect
+(`#larm`)**, **blue spy icon = confirmed actor (`#aktör`)**. `showNotePreview: false`
+makes marker popups show just the note **name** (not the frontmatter). The map
+**centre is set per-operation** by ODEN's "Konfigurera operationsområde", so the
+committed centre is only a starting point.
 
 ## `oden-lock.css` — lock the workspace
 
@@ -50,10 +62,10 @@ main area so operator panels can't be accidentally closed. Hot-reloads (no
 restart). See the file header for details.
 
 ### IMPORTANT — apply with Obsidian CLOSED
-Obsidian caches `graph.json` in memory and **rewrites it on close / on any graph
-setting change**. Writing the file while Obsidian is open will be overwritten.
-Procedure: **quit Obsidian → copy this file in → reopen.** (Or add the color
-groups by hand in Graph View settings while it's open.)
+Obsidian caches `graph.json` **and** the Map View `data.json` in memory and
+**rewrites them on close / on any settings change**. Writing either while Obsidian
+is open will be overwritten. Procedure: **quit Obsidian → copy the files in →
+reopen.** (Or add the colour groups / filter by hand while it's open.)
 
 The colors only show once entity notes exist — run **Bygg entiteter (Jobb A)**
 (or let the watcher auto-build), and confirm actors/marks to see those classes.

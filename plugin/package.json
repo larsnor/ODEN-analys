@@ -1,6 +1,6 @@
 {
   "name": "7s-analys-plugin",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Bin 3 analysis plugin for 7S field reports (Obsidian).",
   "private": true,
   "type": "module",
@@ -8,7 +8,8 @@
     "build": "node esbuild.config.mjs production",
     "dev": "node esbuild.config.mjs",
     "test": "node --test --import tsx test/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "package": "bash ../scripts/package.sh"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
