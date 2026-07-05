@@ -50,7 +50,7 @@ python3 -m corpusgen generate --aoi 60.345,17.422 --area airport \
 python3 -m corpusgen add-hostiles --corpus ./corpus_tierp --type recon
 python3 -m corpusgen feed --corpus ./corpus_tierp --vault /sökväg/till/Vault
 ```
-Sätt sedan skyddsobjektets koordinat i ODEN till samma AOI (t.ex. via
+Sätt sedan Objektets koordinat i ODEN till samma AOI (t.ex. via
 "Konfigurera operationsområde"). Pluginets egna tester är självständiga och
 behöver inte verktyget — de kör mot den incheckade snapshoten i
 [`plugin/test/fixtures/`](plugin/test/fixtures/).

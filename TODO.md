@@ -54,18 +54,17 @@ made, so work can resume without re-deriving context.
 
 ## Detection vocabulary (deterministic layer)
 
-- [ ] **New `vocab.ts` mark categories for recon gear.** The mark subsystem only
-  knows 3 tells (dark backpack / cap / vehicle decal), so new-format gear —
-  binoculars, cameras+teleobjektiv, tripods, hi-vis-without-work, shoulder bags —
-  never clusters for re-id. Add categories (e.g. `optik`, `skyddsväst`) with
-  `SIGNATURE_DIMS` + `marks.ts` logic. Precision-sensitive (a tourist has a camera):
-  gate distinctiveness carefully and add a held-out mark test.
+- [x] **`vocab.ts` mark categories for recon gear** — DONE (bounded, frozen): added
+  `optik` (distinctive only on a specific sub-type — teleobjektiv/nattkikare/… — so
+  plain binoculars are birdwatcher-safe), `verktyg` (breaching tools), `teknik`
+  (signals gear), with fine per-item signatures. `skyddsväst`/hi-vis was deliberately
+  NOT added (too close to benign workers). OOD-measured in `docs/RE-ID_VALIDATION.md`.
 
-- [ ] **Enrich the generator's recon templates.** The corpora still use the
-  *original* recon phrasings, so they don't exercise the expanded
-  `RECON_INDICATORS`. Add varied, realistic phrasings drawing on the wider
-  vocabulary so future corpora stress the matcher (recall is validated by
-  `recon_indicators.test.ts`, but the corpora themselves are narrow).
+- [ ] **Enrich the generator's recon templates.** 7S-generator work — its corpora
+  still lean on the original phrasings. NB: the plugin-side behaviour vocabulary
+  (`THREAT_INDICATORS`, renamed from RECON_INDICATORS) has now been OOD-validated and
+  tense-expanded independently — see `docs/BEHAVIOUR_VALIDATION.md`; this item is only
+  about broadening the *generator's* prose.
 
 ## Testing / repo hygiene
 
@@ -73,9 +72,8 @@ made, so work can resume without re-deriving context.
   ad-hoc (regenerable). Commit a small Tierp fixture + `tierp.test.ts` asserting
   recall/precision thresholds so the site-independence guarantee is locked in CI.
 
-- [ ] **LICENSE + CI workflow.** Add a `LICENSE` and a `.github/workflows` that runs
-  `npm run typecheck && npm test && npm run build` on push, so the repo is
-  review-ready and regressions are caught automatically.
+- [x] **LICENSE + CI workflow** — DONE. MIT `LICENSE` at the repo root and
+  `.github/workflows/test.yml` (typecheck + test + build on push/PR).
 
 ## Cross-repo (7S-generator)
 

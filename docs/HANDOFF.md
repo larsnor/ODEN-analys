@@ -1,10 +1,16 @@
 # 7S Intelligence Analysis Project — Handoff Summary
 
-> **Note (current):** The data-mimic/simulator described in parts of this
-> historical handoff has moved to its own repo,
-> **[7S-generator](https://github.com/larsnor/7S-generator)** (CLI: generate →
-> add-hostiles/-protesters → feed, optional plate images). References below to
-> `generate_reports*.py` / `feed_reports.py` / `gen_images.py` are historical.
+> **STATUS — read first (this is a historical handoff).** The plugin is **built and
+> shipped (v0.1.0)** and has evolved beyond this document. The **code** and the
+> validation notes ([`RE-ID_VALIDATION.md`](RE-ID_VALIDATION.md),
+> [`BEHAVIOUR_VALIDATION.md`](BEHAVIOUR_VALIDATION.md)) are the source of truth; the
+> current developer guide is [`../plugin/README.md`](../plugin/README.md). Known drift
+> in the text below: "NOT yet built" / "NEXT STEP: build" are obsolete; the data-mimic
+> moved to its own repo **[7S-generator](https://github.com/larsnor/7S-generator)** (so
+> `generate_reports*.py` / `feed_reports.py` / `gen_images.py` are historical);
+> `RECON_INDICATORS` is now `THREAT_INDICATORS`; the Bin-2 config lives in
+> `obsidian-config/`; the scorer is `plugin/test/scoring.ts`; the "7s-dialog" logged
+> note was removed; commands are `ODEN:`-prefixed.
 
 ## What this is
 A system for analysing Swedish Home Guard (Hemvärnet) 7S-format field reports,
@@ -19,7 +25,7 @@ dataset, ~300 reports.
   (plates, personnummer) — never descriptive marks. We provide it a FORMAT_SPEC.
 - **Bin 2 — Obsidian config** (no code): graph colour groups, Map View,
   properties-hidden, default-new-note folder, operator hand-creates entities.
-- **Bin 3 — the plugin** (TypeScript, NOT yet built): all ANALYSIS — entity
+- **Bin 3 — the plugin** (TypeScript, built): all ANALYSIS — entity
   re-id, clustering, suspicion scoring, conversational text interface. Derives
   knowledge the messages don't contain.
 

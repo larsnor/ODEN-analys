@@ -1,6 +1,17 @@
 # Bin 3 — Obsidian-plugin för 7S-analys: designdokument (rev. 2)
 
-**Status:** arkitektur/specifikation. Ingen kod ännu.
+> **STATUS — historiskt designdokument.** Detta är den ursprungliga
+> arkitekturspecifikationen. Pluginet är sedan dess **byggt och släppt (v0.1.0)** och
+> har på några punkter avvikit från specen — **koden är sanningskällan**, se
+> [`../plugin/README.md`](../plugin/README.md). Känd avvikelse: pluginet rör i praktiken
+> Map View på *en* punkt (`focusMapOn` centrerar kartan på explicit operatörsåtgärd —
+> "pekar, styr inte", en medveten uppmjukning av §7.3); den "loggade dialogen"
+> (`7s-dialog`) togs bort; interface-skisserna i §8 (`FuzzyMatcher`, `VisionAnalyzer`)
+> och den additiva berikningen i §5.3 implementerades inte som skrivet. Detektionens
+> faktiska räckvidd är mätt i [`RE-ID_VALIDATION.md`](RE-ID_VALIDATION.md) och
+> [`BEHAVIOUR_VALIDATION.md`](BEHAVIOUR_VALIDATION.md).
+
+**Status:** ursprunglig arkitektur/specifikation (historisk — se statusrutan ovan).
 **Datum:** 2026-06-24
 **Omfattning:** endast Bin 3 (analys). Bin 1 (central app / data-mimik) och
 Bin 2 (Obsidian-konfiguration, inkl. graf och Map View) ligger utanför.
