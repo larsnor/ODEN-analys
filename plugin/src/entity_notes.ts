@@ -14,6 +14,7 @@
  * fixed upstream in reid.ts; we only format here.
  */
 import { PlateEntity } from "./reid";
+import { mdText } from "./mdsafe";
 
 /** Marker used to recognise plugin-owned files on disk (§5.2). */
 export const GENERATOR = "7s-plugin";
@@ -32,7 +33,7 @@ export function safeFilename(canonical: string): string {
 function tnrLink(o: { file: string; tnr: string }): string {
   // Link by file stem (the note title), label with the TNR for readability.
   const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
-  return `[[${stem}|TNR${o.tnr}]]`;
+  return `[[${stem}|TNR${mdText(o.tnr)}]]`;
 }
 
 function frontmatter(e: PlateEntity, corroborated: number): string {
@@ -102,7 +103,7 @@ export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): Rende
   for (const o of e.observations) {
     const shown = o.shown !== e.canonical ? `  — sedd som \`${o.shown}\`` : "";
     const cam = confirmed?.has(o.file) ? " 📷" : "";
-    body.push(`- ${tnrLink(o)} — ${o.tidpunkt} — ${o.plats}${shown}${cam}`);
+    body.push(`- ${tnrLink(o)} — ${mdText(o.tidpunkt)} — ${mdText(o.plats)}${shown}${cam}`);
   }
   body.push("");
   body.push(

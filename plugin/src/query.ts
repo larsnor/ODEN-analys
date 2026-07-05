@@ -17,6 +17,7 @@
 import { Report } from "./parse";
 import { PlateEntity } from "./reid";
 import { MarkNomination } from "./jobb";
+import { mdText } from "./mdsafe";
 
 /** Snapshot of current knowledge (reflects gradual vault buildup). */
 export interface KB {
@@ -200,7 +201,8 @@ function stem(file: string): string {
   return file.replace(/^.*\//, "").replace(/\.md$/, "");
 }
 function cite(r: { file: string; tnr: string }): string {
-  return `[[${stem(r.file)}|TNR${r.tnr}]]`;
+  // tnr is attacker-controlled report content inside a wikilink alias — escape it.
+  return `[[${stem(r.file)}|TNR${mdText(r.tnr)}]]`;
 }
 
 function echoBlock(q: StructuredQuery): string {
@@ -213,18 +215,18 @@ function answerEntity(q: StructuredQuery, kb: KB): QueryAnswer {
   const lines: string[] = [echoBlock(q)];
   if (v) {
     lines.push(`# Fordon ${v.canonical}`);
-    lines.push(`Slag: ${v.slag} · ${v.count} observationer · ${v.firstSeen} → ${v.lastSeen}`);
+    lines.push(`Slag: ${v.slag} · ${v.count} observationer · ${mdText(v.firstSeen)} → ${mdText(v.lastSeen)}`);
     if (v.resolvedPartials.length) lines.push(`Auto-sammanslagna partialer: ${v.resolvedPartials.map((p) => "`" + p + "`").join(", ")}`);
     lines.push("", "## Observationer");
-    for (const o of v.observations) lines.push(`- ${cite(o)} — ${o.tidpunkt} — ${o.plats}`);
+    for (const o of v.observations) lines.push(`- ${cite(o)} — ${mdText(o.tidpunkt)} — ${mdText(o.plats)}`);
     return { query: q, markdown: lines.join("\n"), rowCount: v.observations.length };
   }
   const term2 = (q.term ?? "").toLowerCase();
   const mk = kb.marks.find((m) => m.signature.toLowerCase().includes(term2) || m.label.toLowerCase().includes(term2));
   if (mk) {
     lines.push(`# Kännetecken ${mk.label}`);
-    lines.push(`${mk.count} observationer · ${mk.firstSeen} → ${mk.lastSeen}`, "", "## Observationer");
-    for (const o of mk.members) lines.push(`- ${cite(o)} — ${o.tidpunkt} — ${o.plats}`);
+    lines.push(`${mk.count} observationer · ${mdText(mk.firstSeen)} → ${mdText(mk.lastSeen)}`, "", "## Observationer");
+    for (const o of mk.members) lines.push(`- ${cite(o)} — ${mdText(o.tidpunkt)} — ${mdText(o.plats)}`);
     return { query: q, markdown: lines.join("\n"), rowCount: mk.members.length };
   }
   lines.push(`Ingen entitet matchar \`${q.term}\` i nuvarande material.`);
@@ -241,7 +243,7 @@ function answerRecurring(q: StructuredQuery, kb: KB): QueryAnswer {
       lines.push("", "## Fordon");
       for (const v of vs) {
         rows++;
-        lines.push(`- **${v.canonical}** — ${v.count} obs (${v.firstSeen} → ${v.lastSeen}) — ${v.observations.map(cite).slice(0, 12).join(", ")}`);
+        lines.push(`- **${v.canonical}** — ${v.count} obs (${mdText(v.firstSeen)} → ${mdText(v.lastSeen)}) — ${v.observations.map(cite).slice(0, 12).join(", ")}`);
       }
     }
   }
@@ -251,7 +253,7 @@ function answerRecurring(q: StructuredQuery, kb: KB): QueryAnswer {
       lines.push("", "## Kännetecken (bekräftade)");
       for (const m of ms) {
         rows++;
-        lines.push(`- **${m.label}** — ${m.count} obs (${m.firstSeen} → ${m.lastSeen})`);
+        lines.push(`- **${m.label}** — ${m.count} obs (${mdText(m.firstSeen)} → ${mdText(m.lastSeen)})`);
       }
     }
   }
@@ -270,7 +272,7 @@ function answerObservations(q: StructuredQuery, kb: KB): QueryAnswer {
   }
   matches = matches.sort((a, b) => a.tidpunkt.localeCompare(b.tidpunkt));
   for (const r of matches) {
-    lines.push(`- ${cite(r)} — ${r.tidpunkt} — ${r.plats}${r.symbol ? " — " + r.symbol : ""}`);
+    lines.push(`- ${cite(r)} — ${mdText(r.tidpunkt)} — ${mdText(r.plats)}${r.symbol ? " — " + mdText(r.symbol) : ""}`);
   }
   if (matches.length === 0) lines.push("", "_Inga observationer matchar filtren._");
   return { query: q, markdown: lines.join("\n"), rowCount: matches.length };
@@ -290,7 +292,7 @@ function answerSearch(q: StructuredQuery, kb: KB): QueryAnswer {
       r.links.some((l) => l.raw.toLowerCase().includes(term)),
     )
     .sort((a, b) => a.tidpunkt.localeCompare(b.tidpunkt));
-  for (const r of hits) lines.push(`- ${cite(r)} — ${r.tidpunkt} — ${r.plats} — ${r.symbol ?? ""}`);
+  for (const r of hits) lines.push(`- ${cite(r)} — ${mdText(r.tidpunkt)} — ${mdText(r.plats)} — ${mdText(r.symbol)}`);
   if (hits.length === 0) lines.push("", "_Inga träffar._");
   return { query: q, markdown: lines.join("\n"), rowCount: hits.length };
 }

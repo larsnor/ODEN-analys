@@ -12,6 +12,7 @@
  * pruning so Job A / Job B runs never touch it.
  */
 import { ActorHypothesis } from "./actor";
+import { mdText } from "./mdsafe";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
 
@@ -33,7 +34,7 @@ export function actorFilename(h: ActorHypothesis, name?: string): string {
 
 function tnrLink(s: { file: string; tnr: string }): string {
   const stem = s.file.replace(/^.*\//, "").replace(/\.md$/, "");
-  return `[[${stem}|TNR${s.tnr}]]`;
+  return `[[${stem}|TNR${mdText(s.tnr)}]]`;
 }
 
 /** Given an observation's raw `plats`, the stem of the location note to link to
@@ -78,14 +79,14 @@ export function renderActorNote(
   fm.push("tags: [aktör]", "---");
 
   const body: string[] = [];
-  body.push(`# 🕸️ ${name}`);
+  body.push(`# 🕸️ ${mdText(name)}`);
   body.push("");
-  body.push(h.explanation);
+  body.push(mdText(h.explanation));
   body.push("");
   body.push("## Facetter");
   for (const f of h.facets) {
     // Link to each facet's own entity note (vehicle or mark) by its stem.
-    body.push(`- **${f.kind === "fordon" ? "Fordon" : "Kännetecken"}:** [[${f.noteStem}|${f.label}]]`);
+    body.push(`- **${f.kind === "fordon" ? "Fordon" : "Kännetecken"}:** [[${f.noteStem}|${mdText(f.label)}]]`);
   }
   body.push("");
   body.push("## Evidenskedja (inget enskilt meddelande binder alla kännetecken)");
@@ -94,8 +95,9 @@ export function renderActorNote(
     // the message link (tnrLink) for traceability. If the actor recurs at this
     // place, route through the recurrence node instead (one labelled hop).
     const stem = recStemOf?.(step.plats) ?? locStemOf?.(step.plats);
-    const place = stem ? `[[${stem}|${placeLabel(step.plats, nicks)}]]` : placeLabel(step.plats, nicks);
-    body.push(`- ${tnrLink(step)} — ${step.tidpunkt} — ${place} — _kopplar:_ ${step.facets.join(" + ")}`);
+    const lbl = mdText(placeLabel(step.plats, nicks));
+    const place = stem ? `[[${stem}|${lbl}]]` : lbl;
+    body.push(`- ${tnrLink(step)} — ${mdText(step.tidpunkt)} — ${place} — _kopplar:_ ${mdText(step.facets.join(" + "))}`);
   }
   body.push("");
   body.push(

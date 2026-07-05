@@ -9,6 +9,7 @@
 import { Suspect } from "./suspects";
 import { safeFilename } from "./entity_notes";
 import { safeAgentFilename } from "./notenames";
+import { mdText } from "./mdsafe";
 import { Nicknames, placeLabel } from "./places";
 
 export const GENERATOR = "7s-plugin";
@@ -53,14 +54,14 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Loc
   fm.push("---");
 
   const body: string[] = [];
-  body.push(`# ⚠️ ${name}`);
+  body.push(`# ⚠️ ${mdText(name)}`);
   body.push("");
   body.push(`**Bedömd nivå:** ${s.level}  `);
   body.push(`**Antal observationer:** ${s.obs.length}  `);
-  body.push(`**Tidsspann:** ${s.firstSeen} → ${s.lastSeen}`);
+  body.push(`**Tidsspann:** ${mdText(s.firstSeen)} → ${mdText(s.lastSeen)}`);
   // A vehicle suspect links straight to its vehicle entity node → a direct
   // larm↔fordon edge (keeps the larm node connected when messages are hidden).
-  if (s.kind === "fordon") body.push(`  \n**Fordon:** [[${safeFilename(s.label).replace(/\.md$/, "")}|${s.label}]]`);
+  if (s.kind === "fordon") body.push(`  \n**Fordon:** [[${safeFilename(s.label).replace(/\.md$/, "")}|${mdText(s.label)}]]`);
   body.push("");
   body.push("## Observationer");
   for (const o of s.obs) {
@@ -68,8 +69,9 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Loc
     // Keep the message link (traceability) AND link the place directly → the larm
     // node stays in the graph (via a plats edge) even with TNR nodes filtered out.
     const locStem = locStemOf?.(o.plats);
-    const place = locStem ? `[[${locStem}|${placeLabel(o.plats, nicks)}]]` : placeLabel(o.plats, nicks);
-    body.push(`- [[${stem}|TNR${o.tnr}]] — ${o.tidpunkt} — ${place}`);
+    const lbl = mdText(placeLabel(o.plats, nicks));
+    const place = locStem ? `[[${locStem}|${lbl}]]` : lbl;
+    body.push(`- [[${stem}|TNR${mdText(o.tnr)}]] — ${mdText(o.tidpunkt)} — ${place}`);
   }
   body.push("");
   body.push(

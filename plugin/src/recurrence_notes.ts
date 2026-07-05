@@ -12,6 +12,7 @@
  * Provenance: källa/generator 7s-plugin, metod: aterkomst (own per-job prune), and
  * a `#återkomst` tag for the graph colour group.
  */
+import { mdText } from "./mdsafe";
 import { safeAgentFilename } from "./notenames";
 
 export const GENERATOR = "7s-plugin";
@@ -56,10 +57,10 @@ export function renderRecurrenceNote(p: RecurrencePair): RenderedNote {
     "",
   ];
   const body = [
-    `# 🔁 ${p.entityLabel} ×${p.count} · ${p.placeLabel}`,
+    `# 🔁 ${mdText(p.entityLabel)} ×${p.count} · ${mdText(p.placeLabel)}`,
     "",
-    `**${kindWord}:** [[${p.entityStem}|${p.entityLabel}]]  `,
-    `**Plats:** [[${p.placeStem}|${p.placeLabel}]]  `,
+    `**${kindWord}:** [[${p.entityStem}|${mdText(p.entityLabel)}]]  `,
+    `**Plats:** [[${p.placeStem}|${mdText(p.placeLabel)}]]  `,
     `**Antal observationer här:** ${p.count}`,
     "",
     "_Återkommande närvaro — samma entitet observerad på denna plats flera gånger._",

@@ -17,6 +17,7 @@ import { Report } from "./parse";
 import { SuspicionAnalysis } from "./suspicion";
 import { plateIdentifiers } from "./ids";
 import { safeFilename } from "./entity_notes";
+import { mdText } from "./mdsafe";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
 
@@ -135,8 +136,8 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
   fm.push("---");
 
   const body: string[] = [];
-  body.push(`# 📍 ${name}`);
-  if (named) body.push(`_MGRS: ${c.key}_`);
+  body.push(`# 📍 ${mdText(name)}`);
+  if (named) body.push(`_MGRS: ${mdText(c.key)}_`);
   body.push("");
   // Link the plate to its vehicle entity note → a DIRECT place↔fordon graph edge
   // (so the link survives even when message nodes are filtered out of the graph).
@@ -157,7 +158,7 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
     const mark = o.elevated ? "⚠ " : "";
     // Keep the message link (data/traceability) AND link the vehicle directly.
     const plate = o.plates.length ? ` — ${o.plates.map(plateLink).join(", ")}` : "";
-    body.push(`- ${mark}[[${stem}|TNR${o.tnr}]] — ${o.tidpunkt}${plate}`);
+    body.push(`- ${mark}[[${stem}|TNR${mdText(o.tnr)}]] — ${mdText(o.tidpunkt)}${plate}`);
   }
   body.push("");
   body.push("_Platsnod (härledd av 7s-plugin). Länkar samman observationerna på denna plats._");

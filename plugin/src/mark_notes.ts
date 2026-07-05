@@ -9,6 +9,7 @@
  */
 import { markLabel } from "./marks";
 import { MarkNomination } from "./jobb";
+import { mdText } from "./mdsafe";
 
 export const GENERATOR = "7s-plugin";
 export const JOBB_METOD = "jobb-b";
@@ -24,7 +25,7 @@ export function markFilename(nom: MarkNomination): string {
 
 function tnrLink(o: { file: string; tnr: string }): string {
   const stem = o.file.replace(/^.*\//, "").replace(/\.md$/, "");
-  return `[[${stem}|TNR${o.tnr}]]`;
+  return `[[${stem}|TNR${mdText(o.tnr)}]]`;
 }
 
 /** Render a CONFIRMED mark nomination as a provenance-marked entity note. */
@@ -59,7 +60,7 @@ export function renderMarkNote(nom: MarkNomination): RenderedNote {
   body.push("");
   body.push("## Observationer");
   for (const m of nom.members) {
-    body.push(`- ${tnrLink(m)} — ${m.tidpunkt} — ${m.plats}`);
+    body.push(`- ${tnrLink(m)} — ${mdText(m.tidpunkt)} — ${mdText(m.plats)}`);
   }
   body.push("");
   body.push(
