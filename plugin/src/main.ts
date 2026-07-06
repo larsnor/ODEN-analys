@@ -35,20 +35,27 @@ import { METOD, noteStem } from "./notes_common";
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
 import { markFilename, renderMarkNote } from "./mark_notes";
 import { KB } from "./query";
-import { ActorHypothesis, ActorResult, buildActorHypotheses, foldActorMerges } from "./actor";
-import { actorFilename, renderActorNote } from "./actor_notes";
+import { ActorHypothesis, ActorResult, foldActorMerges } from "./actor";
 import { analyzeSuspicion, DEFAULT_SUSPICION, SuspicionAnalysis } from "./suspicion";
 import { AnalysisBundle, computeAlertItems, newAlerts } from "./alerts";
-import { buildSuspects, suspectHypotheses, suspectHypId, isActorCandidate } from "./suspects";
+import { buildSuspects, suspectHypId } from "./suspects";
 import { renderSuspectNotes } from "./suspect_notes";
-import { buildLocations, renderLocationNotes, LocationCluster, locationFilename, resolveLocationKey } from "./location_notes";
-import { renderRecurrenceNote, recurrenceFilename, RecurrencePair } from "./recurrence_notes";
+import { buildLocations, renderLocationNotes, LocationCluster } from "./location_notes";
+import { renderRecurrenceNote, RecurrencePair } from "./recurrence_notes";
 import { isMgrsGrid, placeLabel } from "./places";
 import { mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
-import { buildFeed, FeedItem, FeedRow } from "./feed";
-import { suspicionLevel, reasonPhrases } from "./present";
+import { buildFeed, FeedRow } from "./feed";
 import { Conversation, converse, DeterministicConversation } from "./conversation";
+import {
+  buildFeedItems,
+  buildRecurrences,
+  confirmedActorNotes,
+  foldedConfirmedActors,
+  locationLinker,
+  mergedActors,
+  stemForKey,
+} from "./derive";
 
 type MarkDecision = "confirmed" | "rejected";
 type ActorDecision = "confirmed" | "rejected";
@@ -815,7 +822,7 @@ export default class SevenSPlugin extends Plugin {
     try {
       const { reports } = await this.readReports();
       const suspicion = analyzeSuspicion(reports, this.suspicionOpts());
-      this.lastActors = this.mergedActors(reports, suspicion);
+      this.lastActors = mergedActors(reports, suspicion, this.settings.actorThreshold);
       await this.revealActors();
       new Notice(
         `ODEN: ${this.lastActors.hypotheses.length} aktörsförslag att granska (känslighet ${this.settings.actorThreshold}).`,
@@ -971,21 +978,21 @@ export default class SevenSPlugin extends Plugin {
     // Build the location clusters ONCE so actors can link straight to the same
     // location nodes (a direct actor↔plats edge, no message node in between).
     const clusters = buildLocations(reports, suspicion, this.settings.locationMerges);
-    const locStemOf = this.locationLinker(clusters);
-    const confirmedActors = this.foldedConfirmedActors(reports, suspicion);
+    const locStemOf = locationLinker(clusters, this.settings);
+    const confirmedActors = foldedConfirmedActors(reports, suspicion, this.settings);
 
     // Recurrence nodes: a vehicle or actor seen 2+ times at the same place gets a
     // labelled node ON that pair (count as edge-weight is impossible in the core
     // graph). The pair is ROUTED through it, so no redundant direct edge. Gated on
     // the same toggle as the location/larm layer; an empty set still prunes stale.
     const recs = this.settings.materializeAlerts
-      ? this.buildRecurrences(clusters, confirmedActors)
+      ? buildRecurrences(clusters, confirmedActors, this.settings)
       : { pairs: [] as RecurrencePair[], byVehicle: new Map<string, string>(), byActor: new Map<string, string>() };
     const recForPlate = (placeKey: string, plate: string) =>
-      recs.byVehicle.get(`${safeFilename(plate).replace(/\.md$/, "")}@@${this.stemForKey(clusters, placeKey)}`);
+      recs.byVehicle.get(`${noteStem(safeFilename(plate))}@@${stemForKey(clusters, placeKey, this.settings.locationNicknames)}`);
 
     await this.writeOwnedNotes(
-      this.confirmedActorNotesFrom(reports, suspicion, locStemOf, confirmedActors, recs),
+      confirmedActorNotes(confirmedActors, this.settings, locStemOf, recs),
       "aktor",
     );
     await this.writeSuspectNotes(reports, suspicion, locStemOf);
@@ -994,85 +1001,6 @@ export default class SevenSPlugin extends Plugin {
       recs.pairs.map((p) => { const n = renderRecurrenceNote(p); return { name: n.filename, body: n.markdown }; }),
       METOD.aterkomst,
     );
-  }
-
-  /** Confirmed actor hypotheses, after folding operator "same actor" merges. */
-  private foldedConfirmedActors(reports: Report[], suspicion: SuspicionAnalysis): ActorHypothesis[] {
-    const confirmed = this.mergedActors(reports, suspicion).hypotheses.filter(
-      (h) => this.settings.actorDecisions[h.id] === "confirmed",
-    );
-    return foldActorMerges(confirmed, this.settings.actorMerges);
-  }
-
-  /** The location-note stem for a canonical place key (or "" if it has no node). */
-  private stemForKey(clusters: LocationCluster[], key: string): string {
-    const c = clusters.find((x) => x.key === key);
-    return c ? locationFilename(c, this.settings.locationNicknames).replace(/\.md$/, "") : "";
-  }
-
-  /** Recurrence pairs (entity seen 2+ times at a place), plus lookup maps from an
-   *  `entityStem@@placeStem` key to the recurrence-note stem (for routing). */
-  private buildRecurrences(
-    clusters: LocationCluster[],
-    actors: ActorHypothesis[],
-  ): { pairs: RecurrencePair[]; byVehicle: Map<string, string>; byActor: Map<string, string> } {
-    const nicks = this.settings.locationNicknames;
-    const pairs: RecurrencePair[] = [];
-    const byVehicle = new Map<string, string>();
-    const byActor = new Map<string, string>();
-    const stemByKey = new Map<string, string>();
-    for (const c of clusters) stemByKey.set(c.key, locationFilename(c, nicks).replace(/\.md$/, ""));
-
-    const add = (p: RecurrencePair, into: Map<string, string>) => {
-      pairs.push(p);
-      into.set(p.key, recurrenceFilename(p).replace(/\.md$/, ""));
-    };
-
-    // Vehicles: count how many reports at each cluster carry a given plate.
-    for (const c of clusters) {
-      const placeStem = stemByKey.get(c.key)!;
-      const placeLbl = placeLabel(c.label, nicks);
-      const count = new Map<string, number>();
-      for (const o of c.reports) for (const p of o.plates) count.set(p, (count.get(p) ?? 0) + 1);
-      for (const [plate, n] of count) {
-        if (n < 2) continue;
-        const entityStem = safeFilename(plate).replace(/\.md$/, "");
-        add({ key: `${entityStem}@@${placeStem}`, entityKind: "fordon", entityStem, entityLabel: plate, placeStem, placeLabel: placeLbl, count: n }, byVehicle);
-      }
-    }
-
-    // Actors: count chain steps per place that has a location node.
-    for (const h of actors) {
-      const opName = this.settings.actorNames[h.id];
-      const entityStem = actorFilename(h, opName).replace(/\.md$/, "");
-      const entityLabel = opName ?? (h.facets.map((f) => f.label).join(" + ") || "aktör");
-      const count = new Map<string, number>();
-      for (const step of h.chain) {
-        const key = resolveLocationKey(step.plats, this.settings.locationMerges);
-        if (stemByKey.has(key)) count.set(key, (count.get(key) ?? 0) + 1);
-      }
-      for (const [placeKey, n] of count) {
-        if (n < 2) continue;
-        const placeStem = stemByKey.get(placeKey)!;
-        add({ key: `${entityStem}@@${placeStem}`, entityKind: "aktör", entityStem, entityLabel, placeStem, placeLabel: this.stemLabel(clusters, placeKey), count: n }, byActor);
-      }
-    }
-    return { pairs, byVehicle, byActor };
-  }
-
-  /** The display label for a place key (nickname-resolved). */
-  private stemLabel(clusters: LocationCluster[], key: string): string {
-    const c = clusters.find((x) => x.key === key);
-    return placeLabel(c ? c.label : key, this.settings.locationNicknames);
-  }
-
-  /** A resolver from a raw observation `plats` to the stem of its location note
-   *  (respecting operator merges), or undefined when that place has no node. */
-  private locationLinker(clusters: LocationCluster[]): (plats: string) => string | undefined {
-    const nicks = this.settings.locationNicknames;
-    const stemByKey = new Map<string, string>();
-    for (const c of clusters) stemByKey.set(c.key, locationFilename(c, nicks).replace(/\.md$/, ""));
-    return (plats: string) => stemByKey.get(resolveLocationKey(plats, this.settings.locationMerges));
   }
 
   /** One graph/map node per RELEVANT location (suspicious activity or a vehicle),
@@ -1130,7 +1058,7 @@ export default class SevenSPlugin extends Plugin {
       reports,
       suspicion,
       jobB: buildMarkNominations(reports),
-      actors: this.mergedActors(reports, suspicion),
+      actors: mergedActors(reports, suspicion, this.settings.actorThreshold),
       jobA: buildPlateEntities(reports),
     };
   }
@@ -1152,79 +1080,6 @@ export default class SevenSPlugin extends Plugin {
     await this.getPanelLeaf();
   }
 
-  /** Build the live event/alarm feed items from current analysis + vault notes. */
-  private buildFeedItems(bundle: AnalysisBundle): FeedItem[] {
-    const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
-    const inFolder = (name: string) => (folder ? `${folder}/${name}` : name);
-    const ms = (t: string) => Date.parse(t) || 0;
-    const items: FeedItem[] = [];
-
-    // Feed shows DERIVED events only (identifications + alarms), not raw
-    // "message received" rows.
-    // Identified vehicles (Job A entity notes).
-    for (const e of bundle.jobA.entities) {
-      items.push({
-        path: inFolder(safeFilename(e.canonical)),
-        kind: "fordon",
-        time: ms(e.lastSeen),
-        label: e.canonical,
-        count: e.count,
-        photo: this.lastCorroboration.has(e.canonical),
-      });
-    }
-    // Confirmed marks / actors.
-    for (const n of bundle.jobB.nominations) {
-      if (this.settings.markDecisions[n.signature] === "confirmed") {
-        items.push({ path: inFolder(markFilename(n)), kind: "kännetecken", time: ms(n.lastSeen), label: n.label });
-      }
-    }
-    const confirmedActors = foldActorMerges(
-      bundle.actors.hypotheses.filter((h) => this.settings.actorDecisions[h.id] === "confirmed"),
-      this.settings.actorMerges,
-    );
-    for (const h of confirmedActors) {
-      const opName = this.settings.actorNames[h.id];
-      items.push({
-        path: inFolder(actorFilename(h, opName)),
-        kind: "aktör",
-        time: ms(h.lastSeen),
-        label: opName ?? `${h.vehicleCount} fordon + ${h.markCount} kännetecken`,
-      });
-    }
-    // Alarms (link to the observation itself).
-    for (const row of bundle.suspicion.elevated) {
-      items.push({
-        path: row.file,
-        kind: "larm",
-        time: ms(row.tidpunkt),
-        plats: placeLabel(row.plats, this.settings.locationNicknames),
-        level: suspicionLevel(row.score),
-        reasons: reasonPhrases(row.reasons),
-      });
-    }
-
-    // Pending suggestions awaiting operator review — pinned to the top so they
-    // are visible (click → the confirm/reject review). Human-gated (§6.1).
-    const pendingActors = bundle.actors.hypotheses.filter((h) => !this.settings.actorDecisions[h.id]).length;
-    const pendingMarks = bundle.jobB.nominations.filter((n) => !this.settings.markDecisions[n.signature]).length;
-    if (pendingActors > 0) {
-      items.push({ path: "review:actors", kind: "förslag-aktör", time: Number.MAX_SAFE_INTEGER, pending: pendingActors, review: "actors" });
-    }
-    if (pendingMarks > 0) {
-      items.push({ path: "review:marks", kind: "förslag-märke", time: Number.MAX_SAFE_INTEGER - 1, pending: pendingMarks, review: "marks" });
-    }
-
-    // Nudge: relevant locations that are still a bare MGRS grid and haven't been
-    // named/skipped yet — click to give them a nickname (§ operator naming).
-    let t = Number.MAX_SAFE_INTEGER - 2;
-    for (const c of buildLocations(bundle.reports, bundle.suspicion)) {
-      if (!isMgrsGrid(c.key)) continue; // already has a human-friendly place name
-      if (this.settings.locationNicknames[c.key] || this.settings.locationNameAsked[c.key]) continue;
-      items.push({ path: `review:place:${c.key}`, kind: "namnge-plats", time: t--, place: c.key, review: "place" });
-    }
-    return items;
-  }
-
   /** Recompute and refresh the feed in the open panel (no alert notices). This is
    *  the EXPLICIT path (back button, ⋯ menu, commands), so it leaves any open
    *  review screen and returns to the live feed. */
@@ -1234,7 +1089,7 @@ export default class SevenSPlugin extends Plugin {
       const view = this.getView();
       if (view) {
         view.enterFeedMode();
-        view.setFeed(buildFeed(this.buildFeedItems(bundle)));
+        view.setFeed(buildFeed(buildFeedItems(bundle, this.settings, this.lastCorroboration)));
       }
     } catch (err) {
       console.error("ODEN: refreshPanel failed", err);
@@ -1349,47 +1204,6 @@ export default class SevenSPlugin extends Plugin {
     await this.writeOwnedNotes(notes, METOD.larm);
   }
 
-  /** Actors = transitive hypotheses (§6.4) PLUS single-observation suspect agents
-   *  (#1), deduped so an agent already inside a transitive actor isn't repeated. */
-  private mergedActors(reports: Report[], suspicion: SuspicionAnalysis): ActorResult {
-    const base = buildActorHypotheses(reports, { threshold: this.settings.actorThreshold });
-    const inActors = new Set<string>();
-    for (const h of base.hypotheses) for (const f of h.facets) inActors.add(f.id);
-    // Only nominate suspects with a behavioural signal or a repeat sighting —
-    // proximity+time-only agents stay as map markers, not actor candidates.
-    const candidates = buildSuspects(reports, suspicion).filter(isActorCandidate);
-    const extra = suspectHypotheses(candidates).filter(
-      (h) => !h.facets.some((f) => inActors.has(f.id)),
-    );
-    return { ...base, hypotheses: [...base.hypotheses, ...extra] };
-  }
-
-  /** Render the FULL set of currently-confirmed actor notes from an analysis.
-   *  Writing the whole set — rather than a single note — keeps the per-job prune
-   *  correct: confirming/rejecting one actor never deletes the others. */
-  private confirmedActorNotesFrom(
-    reports: Report[],
-    suspicion: SuspicionAnalysis,
-    locStemOf?: (plats: string) => string | undefined,
-    folded?: ActorHypothesis[],
-    recs?: { byActor: Map<string, string> },
-  ): { name: string; body: string }[] {
-    const actors = folded ?? this.foldedConfirmedActors(reports, suspicion);
-    return actors.map((h) => {
-      const opName = this.settings.actorNames[h.id];
-      // Operator name wins; else a single-observation suspect is titled by its
-      // facet label (not the derived "(N fordon…)" default).
-      const label = opName ?? (h.id.startsWith("suspect-") ? h.facets[0]?.label : undefined);
-      // Route a place this actor recurs at through its recurrence node.
-      const entityStem = actorFilename(h, opName).replace(/\.md$/, "");
-      const recStemOf = recs
-        ? (plats: string) => recs.byActor.get(`${entityStem}@@${locStemOf?.(plats) ?? ""}`)
-        : undefined;
-      const note = renderActorNote(h, label, this.settings.locationNicknames, opName, locStemOf, recStemOf);
-      return { name: note.filename, body: note.markdown };
-    });
-  }
-
   /** Seed the seen-set from the CURRENT state, silently — so the watcher alerts
    *  only on activity that arrives AFTER the plugin loaded. */
   private async baselineAlerts(): Promise<void> {
@@ -1403,7 +1217,7 @@ export default class SevenSPlugin extends Plugin {
       for (const a of items) if (!(a.key in this.settings.seenAlerts)) { this.settings.seenAlerts[a.key] = true; changed = true; }
       if (changed) await this.saveSettings();
       const view = this.getView();
-      if (view) view.setFeed(buildFeed(this.buildFeedItems(bundle)));
+      if (view) view.setFeed(buildFeed(buildFeedItems(bundle, this.settings, this.lastCorroboration)));
     } catch (err) {
       console.error("ODEN: baseline failed", err);
     }
@@ -1420,7 +1234,7 @@ export default class SevenSPlugin extends Plugin {
       for (const a of fresh) this.settings.seenAlerts[a.key] = true;
       if (fresh.length) await this.saveSettings();
       const view = this.getView();
-      if (view) view.setFeed(buildFeed(this.buildFeedItems(bundle)));
+      if (view) view.setFeed(buildFeed(buildFeedItems(bundle, this.settings, this.lastCorroboration)));
       if (silent || fresh.length === 0) return;
       const top = fresh.slice(0, 2).map((a) => a.title).join(" · ");
       new Notice(`ODEN: ${fresh.length} ny händelse — ${top}${fresh.length > 2 ? " …" : ""}`, 8000);
