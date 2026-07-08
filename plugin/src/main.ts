@@ -31,7 +31,7 @@ import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
 import { EmbeddedPlateVision, corroboratePlate, PlateVision } from "./vision";
 import { isOverwritable, isPluginOwned, ownedMetod, renderAll, safeFilename } from "./entity_notes";
-import { METOD, noteStem } from "./notes_common";
+import { METOD, OBJEKTET_STEM, noteStem } from "./notes_common";
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
 import { markFilename, renderMarkNote } from "./mark_notes";
 import { KB } from "./query";
@@ -136,6 +136,11 @@ const DEFAULT_SETTINGS: SevenSSettings = {
 };
 
 const VIEW_TYPE_7S = "7s-analys-text";
+
+/** The Map View query for ODEN's marker layers (mirrors obsidian-config/
+ *  map-view-data.json defaultState.query — keep the two in sync). Derived
+ *  `#plats` hubs stay off the map; predefined places show via #fördefinierad. */
+const MAP_QUERY = "tag:#objektet OR tag:#larm OR tag:#aktör OR tag:#fördefinierad";
 
 // Custom ODEN ribbon/view icon — a stylized raven head in a compass ring,
 // monochrome (currentColor) so it themes. Registered via addIcon("oden", …).
@@ -635,7 +640,8 @@ export default class SevenSPlugin extends Plugin {
               title: "Nytt operationsområde",
               body:
                 "Ett nytt/ändrat operationsområde raderar alla tidigare beslut " +
-                "(bekräftade aktörer, kännetecken, platsnamn och sammanslagningar). Fortsätt?",
+                "(bekräftade aktörer, kännetecken, platsnamn, sammanslagningar " +
+                "och platser i förväg). Fortsätt?",
               confirmText: "Radera och sätt område",
             },
             async () => {
@@ -661,7 +667,7 @@ export default class SevenSPlugin extends Plugin {
     await this.writeAoiNote();
     // Point the map at the area AND include the AOI tag in the query so the marker
     // shows now (the persisted map rule/query only reloads on restart).
-    this.focusMapOn(res.lat, res.lon, "tag:#objektet OR tag:#larm OR tag:#aktör");
+    this.focusMapOn(res.lat, res.lon, MAP_QUERY);
     await this.reconcileActorNodes(); // re-derive nodes for the (possibly wiped) state
     await this.refreshPanel();
     new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
@@ -712,7 +718,7 @@ export default class SevenSPlugin extends Plugin {
       "_Operationens område av intresse. ODEN mäter närhet mot denna punkt._",
       "",
     );
-    await this.writeOwnedNotes([{ name: "Objektet.md", body: body.join("\n") }], METOD.objektet);
+    await this.writeOwnedNotes([{ name: `${OBJEKTET_STEM}.md`, body: body.join("\n") }], METOD.objektet);
   }
 
   /** Guided dialog → a COMPLETE operator-authored 7S observation (all fields). */
@@ -770,6 +776,8 @@ export default class SevenSPlugin extends Plugin {
     await this.saveSettings();
     await this.reconcileActorNodes(); // materializes the 📍 note + vicinity links
     await this.refreshPanel();
+    // Show the new needle right away (an already-open map re-queries live).
+    this.focusMapOn(p.lat, p.lon, MAP_QUERY);
     new Notice(`ODEN: plats "${name}" ${existed ? "uppdaterad" : "skapad"}.`);
   }
 

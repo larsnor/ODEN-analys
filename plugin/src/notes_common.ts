@@ -25,6 +25,11 @@ export const METOD = {
   aterkomst: "aterkomst", // recurrence nodes
 } as const;
 
+/** The AOI marker note's stem ("Objektet.md", written at operation setup). A fixed
+ *  contract like the emoji prefixes: predefined places link it so they (and it)
+ *  have a graph edge from day 0 — the graph hides orphans (`showOrphans: false`). */
+export const OBJEKTET_STEM = "Objektet";
+
 /** A rendered note: vault-relative filename (no folder prefix) + Markdown body. */
 export interface RenderedNote {
   filename: string;

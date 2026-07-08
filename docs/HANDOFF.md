@@ -268,6 +268,16 @@ extra suspicion proximity anchors with bands SCALED by the radius (<R→3, <2R�
 <4R→1), taken as MAX with objektet (never summed — proximity alone still can't
 cross the threshold); reason/alert title names the place ("nära Förrådet").
 Pure logic in location_notes/suspicion/derive; 11 new tests (142 total).
+MAP (follow-up 2026-07-08): predefined notes are tagged `fördefinierad`
+(+ `skyddsvärd` when sensitive) → included in MAP_QUERY (main.ts, mirrored in
+obsidian-config/map-view-data.json defaultState.query) with display rules:
+green fa-map-pin needle for #fördefinierad, violet fa-shield-halved for
+#skyddsvärd. Derived #plats hubs stay off the map. Adding a place refocuses the
+map so the needle shows at once. NOTE: the LIVE vault's map-view data.json only
+updates with Obsidian CLOSED (template in obsidian-config/; live vault patched
+2026-07-08, centre preserved). GRAPH: predefined places link [[Objektet]]
+(OBJEKTET_STEM in notes_common) so they + the AOI node show from day 0 despite
+showOrphans:false; derived hubs deliberately do NOT get that edge.
 
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but

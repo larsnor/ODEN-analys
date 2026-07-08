@@ -112,9 +112,27 @@ test("a predefined place exists as a cluster (and renders) before any report", (
   assert.match(md, /fördefinierad: true/);
   assert.match(md, /radie_m: 100/);
   assert.match(md, /känslig: true/);
-  assert.match(md, /tags: \[plats, skyddsvärd\]/);
+  // #fördefinierad puts the needle on the map (query + display rule); the
+  // sensitive ones additionally carry #skyddsvärd (shield marker).
+  assert.match(md, /tags: \[plats, fördefinierad, skyddsvärd\]/);
   assert.match(md, /Inga observationer ännu/);
   assert.match(md, /Fördefinierad plats/);
+  // Day-0 graph edge: the place links the AOI node (orphans are hidden in the
+  // graph, so a link-less day-0 place would be invisible).
+  assert.match(md, /\*\*Operationsområde:\*\* \[\[Objektet\]\]/);
+  // Non-sensitive: needle tag but no shield, and location: for the map pin.
+  const [plain] = buildLocations([], analyzeSuspicion([], PROT), undefined, PREDEF);
+  const md2 = renderLocationNote(plain).markdown;
+  assert.match(md2, /tags: \[plats, fördefinierad\]/);
+  assert.match(md2, /location: "59.01,17"/);
+  assert.match(md2, /\[\[Objektet\]\]/);
+});
+
+test("a DERIVED location hub does not link Objektet (no artificial hub edges)", () => {
+  const r = report({ tnr: "1", handelse: "Fordon RJK241." });
+  const clusters = buildLocations([r], analyzeSuspicion([r], PROT)); // no predefined
+  const md = renderLocationNote(clusters.find((c) => c.key === "Vägen")!).markdown;
+  assert.equal(md.includes("[[Objektet]]"), false);
 });
 
 test("vicinity: a report within the radius links to BOTH its reported place and the predefined one", () => {

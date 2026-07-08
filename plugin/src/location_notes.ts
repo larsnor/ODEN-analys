@@ -18,7 +18,7 @@ import { SuspicionAnalysis, haversineM } from "./suspicion";
 import { plateIdentifiers } from "./ids";
 import { safeFilename } from "./entity_notes";
 import { mdText } from "./mdsafe";
-import { GENERATOR, METOD, RenderedNote, noteStem, resolveMerge } from "./notes_common";
+import { GENERATOR, METOD, OBJEKTET_STEM, RenderedNote, noteStem, resolveMerge } from "./notes_common";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
 
@@ -169,7 +169,13 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
     `metod: ${METOD.plats}`,
-    c.predefined?.sensitive ? "tags: [plats, skyddsvärd]" : "tags: [plats]",
+    // `fördefinierad` puts the place on the map (query + needle rule); derived
+    // hubs stay graph-only. `skyddsvärd` additionally marks the sensitive ones.
+    c.predefined
+      ? c.predefined.sensitive
+        ? "tags: [plats, fördefinierad, skyddsvärd]"
+        : "tags: [plats, fördefinierad]"
+      : "tags: [plats]",
     `namn: "${name.replace(/"/g, "'")}"`,
     `mgrs: "${c.key}"`,
     `antal_rapporter: ${c.reports.length}`,
@@ -201,6 +207,9 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
   body.push(`**Rapporter:** ${c.reports.length}  `);
   body.push(`**Misstänkta observationer:** ${c.elevatedCount}`);
   if (c.plates.length) body.push(`  \n**Fordon här:** ${c.plates.map(plateLink).join(", ")}`);
+  // Predefined places link the AOI node → a graph edge from day 0, so the place
+  // (and Objektet itself) is visible even though the graph hides orphans.
+  if (c.predefined) body.push(`  \n**Operationsområde:** [[${OBJEKTET_STEM}]]`);
   body.push("");
   body.push("## Observationer");
   for (const o of c.reports) {
