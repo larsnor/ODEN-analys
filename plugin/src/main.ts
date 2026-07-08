@@ -40,7 +40,7 @@ import { analyzeSuspicion, DEFAULT_SUSPICION, SuspicionAnalysis } from "./suspic
 import { AnalysisBundle, computeAlertItems, newAlerts } from "./alerts";
 import { buildSuspects, suspectHypId } from "./suspects";
 import { renderSuspectNotes } from "./suspect_notes";
-import { buildLocations, renderLocationNotes, LocationCluster } from "./location_notes";
+import { buildLocations, renderLocationNotes, LocationCluster, PredefinedLocation } from "./location_notes";
 import { renderRecurrenceNote, RecurrencePair } from "./recurrence_notes";
 import { isMgrsGrid, placeLabel } from "./places";
 import { mgrsToLatLon, parseCoord } from "./mgrs";
@@ -54,6 +54,7 @@ import {
   foldedConfirmedActors,
   locationLinker,
   mergedActors,
+  predefNearLinker,
   stemForKey,
 } from "./derive";
 
@@ -77,6 +78,11 @@ interface SevenSSettings {
   actorMerges: Record<string, string>;
   /** Operator "same place" merges: absorbed `plats` grid key → surviving key. */
   locationMerges: Record<string, string>;
+  /** Operator-predefined places (created at operation setup, before any reports),
+   *  keyed by place name: position + vicinity radius + sensitive flag. Reports
+   *  within the radius link to the place; sensitive places also feed the suspicion
+   *  proximity signal. */
+  predefinedLocations: Record<string, PredefinedLocation>;
   /** Evidence threshold for actor derivation (§9.3-A parameter request). */
   actorThreshold: number;
   /** Protected object (objektet) coords for the suspicion proximity signal. */
@@ -114,6 +120,7 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   actorNames: {},
   actorMerges: {},
   locationMerges: {},
+  predefinedLocations: {},
   actorThreshold: 1,
   protectedLat: DEFAULT_SUSPICION.protectedLat,
   protectedLon: DEFAULT_SUSPICION.protectedLon,
@@ -160,6 +167,12 @@ export default class SevenSPlugin extends Plugin {
       id: "new-observation",
       name: "ODEN: Ny observation (mall)",
       callback: () => this.openNewObservation(),
+    });
+
+    this.addCommand({
+      id: "manage-places",
+      name: "ODEN: Platser i förväg",
+      callback: () => this.openManagePlaces(),
     });
 
     this.addCommand({
@@ -508,6 +521,7 @@ export default class SevenSPlugin extends Plugin {
       s.actorNames,
       s.actorMerges,
       s.locationMerges,
+      s.predefinedLocations,
       s.seenAlerts,
     ].some((m) => Object.keys(m).length > 0);
   }
@@ -524,6 +538,7 @@ export default class SevenSPlugin extends Plugin {
     this.settings.actorNames = {};
     this.settings.actorMerges = {};
     this.settings.locationMerges = {};
+    this.settings.predefinedLocations = {};
     this.settings.seenAlerts = {};
     await this.saveSettings();
 
@@ -650,6 +665,24 @@ export default class SevenSPlugin extends Plugin {
     await this.reconcileActorNodes(); // re-derive nodes for the (possibly wiped) state
     await this.refreshPanel();
     new Notice(`ODEN: operationsområde satt — ${res.name || `${res.lat}, ${res.lon}`}.`);
+    // Offer to pre-create known places right away (day-0 location nodes that
+    // vicinity-link incoming reports; sensitive ones alarm on proximity).
+    if (Object.keys(this.settings.predefinedLocations).length === 0) {
+      new ConfirmModal(
+        this.app,
+        {
+          title: "Platser i förväg",
+          body:
+            "Vill du redan nu skapa kända platser (grindar, förråd, infarter)? " +
+            "Observationer i närheten kopplas automatiskt till platsen, och " +
+            "skyddsvärda platser ger larm vid misstänkt aktivitet i närheten.",
+          confirmText: "Lägg till platser…",
+          cancelText: "Inte nu",
+          cta: true,
+        },
+        () => this.openManagePlaces(),
+      ).open();
+    }
   }
 
   /** ODEN's own marker note for the protected object (idempotent, own-note). */
@@ -721,6 +754,32 @@ export default class SevenSPlugin extends Plugin {
       new Notice("ODEN: kunde inte skapa observationen (se konsolen).");
       return null;
     }
+  }
+
+  // --- Predefined places (operator-created, day-0 location nodes) -------------
+
+  /** ⋯ menu / command / setup follow-up: manage the operator's predefined places. */
+  openManagePlaces(): void {
+    new ManagePlacesModal(this.app, this).open();
+  }
+
+  /** Create/overwrite a predefined place, persist, re-derive the nodes. */
+  async addPredefinedPlace(name: string, p: PredefinedLocation): Promise<void> {
+    const existed = name in this.settings.predefinedLocations;
+    this.settings.predefinedLocations[name] = p;
+    await this.saveSettings();
+    await this.reconcileActorNodes(); // materializes the 📍 note + vicinity links
+    await this.refreshPanel();
+    new Notice(`ODEN: plats "${name}" ${existed ? "uppdaterad" : "skapad"}.`);
+  }
+
+  /** Remove a predefined place; its note is pruned on the reconcile. */
+  async removePredefinedPlace(name: string): Promise<void> {
+    delete this.settings.predefinedLocations[name];
+    await this.saveSettings();
+    await this.reconcileActorNodes();
+    await this.refreshPanel();
+    new Notice(`ODEN: plats "${name}" borttagen.`);
   }
 
   /** ⋯ menu / command: pick any relevant MGRS location to name or rename. */
@@ -902,7 +961,7 @@ export default class SevenSPlugin extends Plugin {
   async mergeLocationsFlow(): Promise<void> {
     const { reports } = await this.readReports();
     const s = analyzeSuspicion(reports, this.suspicionOpts());
-    const clusters = buildLocations(reports, s, this.settings.locationMerges);
+    const clusters = buildLocations(reports, s, this.settings.locationMerges, this.settings.predefinedLocations);
     if (clusters.length < 2) {
       new Notice("ODEN: behöver minst två platser att slå ihop.");
       return;
@@ -977,8 +1036,10 @@ export default class SevenSPlugin extends Plugin {
   private async materializeAgents(reports: Report[], suspicion: SuspicionAnalysis): Promise<void> {
     // Build the location clusters ONCE so actors can link straight to the same
     // location nodes (a direct actor↔plats edge, no message node in between).
-    const clusters = buildLocations(reports, suspicion, this.settings.locationMerges);
+    // Includes the operator-predefined places (day-0 nodes + vicinity linking).
+    const clusters = buildLocations(reports, suspicion, this.settings.locationMerges, this.settings.predefinedLocations);
     const locStemOf = locationLinker(clusters, this.settings);
+    const nearOf = predefNearLinker(clusters, this.settings);
     const confirmedActors = foldedConfirmedActors(reports, suspicion, this.settings);
 
     // Recurrence nodes: a vehicle or actor seen 2+ times at the same place gets a
@@ -992,7 +1053,7 @@ export default class SevenSPlugin extends Plugin {
       recs.byVehicle.get(`${noteStem(safeFilename(plate))}@@${stemForKey(clusters, placeKey, this.settings.locationNicknames)}`);
 
     await this.writeOwnedNotes(
-      confirmedActorNotes(confirmedActors, this.settings, locStemOf, recs),
+      confirmedActorNotes(confirmedActors, this.settings, locStemOf, recs, nearOf),
       "aktor",
     );
     await this.writeSuspectNotes(reports, suspicion, locStemOf);
@@ -1004,13 +1065,15 @@ export default class SevenSPlugin extends Plugin {
   }
 
   /** One graph/map node per RELEVANT location (suspicious activity or a vehicle),
-   *  linking the reports observed there so the place shows as a spatial hub. */
+   *  linking the reports observed there so the place shows as a spatial hub.
+   *  Operator-PREDEFINED places are always written (an explicit human creation);
+   *  only the derived hubs are gated on the alert-layer toggle. */
   private async writeLocationNotes(
     clusters: LocationCluster[],
     recForPlate?: (placeKey: string, plate: string) => string | undefined,
   ): Promise<void> {
-    if (!this.settings.materializeAlerts) return;
-    const notes = renderLocationNotes(clusters, this.settings.locationNicknames, recForPlate).map((n) => ({ name: n.filename, body: n.markdown }));
+    const set = this.settings.materializeAlerts ? clusters : clusters.filter((c) => c.predefined);
+    const notes = renderLocationNotes(set, this.settings.locationNicknames, recForPlate).map((n) => ({ name: n.filename, body: n.markdown }));
     await this.writeOwnedNotes(notes, METOD.plats);
   }
 
@@ -1043,10 +1106,15 @@ export default class SevenSPlugin extends Plugin {
   private debounceTimer: number | null = null;
 
   private suspicionOpts() {
+    // Sensitive predefined places are extra proximity anchors (scaled bands).
+    const sensitivePlaces = Object.entries(this.settings.predefinedLocations)
+      .filter(([, p]) => p.sensitive === true)
+      .map(([name, p]) => ({ name, lat: p.lat, lon: p.lon, radiusM: p.radiusM }));
     return {
       protectedLat: this.settings.protectedLat,
       protectedLon: this.settings.protectedLon,
       threshold: DEFAULT_SUSPICION.threshold,
+      sensitivePlaces,
     };
   }
 
@@ -1106,6 +1174,7 @@ export default class SevenSPlugin extends Plugin {
     menu.addItem((i) => i.setTitle("Granska kopplingsförslag").setIcon("link").onClick(() => void this.runMarkNominations()));
     menu.addItem((i) => i.setTitle("Granska aktörsförslag").setIcon("git-fork").onClick(() => void this.runDeriveActors()));
     menu.addItem((i) => i.setTitle("Namnge plats…").setIcon("map-pin").onClick(() => void this.openLocationNamer()));
+    menu.addItem((i) => i.setTitle("Platser i förväg…").setIcon("landmark").onClick(() => this.openManagePlaces()));
     menu.addSeparator();
     menu.addItem((i) => i.setTitle("Slå ihop aktörer…").setIcon("git-merge").onClick(() => void this.mergeActorsFlow()));
     menu.addItem((i) => i.setTitle("Slå ihop platser…").setIcon("git-merge").onClick(() => void this.mergeLocationsFlow()));
@@ -1848,7 +1917,7 @@ class PickStringModal extends FuzzySuggestModal<{ value: string; label: string }
 class ConfirmModal extends Modal {
   constructor(
     app: App,
-    private opts: { title: string; body: string; confirmText?: string; cancelText?: string },
+    private opts: { title: string; body: string; confirmText?: string; cancelText?: string; cta?: boolean },
     private onConfirm: () => void | Promise<void>,
   ) {
     super(app);
@@ -1860,7 +1929,8 @@ class ConfirmModal extends Modal {
     contentEl.createEl("p", { text: this.opts.body }).style.cssText = "opacity:.85;margin:0 0 12px;";
     const btns = contentEl.createDiv();
     btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
-    const ok = btns.createEl("button", { text: this.opts.confirmText ?? "Fortsätt", cls: "mod-warning" });
+    // Destructive confirmations warn (default); a plain offer uses the CTA style.
+    const ok = btns.createEl("button", { text: this.opts.confirmText ?? "Fortsätt", cls: this.opts.cta ? "mod-cta" : "mod-warning" });
     btns.createEl("button", { text: this.opts.cancelText ?? "Avbryt" }).onclick = () => this.close();
     ok.onclick = () => {
       this.close();
@@ -1924,6 +1994,107 @@ class SetupOperationModal extends Modal {
 
   onClose(): void {
     this.contentEl.empty();
+  }
+}
+
+/** Manage the operator's predefined places: list + remove + add (name, position,
+ *  vicinity radius, sensitive flag). Each place materializes as a 📍 location note
+ *  immediately; reports within its radius link to it as they arrive. */
+class ManagePlacesModal extends Modal {
+  constructor(
+    app: App,
+    private plugin: SevenSPlugin,
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    this.render();
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+
+  private render(): void {
+    const { contentEl } = this;
+    contentEl.empty();
+    contentEl.createEl("h3", { text: "Platser i förväg" });
+    contentEl.createEl("p", {
+      text:
+        "Skapa kända platser (grindar, förråd, infarter). Observationer inom radien " +
+        "kopplas till platsen i grafen. Skyddsvärda platser ger dessutom larmsignal vid närhet.",
+    }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
+
+    // Existing places, with remove buttons.
+    const entries = Object.entries(this.plugin.settings.predefinedLocations).sort(([a], [b]) =>
+      a.localeCompare(b, "sv"),
+    );
+    if (entries.length > 0) {
+      const list = contentEl.createDiv();
+      list.style.cssText = "margin:0 0 12px;";
+      for (const [name, p] of entries) {
+        const row = list.createDiv();
+        row.style.cssText = "display:flex;align-items:center;gap:8px;padding:2px 0;";
+        const txt = row.createEl("span", {
+          text: `📍 ${name} — radie ${p.radiusM} m${p.sensitive ? " — 🛡️ skyddsvärd" : ""}`,
+        });
+        txt.style.cssText = "flex:1;font-size:.92em;";
+        row.createEl("button", { text: "Ta bort" }).onclick = async () => {
+          await this.plugin.removePredefinedPlace(name);
+          this.render();
+        };
+      }
+    }
+
+    // Add form.
+    const nameIn = contentEl.createEl("input", { type: "text" });
+    nameIn.placeholder = "Namn (t.ex. Norra grinden)";
+    nameIn.style.cssText = "width:100%;margin:0 0 6px;";
+
+    const coordIn = contentEl.createEl("input", { type: "text" });
+    coordIn.placeholder = "Position: 59.2622,17.712  eller  33VXF5453072480";
+    coordIn.style.cssText = "width:100%;margin:0 0 6px;";
+
+    const optRow = contentEl.createDiv();
+    optRow.style.cssText = "display:flex;gap:12px;align-items:center;margin:0 0 6px;";
+    optRow.createEl("span", { text: "Radie (m):" }).style.cssText = "font-size:.9em;";
+    const radIn = optRow.createEl("input", { type: "number" });
+    radIn.value = "100";
+    radIn.style.cssText = "width:90px;";
+    const sensLbl = optRow.createEl("label");
+    sensLbl.style.cssText = "display:flex;gap:4px;align-items:center;font-size:.9em;cursor:pointer;";
+    const sensIn = sensLbl.createEl("input", { type: "checkbox" });
+    sensLbl.appendText("Skyddsvärd (larma vid närhet)");
+
+    const err = contentEl.createEl("div");
+    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin-bottom:8px;";
+
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
+    const add = btns.createEl("button", { text: "Lägg till", cls: "mod-cta" });
+    btns.createEl("button", { text: "Stäng" }).onclick = () => this.close();
+    add.onclick = async () => {
+      const name = nameIn.value.trim();
+      if (!name) {
+        err.setText("Ange ett namn på platsen.");
+        return;
+      }
+      const c = parseCoord(coordIn.value);
+      if (!c) {
+        err.setText("Kunde inte tolka positionen — ange lat,lon eller en MGRS-ruta.");
+        return;
+      }
+      const radiusM = Math.round(Number(radIn.value));
+      if (!Number.isFinite(radiusM) || radiusM < 10) {
+        err.setText("Radien måste vara minst 10 m.");
+        return;
+      }
+      err.setText("");
+      await this.plugin.addPredefinedPlace(name, { lat: c.lat, lon: c.lon, radiusM, sensitive: sensIn.checked });
+      this.render(); // stay open — the operator often adds several
+    };
+    window.setTimeout(() => nameIn.focus(), 0);
   }
 }
 

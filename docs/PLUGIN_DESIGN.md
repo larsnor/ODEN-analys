@@ -242,7 +242,10 @@ bekräftelse — en nod grafen sedan visar. **Grafen visar; pluginet resonerar.*
 Viktad, förklarbar summa. Signaler t.ex. återkomst över dygn, nattaktivitet,
 geografisk koncentration nära objektet, spaningsindikatorer i sysselsättning,
 delade (bekräftade) märken mellan olika fordon. Varje entitet får
-`suspicionReasons[]` — aldrig bara en siffra.
+`suspicionReasons[]` — aldrig bara en siffra. Närhetssignalen mäter mot objektet
+OCH operatörens skyddsvärda fördefinierade platser (band skalade efter platsens
+radie: <R→3, <2R→2, <4R→1); starkaste ankaret vinner, aldrig summerat — närhet
+ensam når därmed aldrig larmtröskeln.
 
 ### 6.6 Klustring
 Temporal (fönster), spatial (haversine), entitetsbaserad.

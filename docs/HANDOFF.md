@@ -253,6 +253,22 @@ revealTextView/revealAlerts). NOTE: big view rewrite — verify in Obsidian (rel
   llm), EmbeddingSimilarity. Settings engine/ollamaUrl/genModel/embedModel. Fake
   adapter for tests (no live Ollama in CI). Degrades to deterministic if unreachable.
 
+## PREDEFINED PLACES (2026-07-06)
+Operator can create locations BEFORE reports exist ("Platser i förväg…" in the
+⋯ menu / command / offered right after operation setup): name + position
+(lat,lon or MGRS) + vicinity radius (default 100 m) + optional **skyddsvärd**
+(sensitive) flag. Stored in settings `predefinedLocations` (wiped with the AOI
+like all judgements). Each place materializes immediately as a 📍 `metod: plats`
+note (frontmatter `fördefinierad: true`, `radie_m`, `känslig`; sensitive tag
+`skyddsvärd`) — written even when the alert layer is off. A coord-bearing report
+within the radius links to the NEAREST covering place IN ADDITION to its reported
+`plats` (dual relation; actor chains render "(nära [[plats]])" via NearLinker;
+plate recurrence at the place emerges from the attachment). Sensitive places are
+extra suspicion proximity anchors with bands SCALED by the radius (<R→3, <2R→2,
+<4R→1), taken as MAX with objektet (never summed — proximity alone still can't
+cross the threshold); reason/alert title names the place ("nära Förrådet").
+Pure logic in location_notes/suspicion/derive; 11 new tests (142 total).
+
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but
   not yet written into the spec — DEFERRED pending the other developer's

@@ -54,3 +54,9 @@ export function resolveMerge(id: string, merges?: Record<string, string>): strin
  *  to link to — or undefined when none — so a note keeps a direct graph edge even
  *  when message (TNR) nodes are filtered out. */
 export type StemLinker = (plats: string) => string | undefined;
+
+/** Given an observation FILE, the predefined place whose vicinity claimed it
+ *  (note stem + display label) — or undefined. The second half of the dual place
+ *  relation: the reported `plats` is linked via StemLinker, the nearest predefined
+ *  place via this. */
+export type NearLinker = (file: string) => { stem: string; label: string } | undefined;

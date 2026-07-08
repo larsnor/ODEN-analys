@@ -14,7 +14,7 @@
  * `#plats` tag for the graph colour group.
  */
 import { Report } from "./parse";
-import { SuspicionAnalysis } from "./suspicion";
+import { SuspicionAnalysis, haversineM } from "./suspicion";
 import { plateIdentifiers } from "./ids";
 import { safeFilename } from "./entity_notes";
 import { mdText } from "./mdsafe";
@@ -30,6 +30,20 @@ export interface LocationReportRef {
   plates: string[];
 }
 
+/** An operator-predefined place (created at operation setup, before any reports):
+ *  fixed position + vicinity radius. A coord-bearing report within the radius is
+ *  linked to the place; a `sensitive` place additionally feeds the suspicion
+ *  proximity signal (bands scaled by the radius). Stored in plugin settings,
+ *  keyed by the place NAME (which is also the cluster key / note title). */
+export interface PredefinedLocation {
+  lat: number;
+  lon: number;
+  /** Vicinity radius (m); default 100 in the creation dialog. */
+  radiusM: number;
+  /** Sensitive site → proximity alarm signal, beyond mere graph linking. */
+  sensitive?: boolean;
+}
+
 export interface LocationCluster {
   key: string; // the `plats` string (MGRS grid or place name)
   label: string;
@@ -38,6 +52,8 @@ export interface LocationCluster {
   reports: LocationReportRef[];
   elevatedCount: number;
   plates: string[];
+  /** Set when this cluster is an operator-predefined place (exists from day 0). */
+  predefined?: { radiusM: number; sensitive: boolean };
 }
 
 /** Group reports by `plats`; keep locations tied to suspicion or a vehicle, and
@@ -54,31 +70,72 @@ export function buildLocations(
   reports: Report[],
   suspicion: SuspicionAnalysis,
   merges?: Record<string, string>,
+  predefined?: Record<string, PredefinedLocation>,
 ): LocationCluster[] {
   const elevatedFiles = new Set(suspicion.elevated.map((e) => e.file));
   const map = new Map<string, LocationCluster>();
 
-  for (const r of reports) {
-    const key = resolveLocationKey((r.plats ?? "").trim(), merges);
-    if (!key) continue;
-    const plates = plateIdentifiers(r)
-      .filter((p) => !p.partial)
-      .map((p) => p.value);
-    const elevated = elevatedFiles.has(r.file);
-    // Only suspicious or vehicle observations tie a report to a location hub.
-    if (!elevated && plates.length === 0) continue;
+  // Operator-predefined places exist from day 0 — a cluster (and thus a note)
+  // even before any report mentions or nears them.
+  for (const [name, p] of Object.entries(predefined ?? {})) {
+    const key = resolveLocationKey(name, merges);
+    if (!key || map.has(key)) continue;
+    map.set(key, {
+      key, label: key, lat: p.lat, lon: p.lon, reports: [], elevatedCount: 0, plates: [],
+      predefined: { radiusM: p.radiusM, sensitive: p.sensitive === true },
+    });
+  }
+  const predefClusters = [...map.values()];
 
-    let c = map.get(key);
-    if (!c) {
-      c = { key, label: key, lat: r.lat, lon: r.lon, reports: [], elevatedCount: 0, plates: [] };
-      map.set(key, c);
-    }
+  const attach = (c: LocationCluster, r: Report, elevated: boolean, plates: string[]) => {
     c.reports.push({ tnr: r.tnr, file: r.file, tidpunkt: r.tidpunkt, elevated, plates });
     if (elevated) c.elevatedCount++;
     for (const p of plates) if (!c.plates.includes(p)) c.plates.push(p);
     if (c.lat === undefined && r.lat !== undefined) {
       c.lat = r.lat;
       c.lon = r.lon;
+    }
+  };
+
+  for (const r of reports) {
+    const key = resolveLocationKey((r.plats ?? "").trim(), merges);
+    const plates = plateIdentifiers(r)
+      .filter((p) => !p.partial)
+      .map((p) => p.value);
+    const elevated = elevatedFiles.has(r.file);
+
+    // The reported place. An operator-predefined place records EVERY observation
+    // there (the operator created it because the spot matters — benign context
+    // included); a derived place still needs suspicion or a vehicle to justify a
+    // graph hub.
+    if (key) {
+      const own = map.get(key);
+      if (own?.predefined) {
+        attach(own, r, elevated, plates);
+      } else if (elevated || plates.length > 0) {
+        let c = own;
+        if (!c) {
+          c = { key, label: key, lat: r.lat, lon: r.lon, reports: [], elevatedCount: 0, plates: [] };
+          map.set(key, c);
+        }
+        attach(c, r, elevated, plates);
+      }
+    }
+
+    // Vicinity: the NEAREST predefined place whose radius covers the report also
+    // claims it (dual relation — the reported place above is kept). Skip when the
+    // reported place IS that predefined place (already attached).
+    if (r.lat !== undefined && r.lon !== undefined) {
+      let best: LocationCluster | undefined;
+      let bestD = Infinity;
+      for (const c of predefClusters) {
+        const d = haversineM(r.lat, r.lon, c.lat!, c.lon!);
+        if (d <= c.predefined!.radiusM && d < bestD) {
+          best = c;
+          bestD = d;
+        }
+      }
+      if (best && best.key !== key) attach(best, r, elevated, plates);
     }
   }
 
@@ -112,12 +169,16 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
     `metod: ${METOD.plats}`,
-    "tags: [plats]",
+    c.predefined?.sensitive ? "tags: [plats, skyddsvärd]" : "tags: [plats]",
     `namn: "${name.replace(/"/g, "'")}"`,
     `mgrs: "${c.key}"`,
     `antal_rapporter: ${c.reports.length}`,
     `misstankta: ${c.elevatedCount}`,
   ];
+  if (c.predefined) {
+    fm.push("fördefinierad: true", `radie_m: ${c.predefined.radiusM}`);
+    if (c.predefined.sensitive) fm.push("känslig: true");
+  }
   if (c.plates.length) fm.push(`fordon: [${c.plates.join(", ")}]`);
   if (c.lat !== undefined && c.lon !== undefined) {
     fm.push(`lat: ${c.lat}`, `lon: ${c.lon}`, `location: "${c.lat},${c.lon}"`);
@@ -149,8 +210,18 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
     const plate = o.plates.length ? ` — ${o.plates.map(plateLink).join(", ")}` : "";
     body.push(`- ${mark}[[${stem}|TNR${mdText(o.tnr)}]] — ${mdText(o.tidpunkt)}${plate}`);
   }
+  if (c.reports.length === 0) body.push("_Inga observationer ännu._");
   body.push("");
-  body.push("_Platsnod (härledd av 7s-plugin). Länkar samman observationerna på denna plats._");
+  if (c.predefined) {
+    body.push(
+      `_Fördefinierad plats (skapad av operatören${c.predefined.sensitive ? ", skyddsvärd" : ""}). ` +
+        `Observationer inom ${c.predefined.radiusM} m kopplas hit${
+          c.predefined.sensitive ? "; närhet ger dessutom larmsignal" : ""
+        }._`,
+    );
+  } else {
+    body.push("_Platsnod (härledd av 7s-plugin). Länkar samman observationerna på denna plats._");
+  }
 
   return { filename: locationFilename(c, nicks), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };
 }

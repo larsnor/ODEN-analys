@@ -28,12 +28,25 @@ export interface Scored {
   reasons: Signal[];
 }
 
+/** An operator-marked sensitive place (a predefined location with the sensitive
+ *  flag): an EXTRA proximity anchor, with bands SCALED by the place's vicinity
+ *  radius (<R → 3, <2R → 2, <4R → 1) so a small shed and a large depot both alarm
+ *  sensibly, and the radius the operator set is a real dial. */
+export interface SensitivePlace {
+  name: string;
+  lat: number;
+  lon: number;
+  radiusM: number;
+}
+
 export interface SuspicionOpts {
   /** Protected object (objektet) — HvSS Vällinge säteri by default. */
   protectedLat: number;
   protectedLon: number;
   /** Elevated-suspicion threshold for the rollup. */
   threshold?: number;
+  /** Operator-marked sensitive places — additional proximity anchors. */
+  sensitivePlaces?: SensitivePlace[];
 }
 
 export const DEFAULT_SUSPICION: SuspicionOpts = {
@@ -141,13 +154,28 @@ function hourOf(tidpunkt: string): number | null {
 export function scoreReport(report: Report, opts: SuspicionOpts = DEFAULT_SUSPICION): Scored {
   const reasons: Signal[] = [];
 
-  // 1. Proximity to the protected object (graded; needs coords — MGRS-derived ok).
+  // 1. Proximity (graded; needs coords — MGRS-derived ok). Anchors: objektet
+  //    (fixed 800/1600/3000 m bands) + operator-marked sensitive places (bands
+  //    scaled by each place's vicinity radius). ONE signal only — the strongest,
+  //    then nearest — never summed, so proximity alone still cannot cross the
+  //    threshold no matter how many anchors overlap.
   if (report.lat !== undefined && report.lon !== undefined) {
+    const cand: { d: number; sig: Signal }[] = [];
     const d = haversineM(report.lat, report.lon, opts.protectedLat, opts.protectedLon);
     const m = Math.round(d);
-    if (d < 800) reasons.push({ key: "proximity", label: `nära objektet (~${m} m)`, weight: 3 });
-    else if (d < 1600) reasons.push({ key: "proximity", label: `i närområdet (~${m} m)`, weight: 2 });
-    else if (d < 3000) reasons.push({ key: "proximity", label: `i vidare område (~${m} m)`, weight: 1 });
+    if (d < 800) cand.push({ d, sig: { key: "proximity", label: `nära objektet (~${m} m)`, weight: 3 } });
+    else if (d < 1600) cand.push({ d, sig: { key: "proximity", label: `i närområdet (~${m} m)`, weight: 2 } });
+    else if (d < 3000) cand.push({ d, sig: { key: "proximity", label: `i vidare område (~${m} m)`, weight: 1 } });
+    for (const p of opts.sensitivePlaces ?? []) {
+      const dp = haversineM(report.lat, report.lon, p.lat, p.lon);
+      const R = Math.max(1, p.radiusM);
+      const mp = Math.round(dp);
+      if (dp < R) cand.push({ d: dp, sig: { key: "känslig-plats", label: `nära ${p.name} (~${mp} m)`, weight: 3 } });
+      else if (dp < 2 * R) cand.push({ d: dp, sig: { key: "känslig-plats", label: `i närområdet av ${p.name} (~${mp} m)`, weight: 2 } });
+      else if (dp < 4 * R) cand.push({ d: dp, sig: { key: "känslig-plats", label: `i vidare område kring ${p.name} (~${mp} m)`, weight: 1 } });
+    }
+    cand.sort((a, b) => b.sig.weight - a.sig.weight || a.d - b.d);
+    if (cand.length > 0) reasons.push(cand[0].sig);
   }
 
   // 2. Time of day.

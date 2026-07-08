@@ -13,7 +13,7 @@
  */
 import { ActorHypothesis } from "./actor";
 import { mdText } from "./mdsafe";
-import { GENERATOR, METOD, RenderedNote, StemLinker, noteStem } from "./notes_common";
+import { GENERATOR, METOD, NearLinker, RenderedNote, StemLinker, noteStem } from "./notes_common";
 import { safeAgentFilename } from "./notenames";
 import { Nicknames, placeLabel } from "./places";
 
@@ -36,6 +36,7 @@ export function renderActorNote(
   fileName?: string,
   locStemOf?: StemLinker,
   recStemOf?: StemLinker,
+  nearOf?: NearLinker,
 ): RenderedNote {
   const name = label ?? `${h.vehicleCount} fordon, ${h.markCount} kännetecken`;
   const fm = [
@@ -80,7 +81,11 @@ export function renderActorNote(
     const stem = recStemOf?.(step.plats) ?? locStemOf?.(step.plats);
     const lbl = mdText(placeLabel(step.plats, nicks));
     const place = stem ? `[[${stem}|${lbl}]]` : lbl;
-    body.push(`- ${tnrLink(step)} — ${mdText(step.tidpunkt)} — ${place} — _kopplar:_ ${mdText(step.facets.join(" + "))}`);
+    // Dual place relation: also link the predefined place whose vicinity claimed
+    // this observation (kept ALONGSIDE the reported place, unless it IS that place).
+    const near = nearOf?.(step.file);
+    const nearPart = near && near.stem !== stem ? ` _(nära [[${near.stem}|${mdText(near.label)}]])_` : "";
+    body.push(`- ${tnrLink(step)} — ${mdText(step.tidpunkt)} — ${place}${nearPart} — _kopplar:_ ${mdText(step.facets.join(" + "))}`);
   }
   body.push("");
   body.push(

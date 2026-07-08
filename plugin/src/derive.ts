@@ -21,7 +21,7 @@ import { AnalysisBundle } from "./alerts";
 import { FeedItem } from "./feed";
 import { isMgrsGrid, placeLabel } from "./places";
 import { suspicionLevel, reasonPhrases } from "./present";
-import { StemLinker, noteStem } from "./notes_common";
+import { NearLinker, StemLinker, noteStem } from "./notes_common";
 
 /** The operator-judgement fields the derivation reads — a structural subset of the
  *  plugin's settings, so callers pass `settings` directly. Decision maps are typed
@@ -70,6 +70,7 @@ export function confirmedActorNotes(
   s: PluginState,
   locStemOf?: StemLinker,
   recs?: { byActor: Map<string, string> },
+  nearOf?: NearLinker,
 ): { name: string; body: string }[] {
   return folded.map((h) => {
     const opName = s.actorNames[h.id];
@@ -81,7 +82,7 @@ export function confirmedActorNotes(
     const recStemOf = recs
       ? (plats: string) => recs.byActor.get(`${entityStem}@@${locStemOf?.(plats) ?? ""}`)
       : undefined;
-    const note = renderActorNote(h, label, s.locationNicknames, opName, locStemOf, recStemOf);
+    const note = renderActorNote(h, label, s.locationNicknames, opName, locStemOf, recStemOf, nearOf);
     return { name: note.filename, body: note.markdown };
   });
 }
@@ -106,6 +107,20 @@ export function stemForKey(clusters: LocationCluster[], key: string, nicks: Reco
 export function locationLinker(clusters: LocationCluster[], s: PluginState): StemLinker {
   const stemByKey = locationStems(clusters, s.locationNicknames);
   return (plats: string) => stemByKey.get(resolveLocationKey(plats, s.locationMerges));
+}
+
+/** Resolves an observation FILE to the predefined place whose vicinity claimed it
+ *  (stem + display label), from the attachments already computed in the clusters.
+ *  Gives actors their second place edge: reported place + nearest predefined. */
+export function predefNearLinker(clusters: LocationCluster[], s: PluginState): NearLinker {
+  const byFile = new Map<string, { stem: string; label: string }>();
+  for (const c of clusters) {
+    if (!c.predefined) continue;
+    const stem = noteStem(locationFilename(c, s.locationNicknames));
+    const label = placeLabel(c.label, s.locationNicknames);
+    for (const o of c.reports) if (!byFile.has(o.file)) byFile.set(o.file, { stem, label });
+  }
+  return (file) => byFile.get(file);
 }
 
 export interface Recurrences {

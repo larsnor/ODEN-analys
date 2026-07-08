@@ -46,12 +46,14 @@ export function computeAlertItems(b: AnalysisBundle, nicks?: Nicknames): Alert[]
   // Map View location both already exist, no build step needed).
   for (const r of b.suspicion.elevated) {
     const s = noteStem(r.file);
-    const near = r.reasons.some((x) => x.key === "proximity" && x.weight === 3);
+    // "nära objektet" / "nära <sensitive place>" in the title when right on top.
+    const near = r.reasons.find((x) => (x.key === "proximity" || x.key === "känslig-plats") && x.weight === 3);
+    const nearTxt = near ? ` — ${near.label.replace(/\s*\(~\d+\s*m\)/, "")}` : "";
     const place = placeLabel(r.plats, nicks);
     out.push({
       key: `förhöjd:${r.file}`,
       kind: "förhöjd",
-      title: `Misstänkt aktivitet${near ? " — nära objektet" : ""} — ${place}`,
+      title: `Misstänkt aktivitet${nearTxt} — ${place}`,
       pointer:
         `Öppna [[${s}|TNR${r.tnr}]] (${r.tidpunkt}, ${r.sagesman}). ` +
         `I Map View: zooma till "${place}". Skäl: ${reasonPhrases(r.reasons).join(", ")}.`,
