@@ -9,7 +9,7 @@
  * shell that reads the vault, calls these, and writes the results.
  */
 import { Report } from "./parse";
-import { SuspicionAnalysis } from "./suspicion";
+import { SuspicionAnalysis, haversineM } from "./suspicion";
 import { ActorHypothesis, ActorResult, buildActorHypotheses, foldActorMerges } from "./actor";
 import { buildSuspects, suspectHypotheses, isActorCandidate } from "./suspects";
 import { actorFilename, renderActorNote } from "./actor_notes";
@@ -107,6 +107,25 @@ export function stemForKey(clusters: LocationCluster[], key: string, nicks: Reco
 export function locationLinker(clusters: LocationCluster[], s: PluginState): StemLinker {
   const stemByKey = locationStems(clusters, s.locationNicknames);
   return (plats: string) => stemByKey.get(resolveLocationKey(plats, s.locationMerges));
+}
+
+/** The nearest still-unnamed MGRS location cluster within `maxM` of a coordinate —
+ *  so a map-click seed can offer "name this existing place" instead of creating a
+ *  new one right next to it. Undefined when no such cluster is near. */
+export function nearestNamelessGrid(
+  clusters: LocationCluster[],
+  lat: number,
+  lon: number,
+  nicks: Record<string, string>,
+  maxM = 500,
+): { key: string; distanceM: number } | undefined {
+  let best: { key: string; distanceM: number } | undefined;
+  for (const c of clusters) {
+    if (!isMgrsGrid(c.key) || nicks[c.key] || c.lat === undefined || c.lon === undefined) continue;
+    const d = haversineM(lat, lon, c.lat, c.lon);
+    if (d <= maxM && (!best || d < best.distanceM)) best = { key: c.key, distanceM: Math.round(d) };
+  }
+  return best;
 }
 
 /** Resolves an observation FILE to the predefined place whose vicinity claimed it

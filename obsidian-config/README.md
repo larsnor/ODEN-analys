@@ -60,6 +60,13 @@ design. `showNotePreview: false` makes marker popups show just the note **name**
 (not the frontmatter). The map **centre is set per-operation** by ODEN's
 "Konfigurera operationsområde", so the committed centre is only a starting point.
 
+**Map View's own map tools feed ODEN** (they cannot be hidden, so they work
+instead): right-click the map → **"New note here (front matter)"** drops a bare
+geolocation note, which ODEN detects and offers to turn into a *plats i förväg*
+at that spot or a *name* for the nearest unnamed MGRS place — the kartnot is
+absorbed once an action is picked ("Ignorera" keeps it). **"Copy geolocation"**
+(either variant) pastes straight into any ODEN coordinate field.
+
 ## `oden-lock.css` — lock the workspace
 
 Copy to `<vault>/.obsidian/snippets/oden-lock.css` and enable under

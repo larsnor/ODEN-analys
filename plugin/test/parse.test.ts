@@ -11,7 +11,7 @@ import { test } from "node:test";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { classifyLink, parseReport } from "../src/parse.ts";
+import { classifyLink, parseMapSeed, parseReport } from "../src/parse.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const reportsDir = join(here, "fixtures", "reports");
@@ -123,4 +123,24 @@ test("coordinate-less report omits lat/lon/location cleanly", () => {
   assert.equal(r.lon, undefined);
   assert.equal(r.symbol, "inga särskilda kännetecken.");
   assert.equal(r.links.length, 0);
+});
+
+test("parseMapSeed: a Map View 'New note here' note is a seed; reports/owned notes are not", () => {
+  // Exactly what Map View "New note here (front matter)" writes.
+  const seed = parseMapSeed('---\nlocation: "59.2622,17.712"\n---\n\n');
+  assert.deepEqual(seed, { lat: 59.2622, lon: 17.712 });
+  // Array form Map View also reads.
+  assert.deepEqual(parseMapSeed("---\nlocation: [59.2622, 17.712]\n---\n"), { lat: 59.2622, lon: 17.712 });
+  // Obsidian property-editor style: single-element array holding the pair.
+  assert.deepEqual(parseMapSeed('---\nlocation: ["59.2622,17.712"]\n---\n'), { lat: 59.2622, lon: 17.712 });
+
+  // A 7S report is NOT a seed (typ present).
+  assert.equal(parseMapSeed('---\ntyp: 7S-rapport\nlocation: "59.2,17.7"\n---\n'), null);
+  // A plugin-owned note is NOT a seed (generator present).
+  assert.equal(parseMapSeed('---\ngenerator: 7s-plugin\nlocation: "59.2,17.7"\n---\n'), null);
+  // No location / no frontmatter / junk location → null.
+  assert.equal(parseMapSeed("---\nnamn: test\n---\n"), null);
+  assert.equal(parseMapSeed("Bara brödtext."), null);
+  assert.equal(parseMapSeed('---\nlocation: "här"\n---\n'), null);
+  assert.equal(parseMapSeed('---\nlocation: "959.0,17.0"\n---\n'), null, "out-of-range lat rejected");
 });

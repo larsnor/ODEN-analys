@@ -84,3 +84,16 @@ test("parseCoord accepts lat,lon and MGRS, rejects junk", () => {
     assert.equal(parseCoord(bad), null, `must reject: ${bad}`);
   }
 });
+
+test("parseCoord accepts pasted Map View clipboard formats", () => {
+  // "Copy geolocation" → an inline geo-link.
+  assert.deepEqual(parseCoord("[Grinden](geo:59.2622,17.712)"), { lat: 59.2622, lon: 17.712 });
+  assert.deepEqual(parseCoord("[](geo:59.2622, 17.712)"), { lat: 59.2622, lon: 17.712 });
+  // "Copy geolocation as front matter" → a location: block (with fences).
+  assert.deepEqual(parseCoord('---\nlocation: "59.2622,17.712"\n---\n'), { lat: 59.2622, lon: 17.712 });
+  assert.deepEqual(parseCoord('location: "59.2622,17.712"'), { lat: 59.2622, lon: 17.712 });
+  assert.deepEqual(parseCoord("location: 59.2622,17.712"), { lat: 59.2622, lon: 17.712 });
+  // No numbers inside → still junk.
+  assert.equal(parseCoord("[x](geo:here)"), null);
+  assert.equal(parseCoord('location: "unknown"'), null);
+});

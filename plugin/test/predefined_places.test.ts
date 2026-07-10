@@ -22,7 +22,7 @@ import { buildMarkNominations } from "../src/jobb.ts";
 import { buildActorHypotheses } from "../src/actor.ts";
 import { buildPlateEntities } from "../src/reid.ts";
 import { renderActorNote } from "../src/actor_notes.ts";
-import { buildRecurrences, predefNearLinker, PluginState } from "../src/derive.ts";
+import { buildRecurrences, nearestNamelessGrid, predefNearLinker, PluginState } from "../src/derive.ts";
 import { reasonPhrases } from "../src/present.ts";
 
 // Objektet at 59.0,17.0. 0.0100° lat ≈ 1112 m, so "Förrådet" at 59.0100 sits well
@@ -200,6 +200,27 @@ test("actor note shows the dual place: reported place + (nära <predefined>)", (
     () => ({ stem: "📍 Grinden", label: "Grinden" }),
   ).markdown;
   assert.equal(md2.includes("(nära"), false);
+});
+
+test("nearestNamelessGrid: nearest unnamed MGRS cluster within maxM, skipping named/non-grid", () => {
+  const gridA = "33VXG12345678"; // ~56 m from the probe point below
+  const gridB = "33VXG87654321"; // farther away
+  const reports = [
+    report({ tnr: "1", plats: gridA, lat: 59.0100, handelse: "Fordon RJK241." }),
+    report({ tnr: "2", plats: gridB, lat: 59.0102, handelse: "Fordon ABC123." }),
+    report({ tnr: "3", plats: "Vägen", lat: 59.0104, handelse: "Fordon XYZ789." }), // named place, not a grid
+  ];
+  const clusters = buildLocations(reports, analyzeSuspicion(reports, PROT));
+  // Probe at 59.0105: gridA 56 m, gridB 33 m — nearest wins.
+  const hit = nearestNamelessGrid(clusters, 59.0105, 17.0, {});
+  assert.equal(hit?.key, gridB);
+  assert.ok(hit!.distanceM <= 40);
+  // A nickname removes the grid from candidates.
+  assert.equal(nearestNamelessGrid(clusters, 59.0105, 17.0, { [gridB]: "Grinden" })?.key, gridA);
+  // Beyond maxM → nothing.
+  assert.equal(nearestNamelessGrid(clusters, 59.2, 17.0, {}), undefined);
+  // The non-grid "Vägen" is never nominated even when nearest.
+  assert.equal(nearestNamelessGrid(clusters, 59.0104, 17.0, { [gridA]: "A", [gridB]: "B" }), undefined);
 });
 
 test("a plate recurring WITHIN the vicinity (different plats strings) gets a recurrence node at the place", () => {

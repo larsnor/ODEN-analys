@@ -26,7 +26,7 @@ import {
   TFile,
   WorkspaceLeaf,
 } from "obsidian";
-import { ParseIssue, parseReport, Report } from "./parse";
+import { ParseIssue, parseMapSeed, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
 import { EmbeddedPlateVision, corroboratePlate, PlateVision } from "./vision";
@@ -43,7 +43,7 @@ import { renderSuspectNotes } from "./suspect_notes";
 import { buildLocations, renderLocationNotes, LocationCluster, PredefinedLocation } from "./location_notes";
 import { renderRecurrenceNote, RecurrencePair } from "./recurrence_notes";
 import { isMgrsGrid, placeLabel } from "./places";
-import { mgrsToLatLon, parseCoord } from "./mgrs";
+import { LatLon, mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
 import { buildFeed, FeedRow } from "./feed";
 import { Conversation, converse, DeterministicConversation } from "./conversation";
@@ -54,6 +54,7 @@ import {
   foldedConfirmedActors,
   locationLinker,
   mergedActors,
+  nearestNamelessGrid,
   predefNearLinker,
   stemForKey,
 } from "./derive";
@@ -92,6 +93,9 @@ interface SevenSSettings {
   watcherEnabled: boolean;
   /** Alert keys already surfaced (so only NEW activity raises a notice). */
   seenAlerts: Record<string, true>;
+  /** Map-seed notes (Map View "New note here") the operator chose to ignore —
+   *  keyed by vault path, so the seed dialog doesn't re-prompt for them. */
+  mapSeedHandled: Record<string, true>;
   /** Auto-materialize Job A vehicle entities on recompute (CERTAIN ID matches,
    *  §5.5/§6.1 — safe to auto-write). Job B/actors stay confirmation-gated. */
   autoBuildEntities: boolean;
@@ -126,6 +130,7 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   protectedLon: DEFAULT_SUSPICION.protectedLon,
   watcherEnabled: true,
   seenAlerts: {},
+  mapSeedHandled: {},
   autoBuildEntities: true,
   materializeAlerts: true,
   locationNicknames: {},
@@ -528,6 +533,7 @@ export default class SevenSPlugin extends Plugin {
       s.locationMerges,
       s.predefinedLocations,
       s.seenAlerts,
+      s.mapSeedHandled,
     ].some((m) => Object.keys(m).length > 0);
   }
 
@@ -545,6 +551,7 @@ export default class SevenSPlugin extends Plugin {
     this.settings.locationMerges = {};
     this.settings.predefinedLocations = {};
     this.settings.seenAlerts = {};
+    this.settings.mapSeedHandled = {};
     await this.saveSettings();
 
     let removed = 0;
@@ -1208,6 +1215,54 @@ export default class SevenSPlugin extends Plugin {
     this.registerEvent(this.app.vault.on("create", onChange));
     this.registerEvent(this.app.vault.on("modify", onChange));
     this.registerEvent(this.app.vault.on("delete", onChange));
+
+    // Map-seed intake: a note Map View's "New note here" just dropped (a bare
+    // `location:` frontmatter) gets an offer to become a predefined place or a
+    // place name. layoutReady gate: Obsidian replays `create` for EVERY existing
+    // file during startup indexing — those must never prompt.
+    const onCreate = (file: { path: string }) => {
+      if (!this.app.workspace.layoutReady) return;
+      if (!relevant(file.path) || this.settings.mapSeedHandled[file.path]) return;
+      // Give Map View a beat to finish writing the note body.
+      window.setTimeout(() => void this.maybeOfferMapSeed(file.path), 500);
+    };
+    this.registerEvent(this.app.vault.on("create", onCreate));
+  }
+
+  /** If the just-created note is a map seed, open the seed dialog (create a
+   *  predefined place here / name the nearest unnamed grid / ignore). */
+  private async maybeOfferMapSeed(path: string): Promise<void> {
+    try {
+      const tf = this.app.vault.getAbstractFileByPath(path);
+      if (!(tf instanceof TFile)) return;
+      const seed = parseMapSeed(await this.app.vault.cachedRead(tf));
+      if (!seed) return;
+      // The naming option: an unnamed MGRS place near the click.
+      const { reports } = await this.readReports();
+      const clusters = buildLocations(
+        reports,
+        analyzeSuspicion(reports, this.suspicionOpts()),
+        this.settings.locationMerges,
+        this.settings.predefinedLocations,
+      );
+      const near = nearestNamelessGrid(clusters, seed.lat, seed.lon, this.settings.locationNicknames);
+      new MapSeedModal(this.app, this, path, seed, near).open();
+    } catch (err) {
+      console.warn("ODEN: map-seed check failed", err);
+    }
+  }
+
+  /** Trash a map-seed note once its coordinate has been carried into a flow.
+   *  Operator-commanded from the seed dialog (NOT the owned-note prune path),
+   *  so it goes to the trash rather than being deleted outright. */
+  async absorbMapSeed(path: string): Promise<void> {
+    const tf = this.app.vault.getAbstractFileByPath(path);
+    if (!(tf instanceof TFile)) return;
+    try {
+      await this.app.fileManager.trashFile(tf);
+    } catch (err) {
+      console.warn("ODEN: could not trash map seed", path, err);
+    }
   }
 
   /** Auto-materialize Job A vehicle entities (CERTAIN matches → safe to write,
@@ -2005,6 +2060,61 @@ class SetupOperationModal extends Modal {
   }
 }
 
+/** A Map View "New note here" seed → converge into ODEN's validated flows:
+ *  create a predefined place at the click, or name the nearest unnamed grid.
+ *  Choosing an action absorbs the seed note (it only carried the coordinate);
+ *  "Ignorera" keeps it and never asks about that path again. */
+class MapSeedModal extends Modal {
+  constructor(
+    app: App,
+    private plugin: SevenSPlugin,
+    private path: string,
+    private coord: LatLon,
+    private near?: { key: string; distanceM: number },
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Ny plats från kartan" });
+    contentEl.createEl("p", {
+      text:
+        `En kartnot skapades på ${this.coord.lat.toFixed(5)}, ${this.coord.lon.toFixed(5)}. ` +
+        "Väljer du en åtgärd tas kartnoten bort — koordinaten följer med.",
+    }).style.cssText = "opacity:.8;margin:0 0 12px;font-size:.9em;";
+
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;flex-direction:column;gap:8px;";
+    const mk = (text: string, cta: boolean, onClick: () => void | Promise<void>) => {
+      const b = btns.createEl("button", { text, cls: cta ? "mod-cta" : "" });
+      b.onclick = () => {
+        this.close();
+        void onClick();
+      };
+    };
+
+    mk("Skapa plats i förväg här…", true, async () => {
+      await this.plugin.absorbMapSeed(this.path);
+      new ManagePlacesModal(this.app, this.plugin, `${this.coord.lat},${this.coord.lon}`).open();
+    });
+    if (this.near) {
+      mk(`Namnge platsen ${this.near.key} (~${this.near.distanceM} m)…`, false, async () => {
+        await this.plugin.absorbMapSeed(this.path);
+        await this.plugin.promptLocationName(this.near!.key);
+      });
+    }
+    mk("Ignorera (behåll noten)", false, async () => {
+      this.plugin.settings.mapSeedHandled[this.path] = true;
+      await this.plugin.saveSettings();
+    });
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
 /** Manage the operator's predefined places: list + remove + add (name, position,
  *  vicinity radius, sensitive flag). Each place materializes as a 📍 location note
  *  immediately; reports within its radius link to it as they arrive. */
@@ -2012,6 +2122,7 @@ class ManagePlacesModal extends Modal {
   constructor(
     app: App,
     private plugin: SevenSPlugin,
+    private initCoord?: string,
   ) {
     super(app);
   }
@@ -2062,7 +2173,14 @@ class ManagePlacesModal extends Modal {
 
     const coordIn = contentEl.createEl("input", { type: "text" });
     coordIn.placeholder = "Position: 59.2622,17.712  eller  33VXF5453072480";
-    coordIn.style.cssText = "width:100%;margin:0 0 6px;";
+    coordIn.style.cssText = "width:100%;margin:0 0 2px;";
+    if (this.initCoord) {
+      coordIn.value = this.initCoord; // from a map seed — consume once
+      this.initCoord = undefined;
+    }
+    contentEl.createEl("div", {
+      text: "Tips: högerklicka i kartan → “Copy geolocation” och klistra in här.",
+    }).style.cssText = "opacity:.55;font-size:.8em;margin:0 0 6px;";
 
     const optRow = contentEl.createDiv();
     optRow.style.cssText = "display:flex;gap:12px;align-items:center;margin:0 0 6px;";

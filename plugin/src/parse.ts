@@ -10,7 +10,7 @@
  * Note: real `bin1-intag` reports also carry `källa` and `bilagor` — agreed but
  * not yet written into FORMAT_SPEC v1.0 — so we read them DEFENSIVELY (optional).
  */
-import { findMgrsLatLon } from "./mgrs";
+import { findMgrsLatLon, LatLon } from "./mgrs";
 
 /** Link reference as it literally appears in a message — a raw ref, NOT an
  *  Entity. Bin 1 emits refs; deriving Entities is the plugin's job (§4). */
@@ -276,4 +276,44 @@ export function parseReport(text: string, file: string, issues?: ParseIssue[]): 
     embeds,
     file,
   };
+}
+
+/**
+ * Detect a "map seed": a note Obsidian Map View's "New note here (front matter)"
+ * just created — a `location` frontmatter coordinate and nothing that marks the
+ * note as something else. Such a note is inert to the analysis (no `typ:
+ * 7S-rapport`), so ODEN offers to turn it into a predefined place / a place name
+ * and absorbs it. NOT a seed when the note has a `typ` (a report or an ODEN
+ * entity) or a `generator` (plugin-owned).
+ *
+ * Accepts Map View's `location: "lat,lng"` string form and the `[lat, lng]`
+ * array form it also reads.
+ */
+export function parseMapSeed(text: string): LatLon | null {
+  const { fm } = splitFrontmatter(text);
+  if (!fm) return null;
+  const f = frontmatterToMap(fm);
+  if (f.has("typ") || f.has("generator")) return null;
+  const v = f.get("location");
+  if (v === undefined) return null;
+
+  let lat: number | undefined;
+  let lon: number | undefined;
+  if (Array.isArray(v)) {
+    // `[lat, lng]`, or Obsidian property-editor style `["lat,lng"]` — the
+    // minimal YAML parser splits the latter on its embedded comma into two
+    // half-quoted items, so strip quotes before converting.
+    const parts = (v.length === 1 ? v[0].split(",") : v).map((p) => p.replace(/["']/g, "").trim());
+    if (parts.length !== 2 || parts.some((p) => p === "")) return null;
+    lat = Number(parts[0]);
+    lon = Number(parts[1]);
+  } else {
+    const m = /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/.exec(v.trim());
+    if (!m) return null;
+    lat = Number(m[1]);
+    lon = Number(m[2]);
+  }
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (Math.abs(lat!) > 90 || Math.abs(lon!) > 180) return null;
+  return { lat: lat!, lon: lon! };
 }

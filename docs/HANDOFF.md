@@ -279,6 +279,26 @@ updates with Obsidian CLOSED (template in obsidian-config/; live vault patched
 (OBJEKTET_STEM in notes_common) so they + the AOI node show from day 0 despite
 showOrphans:false; derived hubs deliberately do NOT get that edge.
 
+## MAP VIEW AS INPUT CHANNEL (2026-07-08)
+Decisions (operator): KEEP Map View (its offline tile caching, clustering — an
+own in-plugin map rejected per §7.3 minimal surface); predefined-place ownership
+does NOT flip to notes (settings stay the single source of truth). Instead the
+un-hideable Map View map tools now converge into ODEN's validated flows:
+- "New note here (front matter)" → a bare `location:` note; the watcher's create
+  hook (layoutReady-gated — startup indexing never prompts) runs `parseMapSeed`
+  (parse.ts: location present, no typ, no generator) → MapSeedModal offers
+  "Skapa plats i förväg här…" (ManagePlacesModal prefilled via new initCoord
+  param) or "Namnge platsen <grid> (~N m)…" (nearestNamelessGrid in derive.ts,
+  ≤500 m, unnamed MGRS clusters only → promptLocationName). Picking an action
+  trashes the seed via fileManager.trashFile (operator-commanded, NOT the owned-
+  note prune); "Ignorera" records settings.mapSeedHandled[path] and keeps it.
+- "Copy geolocation" (both variants): parseCoord (mgrs.ts) now also accepts
+  `[namn](geo:lat,lng)` and `location: "lat,lng"` blocks → paste works in every
+  coordinate field (setup, platser i förväg). Hint line added in the dialog.
+146 tests (parseCoord clipboard formats, parseMapSeed incl. array/property-editor
+forms, nearestNamelessGrid). NOTE: parse.ts's minimal YAML splits `["lat,lng"]`
+on the embedded comma — parseMapSeed strips quotes in the array branch.
+
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but
   not yet written into the spec — DEFERRED pending the other developer's
