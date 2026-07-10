@@ -59,6 +59,11 @@ import {
   stemForKey,
 } from "./derive";
 
+/** Build stamp injected by esbuild (`define`): git describe + build time. Falls
+ *  back for non-bundled runs (tsc/tests never execute this file's runtime). */
+declare const __ODEN_BUILD__: string;
+const ODEN_BUILD = typeof __ODEN_BUILD__ !== "undefined" ? __ODEN_BUILD__ : "dev";
+
 type MarkDecision = "confirmed" | "rejected";
 type ActorDecision = "confirmed" | "rejected";
 
@@ -162,6 +167,7 @@ export default class SevenSPlugin extends Plugin {
   settings: SevenSSettings = DEFAULT_SETTINGS;
 
   async onload(): Promise<void> {
+    console.log(`ODEN v${this.manifest.version} — build ${ODEN_BUILD}`);
     await this.loadSettings();
 
     addIcon(ODEN_ICON_ID, ODEN_ICON_SVG);
@@ -1681,6 +1687,13 @@ class SevenSSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
+
+    // Which build is running — version (matches the community-plugin listing)
+    // + the baked-in build stamp, so testing is never against a stale bundle.
+    const ver = containerEl.createEl("div", {
+      text: `ODEN v${this.plugin.manifest.version} — build ${ODEN_BUILD}`,
+    });
+    ver.style.cssText = "opacity:.6;font-size:.85em;margin:0 0 12px;";
 
     new Setting(containerEl)
       .setName("Meddelandemapp (valfri)")
