@@ -287,8 +287,8 @@ un-hideable Map View map tools now converge into ODEN's validated flows:
 - "New note here (front matter)" → a bare `location:` note; the watcher's create
   hook (layoutReady-gated — startup indexing never prompts) runs `parseMapSeed`
   (parse.ts: location present, no typ, no generator) → MapSeedModal offers
-  "Skapa plats i förväg här…" (ManagePlacesModal prefilled via new initCoord
-  param) or "Namnge platsen <grid> (~N m)…" (nearestNamelessGrid in derive.ts,
+  "Skapa plats i förväg här…" (places screen prefilled via initCoord param)
+  or "Namnge platsen <grid> (~N m)…" (nearestNamelessGrid in derive.ts,
   ≤500 m, unnamed MGRS clusters only → promptLocationName). Picking an action
   trashes the seed via fileManager.trashFile (operator-commanded, NOT the owned-
   note prune); "Ignorera" records settings.mapSeedHandled[path] and keeps it.
@@ -298,6 +298,23 @@ un-hideable Map View map tools now converge into ODEN's validated flows:
 146 tests (parseCoord clipboard formats, parseMapSeed incl. array/property-editor
 forms, nearestNamelessGrid). NOTE: parse.ts's minimal YAML splits `["lat,lng"]`
 on the embedded comma — parseMapSeed strips quotes in the array branch.
+FOLLOW-UP (2026-07-10): the places manager is a PANEL SCREEN (view.showPlaces,
+reviewHead pattern), NOT a modal — an Obsidian modal blocks the whole workspace,
+so the operator couldn't right-click the map to copy a position while entering
+places. add/removePredefinedPlace no longer call refreshPanel (would yank the
+operator back to the feed); ← Tillbaka refreshes instead.
+FOLLOW-UP (2026-07-13): hint steers to "Copy geolocation as front matter"
+(copies instantly; the plain variant first asks for a marker name and only
+writes the clipboard on OK). MAP: derived #plats hubs now INCLUDED on the map
+(operator: a reported place like "Uppställningsplatsen" showed in graph but not
+map) — MAP_QUERY + template query gained tag:#plats, display rule orange-dark
+fa-location-dot placed BEFORE fördefinierad/skyddsvärd (Map View applies rules
+in order, later override → predefined keep needle/shield). GOTCHA found live:
+an OPEN map pane persists its own query in workspace.json and IGNORES
+data.json defaultState — patching data.json changed nothing for the operator's
+restored pane. Fix: ⋯ menu + command "Visa ODEN-lagren på kartan"
+(focusMapOnOden → focusMapOn(AOI, MAP_QUERY)) re-asserts the query on the live
+pane; also the one-click reset when manual filtering drifts.
 
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but

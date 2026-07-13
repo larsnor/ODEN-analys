@@ -148,9 +148,11 @@ const DEFAULT_SETTINGS: SevenSSettings = {
 const VIEW_TYPE_7S = "7s-analys-text";
 
 /** The Map View query for ODEN's marker layers (mirrors obsidian-config/
- *  map-view-data.json defaultState.query — keep the two in sync). Derived
- *  `#plats` hubs stay off the map; predefined places show via #fördefinierad. */
-const MAP_QUERY = "tag:#objektet OR tag:#larm OR tag:#aktör OR tag:#fördefinierad";
+ *  map-view-data.json defaultState.query — keep the two in sync). Includes the
+ *  derived `#plats` hubs (amber dots): a place reported with coordinates belongs
+ *  on the map, not just in the graph. Predefined places keep their own needle/
+ *  shield via the later #fördefinierad/#skyddsvärd display rules. */
+const MAP_QUERY = "tag:#objektet OR tag:#larm OR tag:#aktör OR tag:#plats OR tag:#fördefinierad";
 
 // Custom ODEN ribbon/view icon — a stylized raven head in a compass ring,
 // monochrome (currentColor) so it themes. Registered via addIcon("oden", …).
@@ -188,7 +190,13 @@ export default class SevenSPlugin extends Plugin {
     this.addCommand({
       id: "manage-places",
       name: "ODEN: Platser i förväg",
-      callback: () => this.openManagePlaces(),
+      callback: () => void this.openManagePlaces(),
+    });
+
+    this.addCommand({
+      id: "focus-map",
+      name: "ODEN: Visa ODEN-lagren på kartan",
+      callback: () => this.focusMapOnOden(),
     });
 
     this.addCommand({
@@ -777,18 +785,29 @@ export default class SevenSPlugin extends Plugin {
 
   // --- Predefined places (operator-created, day-0 location nodes) -------------
 
-  /** ⋯ menu / command / setup follow-up: manage the operator's predefined places. */
-  openManagePlaces(): void {
-    new ManagePlacesModal(this.app, this).open();
+  /** ⋯ menu / command: centre the map on the AOI and (re)assert ODEN's marker
+   *  layers. An OPEN map pane keeps its own saved query (workspace state) and
+   *  ignores data.json's defaultState — so after a query/rule update, or when the
+   *  operator's manual filtering drifted, this is the one-click reset. */
+  focusMapOnOden(): void {
+    this.focusMapOn(this.settings.protectedLat, this.settings.protectedLon, MAP_QUERY);
   }
 
-  /** Create/overwrite a predefined place, persist, re-derive the nodes. */
+  /** ⋯ menu / command / setup follow-up / map seed: open the places screen IN THE
+   *  PANEL (not a modal — a modal blocks the whole workspace, so the operator
+   *  couldn't right-click the map to copy a position while entering places). */
+  async openManagePlaces(initCoord?: string): Promise<void> {
+    await this.revealPanel();
+    this.getView()?.showPlaces(initCoord);
+  }
+
+  /** Create/overwrite a predefined place, persist, re-derive the nodes. The feed
+   *  is NOT refreshed here — the places screen stays open (its ← back refreshes). */
   async addPredefinedPlace(name: string, p: PredefinedLocation): Promise<void> {
     const existed = name in this.settings.predefinedLocations;
     this.settings.predefinedLocations[name] = p;
     await this.saveSettings();
     await this.reconcileActorNodes(); // materializes the 📍 note + vicinity links
-    await this.refreshPanel();
     // Show the new needle right away (an already-open map re-queries live).
     this.focusMapOn(p.lat, p.lon, MAP_QUERY);
     new Notice(`ODEN: plats "${name}" ${existed ? "uppdaterad" : "skapad"}.`);
@@ -799,7 +818,6 @@ export default class SevenSPlugin extends Plugin {
     delete this.settings.predefinedLocations[name];
     await this.saveSettings();
     await this.reconcileActorNodes();
-    await this.refreshPanel();
     new Notice(`ODEN: plats "${name}" borttagen.`);
   }
 
@@ -1192,10 +1210,11 @@ export default class SevenSPlugin extends Plugin {
     menu.addItem((i) => i.setTitle("Konfigurera operationsområde…").setIcon("target").onClick(() => this.openOperationSetup()));
     menu.addSeparator();
     menu.addItem((i) => i.setTitle("Uppdatera lägesbild").setIcon("refresh-cw").onClick(() => void this.refreshPanel()));
+    menu.addItem((i) => i.setTitle("Visa ODEN-lagren på kartan").setIcon("map").onClick(() => this.focusMapOnOden()));
     menu.addItem((i) => i.setTitle("Granska kopplingsförslag").setIcon("link").onClick(() => void this.runMarkNominations()));
     menu.addItem((i) => i.setTitle("Granska aktörsförslag").setIcon("git-fork").onClick(() => void this.runDeriveActors()));
     menu.addItem((i) => i.setTitle("Namnge plats…").setIcon("map-pin").onClick(() => void this.openLocationNamer()));
-    menu.addItem((i) => i.setTitle("Platser i förväg…").setIcon("landmark").onClick(() => this.openManagePlaces()));
+    menu.addItem((i) => i.setTitle("Platser i förväg…").setIcon("landmark").onClick(() => void this.openManagePlaces()));
     menu.addSeparator();
     menu.addItem((i) => i.setTitle("Slå ihop aktörer…").setIcon("git-merge").onClick(() => void this.mergeActorsFlow()));
     menu.addItem((i) => i.setTitle("Slå ihop platser…").setIcon("git-merge").onClick(() => void this.mergeLocationsFlow()));
@@ -1551,6 +1570,92 @@ class SevenSTextView extends ItemView {
     head.createEl("button", { text: "← Tillbaka" }).onclick = () => void this.plugin.refreshPanel();
     head.createEl("strong", { text: title });
     return this.feedEl.createDiv();
+  }
+
+  /** Places screen IN THE PANEL (not a modal, which would block the map): list +
+   *  remove + add. The map stays interactive alongside, so the operator can
+   *  right-click it → "Copy geolocation" and paste into the position field. */
+  showPlaces(initCoord?: string): void {
+    const content = this.reviewHead("Platser i förväg");
+    content.createEl("p", {
+      text:
+        "Skapa kända platser (grindar, förråd, infarter). Observationer inom radien " +
+        "kopplas till platsen i grafen. Skyddsvärda platser ger dessutom larmsignal vid närhet.",
+    }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
+
+    // Existing places, with remove buttons.
+    const entries = Object.entries(this.plugin.settings.predefinedLocations).sort(([a], [b]) =>
+      a.localeCompare(b, "sv"),
+    );
+    if (entries.length > 0) {
+      const list = content.createDiv();
+      list.style.cssText = "margin:0 0 12px;";
+      for (const [name, p] of entries) {
+        const row = list.createDiv();
+        row.style.cssText = "display:flex;align-items:center;gap:8px;padding:2px 0;";
+        const txt = row.createEl("span", {
+          text: `📍 ${name} — radie ${p.radiusM} m${p.sensitive ? " — 🛡️ skyddsvärd" : ""}`,
+        });
+        txt.style.cssText = "flex:1;font-size:.92em;";
+        row.createEl("button", { text: "Ta bort" }).onclick = async () => {
+          await this.plugin.removePredefinedPlace(name);
+          this.showPlaces();
+        };
+      }
+    }
+
+    // Add form.
+    const nameIn = content.createEl("input", { type: "text" });
+    nameIn.placeholder = "Namn (t.ex. Norra grinden)";
+    nameIn.style.cssText = "width:100%;margin:0 0 6px;";
+
+    const coordIn = content.createEl("input", { type: "text" });
+    coordIn.placeholder = "Position: 59.2622,17.712  eller  33VXF5453072480";
+    coordIn.style.cssText = "width:100%;margin:0 0 2px;";
+    if (initCoord) coordIn.value = initCoord; // from a map seed
+    content.createEl("div", {
+      text:
+        "Tips: högerklicka i kartan → “Copy geolocation as front matter” (kopierar direkt, " +
+        "ingen dialog) och klistra in här. Eller “New note here (front matter)” — då fylls " +
+        "positionen i automatiskt.",
+    }).style.cssText = "opacity:.55;font-size:.8em;margin:0 0 6px;";
+
+    const optRow = content.createDiv();
+    optRow.style.cssText = "display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 6px;";
+    optRow.createEl("span", { text: "Radie (m):" }).style.cssText = "font-size:.9em;";
+    const radIn = optRow.createEl("input", { type: "number" });
+    radIn.value = "100";
+    radIn.style.cssText = "width:90px;";
+    const sensLbl = optRow.createEl("label");
+    sensLbl.style.cssText = "display:flex;gap:4px;align-items:center;font-size:.9em;cursor:pointer;";
+    const sensIn = sensLbl.createEl("input", { type: "checkbox" });
+    sensLbl.appendText("Skyddsvärd (larma vid närhet)");
+
+    const err = content.createEl("div");
+    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin-bottom:8px;";
+
+    const add = content.createEl("button", { text: "Lägg till", cls: "mod-cta" });
+    add.onclick = async () => {
+      const name = nameIn.value.trim();
+      if (!name) {
+        err.setText("Ange ett namn på platsen.");
+        return;
+      }
+      const c = parseCoord(coordIn.value);
+      if (!c) {
+        err.setText("Kunde inte tolka positionen — ange lat,lon, en MGRS-ruta eller klistra in från kartan.");
+        return;
+      }
+      const radiusM = Math.round(Number(radIn.value));
+      if (!Number.isFinite(radiusM) || radiusM < 10) {
+        err.setText("Radien måste vara minst 10 m.");
+        return;
+      }
+      err.setText("");
+      await this.plugin.addPredefinedPlace(name, { lat: c.lat, lon: c.lon, radiusM, sensitive: sensIn.checked });
+      this.showPlaces(); // stay on the screen — the operator often adds several
+    };
+    window.setTimeout(() => nameIn.focus(), 0);
   }
 
   /** Render actor hypotheses (§6.4) with threshold control + confirm/reject. */
@@ -2109,7 +2214,7 @@ class MapSeedModal extends Modal {
 
     mk("Skapa plats i förväg här…", true, async () => {
       await this.plugin.absorbMapSeed(this.path);
-      new ManagePlacesModal(this.app, this.plugin, `${this.coord.lat},${this.coord.lon}`).open();
+      await this.plugin.openManagePlaces(`${this.coord.lat},${this.coord.lon}`);
     });
     if (this.near) {
       mk(`Namnge platsen ${this.near.key} (~${this.near.distanceM} m)…`, false, async () => {
@@ -2125,115 +2230,6 @@ class MapSeedModal extends Modal {
 
   onClose(): void {
     this.contentEl.empty();
-  }
-}
-
-/** Manage the operator's predefined places: list + remove + add (name, position,
- *  vicinity radius, sensitive flag). Each place materializes as a 📍 location note
- *  immediately; reports within its radius link to it as they arrive. */
-class ManagePlacesModal extends Modal {
-  constructor(
-    app: App,
-    private plugin: SevenSPlugin,
-    private initCoord?: string,
-  ) {
-    super(app);
-  }
-
-  onOpen(): void {
-    this.render();
-  }
-
-  onClose(): void {
-    this.contentEl.empty();
-  }
-
-  private render(): void {
-    const { contentEl } = this;
-    contentEl.empty();
-    contentEl.createEl("h3", { text: "Platser i förväg" });
-    contentEl.createEl("p", {
-      text:
-        "Skapa kända platser (grindar, förråd, infarter). Observationer inom radien " +
-        "kopplas till platsen i grafen. Skyddsvärda platser ger dessutom larmsignal vid närhet.",
-    }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
-
-    // Existing places, with remove buttons.
-    const entries = Object.entries(this.plugin.settings.predefinedLocations).sort(([a], [b]) =>
-      a.localeCompare(b, "sv"),
-    );
-    if (entries.length > 0) {
-      const list = contentEl.createDiv();
-      list.style.cssText = "margin:0 0 12px;";
-      for (const [name, p] of entries) {
-        const row = list.createDiv();
-        row.style.cssText = "display:flex;align-items:center;gap:8px;padding:2px 0;";
-        const txt = row.createEl("span", {
-          text: `📍 ${name} — radie ${p.radiusM} m${p.sensitive ? " — 🛡️ skyddsvärd" : ""}`,
-        });
-        txt.style.cssText = "flex:1;font-size:.92em;";
-        row.createEl("button", { text: "Ta bort" }).onclick = async () => {
-          await this.plugin.removePredefinedPlace(name);
-          this.render();
-        };
-      }
-    }
-
-    // Add form.
-    const nameIn = contentEl.createEl("input", { type: "text" });
-    nameIn.placeholder = "Namn (t.ex. Norra grinden)";
-    nameIn.style.cssText = "width:100%;margin:0 0 6px;";
-
-    const coordIn = contentEl.createEl("input", { type: "text" });
-    coordIn.placeholder = "Position: 59.2622,17.712  eller  33VXF5453072480";
-    coordIn.style.cssText = "width:100%;margin:0 0 2px;";
-    if (this.initCoord) {
-      coordIn.value = this.initCoord; // from a map seed — consume once
-      this.initCoord = undefined;
-    }
-    contentEl.createEl("div", {
-      text: "Tips: högerklicka i kartan → “Copy geolocation” och klistra in här.",
-    }).style.cssText = "opacity:.55;font-size:.8em;margin:0 0 6px;";
-
-    const optRow = contentEl.createDiv();
-    optRow.style.cssText = "display:flex;gap:12px;align-items:center;margin:0 0 6px;";
-    optRow.createEl("span", { text: "Radie (m):" }).style.cssText = "font-size:.9em;";
-    const radIn = optRow.createEl("input", { type: "number" });
-    radIn.value = "100";
-    radIn.style.cssText = "width:90px;";
-    const sensLbl = optRow.createEl("label");
-    sensLbl.style.cssText = "display:flex;gap:4px;align-items:center;font-size:.9em;cursor:pointer;";
-    const sensIn = sensLbl.createEl("input", { type: "checkbox" });
-    sensLbl.appendText("Skyddsvärd (larma vid närhet)");
-
-    const err = contentEl.createEl("div");
-    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin-bottom:8px;";
-
-    const btns = contentEl.createDiv();
-    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
-    const add = btns.createEl("button", { text: "Lägg till", cls: "mod-cta" });
-    btns.createEl("button", { text: "Stäng" }).onclick = () => this.close();
-    add.onclick = async () => {
-      const name = nameIn.value.trim();
-      if (!name) {
-        err.setText("Ange ett namn på platsen.");
-        return;
-      }
-      const c = parseCoord(coordIn.value);
-      if (!c) {
-        err.setText("Kunde inte tolka positionen — ange lat,lon eller en MGRS-ruta.");
-        return;
-      }
-      const radiusM = Math.round(Number(radIn.value));
-      if (!Number.isFinite(radiusM) || radiusM < 10) {
-        err.setText("Radien måste vara minst 10 m.");
-        return;
-      }
-      err.setText("");
-      await this.plugin.addPredefinedPlace(name, { lat: c.lat, lon: c.lon, radiusM, sensitive: sensIn.checked });
-      this.render(); // stay open — the operator often adds several
-    };
-    window.setTimeout(() => nameIn.focus(), 0);
   }
 }
 

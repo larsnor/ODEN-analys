@@ -53,10 +53,12 @@ separate community plugin the operator installs; it is NOT bundled). It sets the
 default query to `tag:#larm OR tag:#aktör OR tag:#objektet OR tag:#fördefinierad`
 and colors markers to match the graph: **gold bullseye = objektet**, **red
 triangle = pending suspect (`#larm`)**, **blue spy icon = confirmed actor
-(`#aktör`)**, **green pin = predefined place (`#fördefinierad`, created via
-"Platser i förväg…")**, **violet shield = sensitive predefined place
-(`#skyddsvärd`)**. Derived location hubs (`#plats` only) stay off the map by
-design. `showNotePreview: false` makes marker popups show just the note **name**
+(`#aktör`)**, **amber dot = reported place (`#plats`, derived from messages —
+a place with coordinates belongs on the map, not just in the graph)**, **green
+pin = predefined place (`#fördefinierad`, created via "Platser i förväg…")**,
+**violet shield = sensitive predefined place (`#skyddsvärd`)**. Rule order
+matters: later rules override, so the predefined needle/shield wins over the
+plats dot. `showNotePreview: false` makes marker popups show just the note **name**
 (not the frontmatter). The map **centre is set per-operation** by ODEN's
 "Konfigurera operationsområde", so the committed centre is only a starting point.
 
@@ -64,8 +66,10 @@ design. `showNotePreview: false` makes marker popups show just the note **name**
 instead): right-click the map → **"New note here (front matter)"** drops a bare
 geolocation note, which ODEN detects and offers to turn into a *plats i förväg*
 at that spot or a *name* for the nearest unnamed MGRS place — the kartnot is
-absorbed once an action is picked ("Ignorera" keeps it). **"Copy geolocation"**
-(either variant) pastes straight into any ODEN coordinate field.
+absorbed once an action is picked ("Ignorera" keeps it). **"Copy geolocation as
+front matter"** copies the position immediately (no dialog) and pastes straight
+into any ODEN coordinate field; plain **"Copy geolocation"** works too, but first
+asks for a marker name — the clipboard is only written after you press OK.
 
 ## `oden-lock.css` — lock the workspace
 
@@ -79,6 +83,11 @@ Obsidian caches `graph.json` **and** the Map View `data.json` in memory and
 **rewrites them on close / on any settings change**. Writing either while Obsidian
 is open will be overwritten. Procedure: **quit Obsidian → copy the files in →
 reopen.** (Or add the colour groups / filter by hand while it's open.)
+
+**Also note:** an already-open map pane keeps its **own** saved query (workspace
+state) and ignores `defaultState` — so after updating the map config, either open
+a fresh map view, or use ODEN's ⋯ menu → **"Visa ODEN-lagren på kartan"**, which
+re-asserts the current ODEN query on the live pane.
 
 The colors only show once entity notes exist — run **Bygg entiteter (Jobb A)**
 (or let the watcher auto-build), and confirm actors/marks to see those classes.

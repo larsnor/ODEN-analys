@@ -6,7 +6,7 @@
       "lat": 60.35345493461713,
       "lng": 17.41884300001621
     },
-    "query": "tag:#larm OR tag:#aktör OR tag:#objektet OR tag:#fördefinierad",
+    "query": "tag:#larm OR tag:#aktör OR tag:#objektet OR tag:#plats OR tag:#fördefinierad",
     "queryError": false,
     "chosenMapSource": 0,
     "forceHistorySave": false,
@@ -90,6 +90,16 @@
         "prefix": "fas",
         "icon": "fa-bullseye",
         "markerColor": "orange",
+        "opacity": 1
+      }
+    },
+    {
+      "query": "tag:#plats",
+      "preset": false,
+      "iconDetails": {
+        "prefix": "fas",
+        "icon": "fa-location-dot",
+        "markerColor": "orange-dark",
         "opacity": 1
       }
     },
