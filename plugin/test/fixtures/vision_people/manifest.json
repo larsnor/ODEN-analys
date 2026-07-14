@@ -1,0 +1,426 @@
+{
+  "persons_01.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "ung",
+        "klader": [
+          "röd jacka",
+          "grå tröja",
+          "mörka jeans",
+          "bruna kängor"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a young man in a red jacket and dark jeans, on a gravel road in open Swedish countryside, fields and forest edge, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Grusväg, skogsbryn — exakt enligt prompt"
+  },
+  "persons_02.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "ung",
+        "klader": [
+          "gul regnjacka med kapuschong",
+          "mörka byxor (delvis skymda)"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a young woman in a yellow raincoat and black trousers, at the edge of a wheat field, rural landscape, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Sädesfält — byxor knappt synliga"
+  },
+  "persons_03.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "äldre",
+        "klader": [
+          "blå rutig flanellskjorta",
+          "gråbeige byxor"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a middle-aged man in a blue checked flannel shirt and grey trousers, on a forest path among pine trees, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Tallskog. AVVIKELSE: prompt sa medelålders, genererad man är gråhårig/gråskäggig → äldre; går snarare än står"
+  },
+  "persons_04.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "medelålders",
+        "klader": [
+          "grön kappa",
+          "vit halsduk",
+          "vit polotröja"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a middle-aged woman in a green wool coat and a white scarf, beside a country fence with meadows behind, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Vid gärdesgård — exakt enligt prompt"
+  },
+  "persons_05.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "äldre",
+        "klader": [
+          "grå rock",
+          "gubbkeps",
+          "mörka byxor",
+          "bruna kängor"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "an elderly man in a grey overcoat and a flat cap, on a dirt track near a red wooden barn, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Mellan röda lador/järnvägsspår — exakt enligt prompt"
+  },
+  "persons_06.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "lila täckjacka",
+          "blå polotröja",
+          "mörka byxor"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "an elderly woman in a purple quilted jacket and dark trousers, in a rural meadow with birch trees, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Björkdunge — exakt enligt prompt"
+  },
+  "persons_07.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "ung",
+        "klader": [
+          "svart huvtröja med kapuschong",
+          "svarta joggingbyxor",
+          "vita sneakers"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a young man in a black hoodie and white sneakers, on a city sidewalk with apartment buildings behind, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Stadsgata. 1–2 oskarpa bakgrundspersoner"
+  },
+  "persons_08.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "ung",
+        "klader": [
+          "vit blus",
+          "beige chinos"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a young woman in a white blouse and beige chinos, indoor office clothing, on a cobblestone square in a small town, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Kullerstensgata — exakt enligt prompt"
+  },
+  "persons_09.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "medelålders",
+        "klader": [
+          "brun skinnjacka",
+          "mörk t-shirt",
+          "jeans"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a middle-aged man in a brown leather jacket and blue jeans, at a bus stop on an ordinary street, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Busshållplats med buss i bakgrunden — exakt enligt prompt"
+  },
+  "persons_10.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "medelålders",
+        "klader": [
+          "orange täckjacka",
+          "svarta leggings"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a middle-aged woman in an orange puffer jacket and black leggings, on a pedestrian street with shop windows, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Affärsgata. 2–3 oskarpa bakgrundspersoner (mörka jackor)"
+  },
+  "persons_11.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "äldre",
+        "klader": [
+          "mörkblå kavaj",
+          "ljusblå skjorta utan slips"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "an elderly man in a dark blue suit without tie, indoor clothing outdoors, in front of a brick apartment block, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "Tegelhus — midjebild, ej helkropp"
+  },
+  "persons_12.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "rosa kofta",
+          "rosa topp",
+          "grå kjol"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "rosa/beige kofta",
+          "grå kjol"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "an elderly woman in a pink cardigan and grey skirt, on a quiet residential street corner, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: SDXL DUPLICERADE subjektet → TVÅ äldre kvinnor (prompt sa en); går snarare än står"
+  },
+  "persons_13.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "beige kappa",
+          "turkos polotröja"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "camel kappa",
+          "turkos polotröja"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "turkos kappa",
+          "mönstrad tröja",
+          "halsduk"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "two women standing together, one young in a turquoise fleece, one elderly in a beige coat, on a country road between fields, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: 3 äldre kvinnor (prompt: 2, en ung) — turkosen 'blödde' över alla; landsväg"
+  },
+  "persons_14.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "äldre",
+        "klader": [
+          "olivgrön parkas"
+        ]
+      },
+      {
+        "kon": "man",
+        "alder": "medelålders",
+        "klader": [
+          "olivgrön parkas"
+        ]
+      },
+      {
+        "kon": "man",
+        "alder": "medelålders",
+        "klader": [
+          "olivgrön parkas"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "three men standing loosely apart: young in a green parka, middle-aged in a black jacket, elderly in a brown coat, at a forest clearing, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: alla tre i olivgröna parkas (prompt: grön/svart/brun) — färgbleed; skogsglänta"
+  },
+  "persons_15.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "medelålders",
+        "klader": [
+          "röd rock",
+          "mörk tröja"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "medelålders",
+        "klader": [
+          "röd kappa",
+          "mörk tröja"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "ung",
+        "klader": [
+          "grå kappa",
+          "jeans"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a man in a grey sweater and a woman in a red wool coat standing side by side, by a lakeside in open countryside, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: 3 personer (prompt: 2) och mannens tröja blev röd rock; vid sjö"
+  },
+  "persons_16.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "ung",
+        "klader": [
+          "gul regnrock",
+          "svarta leggings"
+        ]
+      },
+      {
+        "kon": "man",
+        "alder": "medelålders",
+        "klader": [
+          "mörkblå jacka",
+          "bruna byxor"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "ung",
+        "klader": [
+          "gul trenchcoat",
+          "mörk tröja"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "medelålders",
+        "klader": [
+          "blå jacka",
+          "gråbeige byxor"
+        ]
+      },
+      {
+        "kon": "kvinna",
+        "alder": "medelålders",
+        "klader": [
+          "beige kappa",
+          "röd halsduk",
+          "mörka byxor"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "four people standing in a loose group: two men in dark jackets, a woman in a blue coat, a woman in a yellow jacket, on a city square, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: FEM personer (prompt: 4; 2 män→1); stadstorg — bra grupptest"
+  },
+  "persons_17.jpg": {
+    "persons": [
+      {
+        "kon": "man",
+        "alder": "ung",
+        "klader": [
+          "mörkblå vindjacka",
+          "vit t-shirt",
+          "svarta byxor"
+        ]
+      },
+      {
+        "kon": "man",
+        "alder": "ung",
+        "klader": [
+          "mörkblå vindjacka",
+          "vit t-shirt",
+          "svarta byxor"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "two young men standing, one in a white t-shirt, one in a navy windbreaker, on a bridge over a canal in a town, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: båda fick vindjacka+vit t-shirt (prompt: en i enbart t-shirt); kanalbro"
+  },
+  "persons_18.jpg": {
+    "persons": [
+      {
+        "kon": "kvinna",
+        "alder": "äldre",
+        "klader": [
+          "mörkgrön kappa",
+          "grönbeige stickad tröja"
+        ]
+      },
+      {
+        "kon": "man",
+        "alder": "äldre",
+        "klader": [
+          "olivgrön jacka",
+          "mörk halsduk",
+          "jeans"
+        ],
+        "utrustning": [
+          "kundvagn"
+        ]
+      }
+    ],
+    "behaviour": [],
+    "activity": "ingen — står bara",
+    "prompt": "a middle-aged woman in a black coat and an elderly man in a green jacket standing near each other, outside a suburban supermarket, photorealistic photo, full body visible, standing still doing nothing, relaxed neutral pose, looking around casually, overcast daylight, candid documentary style",
+    "verified": true,
+    "notes": "AVVIKELSE: kvinnans kappa grön (prompt: svart), mannen fick kundvagn (aktivitet: handlar — fortfarande benign); utanför butik"
+  }
+}

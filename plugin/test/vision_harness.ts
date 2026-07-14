@@ -29,6 +29,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const OLLAMA = process.env.OLLAMA_URL ?? "http://localhost:11434";
 const args = process.argv.slice(2);
 const doSighting = args.includes("--sighting");
+// --files a.jpeg,b.jpeg — limit the sighting pass (rerun failures cheaply).
+const filesArg = args.find((a) => a.startsWith("--files="))?.slice("--files=".length);
+const onlyFiles = filesArg ? new Set(filesArg.split(",")) : undefined;
 const MODELS = args.filter((a) => !a.startsWith("--"));
 if (MODELS.length === 0) MODELS.push("llava:7b");
 
@@ -64,10 +67,14 @@ async function chat(model: string, prompt: string, imageB64: string, json = fals
       stream: false,
       keep_alive: "10m",
       format: json ? "json" : undefined,
-      options: { temperature: 0 },
+      // num_ctx: Ollama's DEFAULT is 4096 — a VLM image eats ~2-4k tokens, so
+      // structured-output runs truncate mid-JSON ("ogiltig JSON" epidemic) or
+      // 400 outright. 8192 fits the 8b on 16 GB. The real integration must set
+      // this too (documented in VISION_VALIDATION.md).
+      options: { temperature: 0, num_ctx: 8192 },
       messages: [{ role: "user", content: prompt, images: [imageB64] }],
     }),
-    signal: AbortSignal.timeout(300_000),
+    signal: AbortSignal.timeout(600_000),
   });
   const body = (await res.json()) as ChatResponse;
   if (!res.ok || body.error) throw new Error(body.error ?? `HTTP ${res.status}`);
@@ -122,28 +129,41 @@ interface Truth {
 
 async function sightingPass(model: string, dir: string, truth: Record<string, Truth>): Promise<void> {
   console.log(`\n  --sighting (full JSON prompt; review model vs note):`);
-  for (const [f, t] of Object.entries(truth).filter(([k]) => !k.startsWith("_"))) {
+  let countOk = 0, countTot = 0, failures = 0;
+  const entries = Object.entries(truth).filter(([k]) => !k.startsWith("_") && (!onlyFiles || onlyFiles.has(k)));
+  for (const [f, t] of entries) {
     let line: string;
     let delta = "";
-    try {
-      const { text, ms } = await chat(model, SIGHTING_PROMPT, b64(dir, f), true);
-      let personCount = "?";
+    // Per-image tolerance: one stalled call (Mac sleep, model reload) must not
+    // kill the pass — retry once, then record the failure and continue.
+    for (let attempt = 1; ; attempt++) {
       try {
-        const parsed = JSON.parse(text) as { personer?: unknown[] };
-        personCount = String(parsed.personer?.length ?? 0);
-        const want = t.persons?.length ?? 0;
-        delta = ` [personer modell ${personCount} / facit ${want}]`;
-      } catch {
-        delta = " [ogiltig JSON]";
+        const { text, ms } = await chat(model, SIGHTING_PROMPT, b64(dir, f), true);
+        try {
+          const parsed = JSON.parse(text) as { personer?: unknown[] };
+          const got = parsed.personer?.length ?? 0;
+          const want = t.persons?.length ?? 0;
+          countTot++;
+          if (Math.abs(got - want) <= (want >= 4 ? 1 : 0)) countOk++;
+          delta = ` [personer modell ${got} / facit ${want}]`;
+        } catch {
+          delta = " [ogiltig JSON]";
+        }
+        line = `${text.replace(/\s+/g, " ").slice(0, 240)} (${ms} ms)`;
+        break;
+      } catch (err) {
+        if (attempt >= 2) {
+          line = `FAILED — ${(err as Error).message}`;
+          failures++;
+          break;
+        }
       }
-      line = `${text.replace(/\s+/g, " ").slice(0, 240)} (${ms} ms)`;
-    } catch (err) {
-      line = `FAILED — ${(err as Error).message}`;
     }
     const flag = t.expect_unknown ? " ⚠okänd-förväntat" : t.hard ? " (svår)" : "";
     console.log(`    ${f}${flag} — facit: ${t.notes}${delta}`);
     console.log(`      → ${line}`);
   }
+  console.log(`  personantal rätt (±1 vid grupper ≥4): ${countOk}/${countTot}; misslyckade anrop: ${failures}`);
 }
 
 async function main(): Promise<void> {
@@ -166,9 +186,14 @@ async function main(): Promise<void> {
     try {
       // Warm-up (model load) — excluded from latency.
       await chat(model, "Reply OK.", b64(synthDir, synthItems[0][0]));
-      await platePass(model, synthDir, synthItems, "synthetic cards (best-case OCR)");
-      if (hasReal) await platePass(model, realDir, realPlateItems, "REAL Swedish plates (field OCR)");
-      if (doSighting && hasReal) await sightingPass(model, realDir, realTruth);
+      // --sighting runs ONLY the sighting pass (the plate passes are measured
+      // separately and are expensive to repeat at VLM latencies).
+      if (doSighting) {
+        if (hasReal) await sightingPass(model, realDir, realTruth);
+      } else {
+        await platePass(model, synthDir, synthItems, "synthetic cards (best-case OCR)");
+        if (hasReal) await platePass(model, realDir, realPlateItems, "REAL Swedish plates (field OCR)");
+      }
     } catch (err) {
       console.error(`  ${model}: FAILED — ${(err as Error).message}`);
     }
