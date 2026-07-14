@@ -26,3 +26,7 @@ simulator/attachments/plate_*.jpg
 
 # Claude Code local settings
 .claude/
+
+# Real photo set for the vision harness — operator-provided, NEVER commit
+# (real people/vehicles/plates; the public repo gets numbers only, via docs/)
+plugin/test/fixtures/vision_real/
