@@ -86,5 +86,14 @@ prosa — de hittar aldrig på bevis mot en civil, men missar mycket:
   recall efter en avgränsad, precisionsspärrad utökning; resten är öppen vokabulär =
   framtida språkmodellsarbete).
 
+**Bildanalys (valfri, lokal LLM):** ODEN kan läsa bifogade foton med en lokal
+vision-modell (Ollama, `qwen3-vl:4b` — mätt i
+[`docs/VISION_VALIDATION.md`](docs/VISION_VALIDATION.md)): skyltar, fordon (märke/
+färg), personer (kön/ålder/klädfärg/utrustning). Den är **avstängd som standard**,
+slås på med 📷-chippen i panelen, och är **nomineringsgrindad** — modellen föreslår,
+operatören bekräftar per fynd. Störst nytta: skyltar och låg bemanning. Detektionen
+beror aldrig på den (§8.2); driftläget (deterministiskt + valfria LLM-lager) syns
+direkt i panelens lägesstrip.
+
 ## Licens
 MIT — se [`LICENSE`](LICENSE).

@@ -316,6 +316,50 @@ restored pane. Fix: ⋯ menu + command "Visa ODEN-lagren på kartan"
 (focusMapOnOden → focusMapOn(AOI, MAP_QUERY)) re-asserts the query on the live
 pane; also the one-click reset when manual filtering drifts.
 
+## VISION (Steg 1 byggt 2026-07-14) — photo-borne observations via local Ollama
+Model bake-off DONE (docs/VISION_VALIDATION.md): DEFAULT qwen3-vl:4b (matches 8b
+accuracy — 95/85% plate, 0 WRONG — but ~2x faster + no swap timeouts on 16 GB);
+8b/32b reserved for higher-RAM machines. New pure modules: src/photo_analysis.ts
+(PhotoSighting, reviewed prompt, parse/validate, RECON-only behaviour map
+[optik/observation/registrering — severe behaviours are act-not-photograph],
+sighting→per-item nominations; 10 CI tests, FakeVision) + src/llm.ts (Ollama client,
+health, VISION_MODELS). main.ts: settings visionEnabled/ollamaUrl/visionModel +
+photoAnalyses run-once cache (hash+model+promptV, §9.2 no-fishing) + photoPlates/
+Annotations confirmations; computePhotoSightings; confirmed photo-plate INJECTED
+into Job A via ids.ts source "photo" + Report.photoPlates. UI: panel MODE STRIP
+(📷 Bild live-toggle + 📝/💬 future chips + connection dot; deterministic core
+always on) NOT a settings toggle; per-item photo-review over the image (plate→Job A,
+vehicle/person→annotation, operator may promote a person to actor); "Analysera
+bilder nu" command; at-enable consequences warning; settings dropdown + Testa
+anslutning. Provenance föreslagen-av: llm-vision. Menu trimmed (Granska koppling/
+aktör + Uppdatera lägesbild — feed rows + watcher cover them). Text-reasoning
+(role 2) is a SEPARATE later phase on the SAME model + same nomination frame.
+Locked-design record: /Users/larsno/.claude/plans/ok-so-we-can-zany-moth.md.
+
+## TEXT-REASONING + CHAT (roles 2 & 3, built 2026-07-15)
+The two remaining LLM roles, on the SAME model (qwen3-vl is a full LM) and the SAME
+nomination frame as vision. All three capabilities are independent panel chips
+(📷 Bild · 📝 Text · 💬 Chat), each degrading to deterministic; deterministic core
+always on.
+- **Chat (💬, OllamaConversation in conversation.ts):** LLM only REFINES the
+  deterministic parseQuery (intent/kind/term/place) and NARRATES the deterministic
+  answer (§7.1 — findings never originate in the model). `converse(conversationEngine())`.
+  Safe → no validation needed, no warning on enable.
+- **Text-reasoning (📝, src/text_reasoning.ts + OllamaText):** open-vocab extractor
+  lifting the FROZEN keyword lists' measured recall ceiling (~6–9% marks, ~24–62%
+  behaviour). Per report Händelse⊕Symbol → {kännetecken[], beteenden[{begrepp,fras}]},
+  run-once cached (content-hash+model+prompt, settings.textExtractions). Behaviours
+  classified into the SAME concept space (suspicion.threatConcepts) — FULL spectrum
+  (text can carry sabotage, unlike photo's recon-only) — confirmed → confirmedBehaviours
+  → score. Marks re-identified across reports by NORMALISED KEY (exact-key floor;
+  embeddings/fuzzy = later), clustered ≥2 → nomination → confirm → 🎒 kännetecken hub
+  note (metod text-marke, föreslagen-av: llm). Per-item review (📝 Textfynd), command
+  "Tolka text nu", at-enable warning (recall UNMEASURED → safe because gated; a
+  harness pass over the behaviour OOD corpora quantifies the lift before trust).
+- confirmedBehaviours (was photoBehaviours) is now source-agnostic (photo recon +
+  text) → suspicion, deduped vs keyword hits. 164 tests (photo_analysis 10,
+  text_reasoning 6, ids photo-plate, suspicion confirmedBehaviours). Menu unchanged.
+
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but
   not yet written into the spec — DEFERRED pending the other developer's

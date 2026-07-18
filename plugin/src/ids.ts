@@ -23,7 +23,8 @@ export type IdentifierSource =
   | "prose-handelse"
   | "prose-stalle"
   | "prose-symbol"
-  | "frontmatter";
+  | "frontmatter"
+  | "photo"; // operator-confirmed from an attached photo (§6.7, llm-vision)
 
 export interface Identifier {
   type: IdentifierType;
@@ -95,6 +96,14 @@ export function extractIdentifiers(report: Report): Identifier[] {
   found.push(...scanProse(report.handelse ?? "", "prose-handelse"));
   found.push(...scanProse(report.stalle ?? "", "prose-stalle"));
   found.push(...scanProse(report.symbol ?? "", "prose-symbol"));
+
+  // 2b. Operator-CONFIRMED photo plates (§6.7) — injected as if typed, so Job A
+  //     re-identifies a vehicle whose plate only ever appeared in an image. Only
+  //     confirmed plates reach here (main.ts attaches them post-parse).
+  for (const p of report.photoPlates ?? []) {
+    const v = normPlate(p);
+    if (v) found.push({ type: "plate", role: "actor", value: v, raw: p, partial: false, source: "photo" });
+  }
 
   // 3. Frontmatter sender identity.
   if (report.signalAvsandareId) {

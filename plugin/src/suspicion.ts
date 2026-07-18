@@ -134,6 +134,14 @@ export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: num
     "testar dörrhandtaget"] },
 ];
 
+/** The behaviour concepts (key + operator label + weight), for the LLM text
+ *  extractor to classify open-vocabulary phrasing into — same concept space as the
+ *  deterministic keyword list, so a text-LLM hit and a keyword hit are the same
+ *  signal and dedupe cleanly. */
+export function threatConcepts(): { key: string; label: string; weight: number }[] {
+  return THREAT_INDICATORS.map((i) => ({ key: i.key, label: i.label, weight: i.weight ?? 2 }));
+}
+
 const R = 6371000; // earth radius (m)
 export function haversineM(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const toRad = (d: number) => (d * Math.PI) / 180;
@@ -190,6 +198,14 @@ export function scoreReport(report: Report, opts: SuspicionOpts = DEFAULT_SUSPIC
   for (const ind of THREAT_INDICATORS) {
     const hit = ind.stems.find((s) => text.includes(s));
     if (hit) reasons.push({ key: `beteende:${ind.key}`, label: `hotindikator: ${ind.label} ("${hit}")`, weight: ind.weight ?? 2 });
+  }
+
+  // 3b. Operator-CONFIRMED recon behaviours from an attached photo (§6.7). Already
+  //     gated (llm-vision → operatör confirmed) and restricted to the recon subset
+  //     at nomination time, so they simply add their weight here — deduped against
+  //     a text keyword that already found the same concept.
+  for (const b of report.confirmedBehaviours ?? []) {
+    if (!reasons.some((r) => r.key === b.key)) reasons.push(b);
   }
 
   const score = reasons.reduce((s, r) => s + r.weight, 0);

@@ -23,6 +23,7 @@ export const METOD = {
   plats: "plats", // location hubs
   objektet: "objektet", // the AOI marker
   aterkomst: "aterkomst", // recurrence nodes
+  textmarke: "text-marke", // LLM open-vocab kännetecken (confirmed, föreslagen-av: llm)
 } as const;
 
 /** The AOI marker note's stem ("Objektet.md", written at operation setup). A fixed

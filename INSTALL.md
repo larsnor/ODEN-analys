@@ -54,9 +54,28 @@ nominations, run the suspicion analysis, name/merge entities, etc. In Graph view
 you'll see six colour-coded node types (objektet, larm, aktör, plats, återkomst,
 entities) with raw messages hidden by the `-file:TNR` filter.
 
+## 7. (Optional) Image analysis — local LLM via Ollama
+ODEN can read attached photos ("Se bild" reports) with a local vision model — most
+useful for **registreringsskyltar** and **periods of low staffing**. It is OFF by
+default and entirely optional; detection never depends on it.
+
+1. Install **Ollama** (`https://ollama.com`) — a local, offline model server.
+2. Pull the model: `ollama pull qwen3-vl:4b` (≈3 GB; the default. `:8b` is more
+   accurate but needs ≥32 GB RAM — see `docs/VISION_VALIDATION.md` for the numbers).
+3. In Obsidian: **Settings → ODEN** → check the Ollama address + model, press
+   **"Testa anslutning"**.
+4. In the ODEN panel, click the **📷 Bild** chip to turn it on (you'll get a
+   one-time warning about speed). Photos are then analysed and every finding —
+   plate, vehicle, person — is **proposed for your confirmation** (per item, over
+   the photo). Nothing is written without you accepting it (`föreslagen-av:
+   llm-vision`). Ollama can also run on a stronger machine on the network (set the
+   address accordingly).
+
 ## Note on detection scope
-See `docs/RE-ID_VALIDATION.md`. In short: the deterministic mark re-identification
-layer is a **high-precision seed** — it fails safe (never invents a mark on a
-civilian) but its recall/precision on *real* reports is unvalidated and limited by
-a fixed vocabulary. Plate-based re-id and the proximity/behaviour suspicion scoring
-are the robust parts; broad open-vocabulary re-id is future (LLM) work.
+See `docs/RE-ID_VALIDATION.md`, `docs/BEHAVIOUR_VALIDATION.md`, and (for the vision
+model) `docs/VISION_VALIDATION.md`. In short: the deterministic mark
+re-identification layer is a **high-precision seed** — it fails safe (never invents
+a mark on a civilian) but its recall on *real* reports is limited by a fixed
+vocabulary. Plate-based re-id and the proximity/behaviour suspicion scoring are the
+robust parts. Image analysis (optional, above) is **nomination-gated**: the model
+suggests, the operator confirms — it is never the sole detection path.

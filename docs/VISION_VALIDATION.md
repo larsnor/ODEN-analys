@@ -174,7 +174,14 @@ en modellfamilj håller prompt + normalisering konsekvent.
 5. «okänd»-disciplinen håller hos BÅDA storlekar — kön gissas i princip aldrig på
    ryggtavlor/siluetter; det är själva förutsättningen för persondelen.
 
-**Kvar (Steg 1, själva integrationen):** src/llm.ts (Ollama-klient), photo_analysis.ts
-(prompt+schema+validering, den mänskligt granskade prompten härifrån), cache
-(§9.2 kör-en-gång per bild-hash), nomineringsflöde (foto-plåt-kö + foto-märken),
-inställningar (visionEnabled/ollamaUrl/visionModel-dropdown). FakeVision för CI.
+**Steg 1 BYGGT (2026-07-14):** src/llm.ts (Ollama-klient + health + VISION_MODELS),
+src/photo_analysis.ts (PhotoSighting-typer, den granskade prompten, parse/validering,
+recon-behaviour-mappning, sighting→per-item-nomineringar; 10 CI-tester med FakeVision).
+main.ts: settings (visionEnabled/ollamaUrl/visionModel/photoAnalyses-cache/
+photoPlates/photoAnnotations), computePhotoSightings (kör-en-gång per bild-hash+
+modell+promptversion), Job A-injektion av bekräftade foto-plåtar (ids.ts source
+"photo"), panel-lägesstrip (📷/📝/💬-chippar + anslutningsprick), per-item
+granskningsskärm över fotot, kommando "Analysera bilder nu", varning vid påslag,
+inställnings-dropdown + "Testa anslutning". 157 tester gröna. De 5 mätkraven ovan
+hedrade (normalizePlateRead, num_ctx 8192, async/kommando-styrt, nomineringsgrind,
+modell per maskinklass). Provenance: föreslagen-av llm-vision, bekräftad-av operatör.

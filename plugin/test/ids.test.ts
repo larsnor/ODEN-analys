@@ -94,3 +94,24 @@ test("a linked plate is not double-counted with its prose occurrence", () => {
   assert.equal(plates[0].value, "RJK241");
   assert.equal(plates[0].source, "link", "link provenance preferred");
 });
+
+test("operator-confirmed photo plate is injected into Job A as if typed (§6.7)", () => {
+  // A "Se bild"-style report: no plate in the text at all.
+  const text = [
+    "---", "id: P", "typ: 7S-rapport", 'tnr: "080910"', 'tidpunkt: "2026-07-05T02:00:00"', "sagesman: BQ", "---",
+    "", "**Händelse:** Se bild.",
+  ].join("\n");
+  const r = parseReport(text, "reports/p.md");
+  assert.equal(plateIdentifiers(r).length, 0, "no plate in the text");
+
+  // Operator confirmed a photo plate → injected post-parse.
+  r.photoPlates = ["RTZ355"];
+  const plates = plateIdentifiers(r);
+  assert.equal(plates.length, 1);
+  assert.equal(plates[0].value, "RTZ355");
+  assert.equal(plates[0].source, "photo", "provenance = photo (llm-vision)");
+  assert.equal(plates[0].partial, false);
+  // And Job A now re-identifies the vehicle.
+  const canon = new Set(buildPlateEntities([r]).entities.map((e) => e.canonical));
+  assert.ok(canon.has("RTZ355"), "photo plate reaches Job A");
+});

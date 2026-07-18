@@ -68,3 +68,26 @@ test("analysis is deterministic", { skip: !haveCorpus }, () => {
   const { reports } = load();
   assert.deepEqual(analyzeSuspicion(reports), analyzeSuspicion(reports));
 });
+
+test("confirmedBehaviours (photo/text LLM, operator-confirmed) feed the score, deduped", () => {
+  const base = parseReport(
+    ['---', 'id: Z', 'typ: 7S-rapport', 'tnr: "020200"', 'tidpunkt: "2026-06-15T02:00:00"', "lat: 59.2615", "lon: 17.7135", "sagesman: AQ", "---",
+     "", "**Händelse:** Se bild."].join("\n"),
+    "z",
+  );
+  // Se bild + night(2) + proximity(3) but no text behaviour → elevated only from geo+time.
+  const before = scoreReport(base).score;
+  // Operator confirms a recon behaviour from the photo/text LLM (+2).
+  const withBeh = { ...base, confirmedBehaviours: [{ key: "beteende:optik", label: "hotindikator (foto): kikare", weight: 2 }] };
+  assert.equal(scoreReport(withBeh).score, before + 2, "confirmed behaviour adds its weight");
+  assert.ok(scoreReport(withBeh).reasons.some((r) => r.key === "beteende:optik"));
+  // Deduped against a text keyword that already found the same concept (no double count).
+  const dupText = parseReport(
+    ['---', 'id: Z2', 'typ: 7S-rapport', 'tnr: "020201"', 'tidpunkt: "2026-06-15T02:00:00"', "lat: 59.2615", "lon: 17.7135", "sagesman: AQ", "---",
+     "", "**Händelse:** Betraktade grinden genom kikare."].join("\n"),
+    "z2",
+  );
+  const withDup = { ...dupText, confirmedBehaviours: [{ key: "beteende:optik", label: "x", weight: 2 }] };
+  const optikCount = scoreReport(withDup).reasons.filter((r) => r.key === "beteende:optik").length;
+  assert.equal(optikCount, 1, "keyword + confirmed same concept → counted once");
+});

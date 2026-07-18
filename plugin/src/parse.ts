@@ -62,6 +62,16 @@ export interface Report {
   links: LinkRef[]; // [[...]] targets found in body
   embeds: string[]; // ![[...]] image embeds found in body
 
+  /** Operator-confirmed plates read from attached photos (§6.7). NOT from
+   *  frontmatter — injected post-parse from settings so Job A treats a
+   *  photo-only plate as if typed. */
+  photoPlates?: string[];
+  /** Operator-confirmed behaviour signals from an LLM finding — a photo (recon
+   *  subset) or the text extractor (§6.7). Injected post-parse so the suspicion
+   *  score includes them (structurally a suspicion Signal[]; inlined to avoid a
+   *  parse↔suspicion import cycle). */
+  confirmedBehaviours?: { key: string; label: string; weight: number }[];
+
   // --- bookkeeping ---
   file: string; // path or stem the report was read from
 }
