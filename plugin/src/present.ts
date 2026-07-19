@@ -34,6 +34,9 @@ const REASON_PHRASE: Record<string, string> = {
 
 export function reasonPhrase(s: Signal): string {
   if (REASON_PHRASE[s.key]) return REASON_PHRASE[s.key];
+  // Craft signals (farkost:<type>) — the type label reads as its own reason
+  // (e.g. "drönare" alongside "nära objektet", "nattetid").
+  if (s.key.startsWith("farkost:")) return s.label.replace(/^farkost:\s*/i, "");
   // Fallback: scrub any "(+N)" weight or "(~123 m)" distance from a raw label.
   return s.label.replace(/\s*\(\+\d+\)/g, "").replace(/\s*\(~\d+\s*m\)/g, "").trim();
 }

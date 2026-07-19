@@ -17,6 +17,7 @@
  * (recurring vehicles): recurrence + aggregated proximity/night.
  */
 import { Report } from "./parse";
+import { extractCraft } from "./craft";
 
 export interface Signal {
   key: string;
@@ -206,6 +207,21 @@ export function scoreReport(report: Report, opts: SuspicionOpts = DEFAULT_SUSPIC
   //     a text keyword that already found the same concept.
   for (const b of report.confirmedBehaviours ?? []) {
     if (!reasons.some((r) => r.key === b.key)) reasons.push(b);
+  }
+
+  // 4. Craft type (farkost) — a drone/boat/aircraft is inherently relevant near
+  //    the objektet. The type's `threat` weight STACKS with proximity + time, so
+  //    a drone near the objektet at night reaches Hög, a boat loitering there at
+  //    night reaches Förhöjd, and a tractor (threat 0) never flags on type alone.
+  //    Craft is always QUERYABLE (query.ts farkost target) even when unelevated.
+  //    NB deliberate: a drone ALSO fires beteende:optik (the frozen, validated
+  //    "drönar" stem above) — that is two model dimensions, not double-counting:
+  //    farkost = what it IS (an aircraft), optik = what it DOES (airborne
+  //    sensor). Net effect: any drone mention alone reaches "Att bevaka".
+  for (const c of extractCraft(report)) {
+    if (c.threat > 0 && !reasons.some((r) => r.key === `farkost:${c.type}`)) {
+      reasons.push({ key: `farkost:${c.type}`, label: `farkost: ${c.label}`, weight: c.threat });
+    }
   }
 
   const score = reasons.reduce((s, r) => s + r.weight, 0);

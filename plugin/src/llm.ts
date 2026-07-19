@@ -53,11 +53,14 @@ interface ChatMessage {
 
 /** One raw Ollama /api/chat turn → the message content, or null on any failure
  *  (network/timeout/non-2xx). num_ctx>=8192 is MANDATORY (the 4096 default
- *  truncates structured JSON mid-object — proven in the bake-off). */
+ *  truncates structured JSON mid-object — proven in the bake-off).
+ *  `think:false` (chat path) turns off qwen3's reasoning preamble — pass only
+ *  for interactive calls; batch vision/text keep the validated default. */
 export async function ollamaChat(
   opts: OllamaOpts,
   messages: ChatMessage[],
   json = false,
+  think?: boolean,
 ): Promise<string | null> {
   try {
     const res = await fetch(`${opts.url.replace(/\/+$/, "")}/api/chat`, {
@@ -68,6 +71,7 @@ export async function ollamaChat(
         stream: false,
         keep_alive: "10m",
         format: json ? "json" : undefined,
+        ...(think === undefined ? {} : { think }),
         options: { temperature: 0, num_ctx: 8192 },
         messages,
       }),
