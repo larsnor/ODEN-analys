@@ -78,11 +78,29 @@ Settings → Appearance → CSS snippets. Hides the tab close/new-tab buttons in
 main area so operator panels can't be accidentally closed. Hot-reloads (no
 restart). See the file header for details.
 
+## `app.json` — editor / vault preferences
+
+Copy to `<vault>/.obsidian/app.json`. Sets `propertiesInDocument: "hidden"` so
+notes don't render the **Egenskaper (Properties)** panel at the top of each file —
+the 7S frontmatter is still fully parsed and used by ODEN and Map View, it's just
+not shown inline. (Equivalent to Settings → Editor → *Properties in document* →
+*Hidden*.)
+
+## `workspace.json` — default pane layout
+
+Copy to `<vault>/.obsidian/workspace.json`. The operator workspace: the **map**,
+the **graph**, and the **ODEN panel** as **pinned** tabs — pinned so clicking a
+report opens it in a *new* tab instead of hijacking one of the panels. Session
+state (`lastOpenFiles`, the active leaf, and any open report file/title) is
+stripped from the committed template — Obsidian repopulates that as the operator
+works.
+
 ### IMPORTANT — apply with Obsidian CLOSED
-Obsidian caches `graph.json` **and** the Map View `data.json` in memory and
-**rewrites them on close / on any settings change**. Writing either while Obsidian
-is open will be overwritten. Procedure: **quit Obsidian → copy the files in →
-reopen.** (Or add the colour groups / filter by hand while it's open.)
+Obsidian caches `graph.json`, the Map View `data.json`, `app.json` **and**
+`workspace.json` in memory and **rewrites them on close / on any settings change**.
+Writing any of them while Obsidian is open will be overwritten. Procedure: **quit
+Obsidian → copy the files in → reopen.** (Or add the colour groups / filter by hand
+while it's open.)
 
 **Also note:** an already-open map pane keeps its **own** saved query (workspace
 state) and ignores `defaultState` — so after updating the map config, either open
