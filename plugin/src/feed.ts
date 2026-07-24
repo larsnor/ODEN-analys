@@ -15,8 +15,10 @@ export type FeedKind =
   | "kännetecken"
   | "aktör"
   | "larm"
+  | "bildanalys"
   | "förslag-aktör"
   | "förslag-märke"
+  | "förslag-bild"
   | "namnge-plats";
 
 export interface FeedItem {
@@ -34,11 +36,15 @@ export interface FeedItem {
   reasons?: string[]; // larm reasons (already operator-phrased)
   pending?: number; // number of suggestions awaiting review
   /** Clicking a suggestion row opens a review screen / action instead of a note. */
-  review?: "actors" | "marks" | "place";
+  review?: "actors" | "marks" | "place" | "photos";
   /** For a "namnge-plats" row: the MGRS grid to name. */
   place?: string;
   /** Vehicle has ≥1 photo-corroborated plate observation (§6.7). */
   photo?: boolean;
+  /** Click-target override when `path` is synthetic (e.g. a transient
+   *  "bildanalys" row keyed `bildanalys:<file>` so it never dedups away the
+   *  report's own larm row) — the real vault path to open. */
+  file?: string;
 }
 
 export interface FeedRow {
@@ -46,7 +52,7 @@ export interface FeedRow {
   text: string;
   stem: string; // note stem for [[..]] / open
   severity: "larm" | "info" | "review";
-  review?: "actors" | "marks" | "place";
+  review?: "actors" | "marks" | "place" | "photos";
   place?: string;
 }
 
@@ -62,10 +68,14 @@ function label(item: FeedItem): string {
       return `Aktör bekräftad: ${item.label}`;
     case "larm":
       return `⚠ Misstänkt aktivitet${item.plats ? " — " + item.plats : ""}${item.reasons && item.reasons.length ? " (" + item.reasons.join(", ") + ")" : ""}`;
+    case "bildanalys":
+      return `📷 Bild mottagen, analys startad — TNR${item.tnr}${item.plats ? " — " + item.plats : ""}`;
     case "förslag-aktör":
       return `🔗 ${item.pending} aktörsförslag att granska →`;
     case "förslag-märke":
       return `🎒 ${item.pending} kopplingsförslag att granska →`;
+    case "förslag-bild":
+      return `📷 ${item.pending} bildfynd att granska →`;
     case "namnge-plats":
       return `📍 Namnge plats ${item.place} →`;
   }
@@ -84,7 +94,7 @@ export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
     .map((it): FeedRow => ({
       kind: it.kind,
       text: label(it),
-      stem: noteStem(it.path),
+      stem: noteStem(it.file ?? it.path),
       severity: it.review ? "review" : it.kind === "larm" ? "larm" : "info",
       review: it.review,
       place: it.place,

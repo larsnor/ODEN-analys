@@ -56,6 +56,13 @@ export const DEFAULT_SUSPICION: SuspicionOpts = {
   threshold: 5,
 };
 
+/** Injected for a report the operator has explicitly FLAGGED as an alarm
+ *  (file-menu "Flagga som larm"). Weight 9 = the Hög band on its own, so the
+ *  report always elevates, with an honest operator-provenance reason. Rides the
+ *  same confirmedBehaviours channel as photo/text confirmations (dedup by key),
+ *  keeping the scoring pipeline single-pathed and this signal testable. */
+export const OPERATOR_FLAG_SIGNAL = { key: "operatörsflagga", label: "flaggad av operatör", weight: 9 } as const;
+
 /**
  * Threat-behaviour indicators (the TUNABLE / domain-specific surface, isolated
  * like vocab.ts). Covers the four hostility modes — reconnaissance, sabotage,

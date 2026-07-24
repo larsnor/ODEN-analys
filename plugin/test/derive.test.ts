@@ -219,3 +219,22 @@ test("buildFeedItems: an un-named MGRS grid place nudges for a nickname; naming/
   assert.equal(nudge(state({ locationNicknames: { [grid]: "Grinden" } })).length, 0, "a nickname clears the nudge");
   assert.equal(nudge(state({ locationNameAsked: { [grid]: true } })).length, 0, "already-asked clears the nudge");
 });
+
+test("buildFeedItems: analysing photos pin 'bildanalys' rows; pending findings one 'förslag-bild' review row", () => {
+  const reports = [report({ tnr: "150900" })];
+  const bundle = bundleFrom(reports);
+  const items = buildFeedItems(bundle, state(), new Map(), new Set(["reports/TNR150900.md"]), 3);
+  const analysing = items.find((i) => i.kind === "bildanalys");
+  assert.ok(analysing, "bildanalys row present");
+  assert.equal(analysing!.path, "bildanalys:reports/TNR150900.md", "synthetic path — never dedups the report's larm row");
+  assert.equal(analysing!.file, "reports/TNR150900.md", "real click target");
+  assert.equal(analysing!.tnr, "150900");
+  const rev = items.find((i) => i.kind === "förslag-bild");
+  assert.ok(rev, "review row present");
+  assert.equal(rev!.pending, 3);
+  assert.equal(rev!.review, "photos");
+  assert.ok(rev!.time > analysing!.time, "review rows pin above the transient analysing rows");
+  // Nothing analysing / pending → neither row.
+  const none = buildFeedItems(bundle, state(), new Map());
+  assert.equal(none.filter((i) => i.kind === "bildanalys" || i.kind === "förslag-bild").length, 0);
+});

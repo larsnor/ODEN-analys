@@ -51,3 +51,20 @@ test("respects the limit", () => {
   }));
   assert.equal(buildFeed(items, 20).length, 20);
 });
+
+test("bildanalys + förslag-bild rows: labels, severity and the click-target override", () => {
+  const items: FeedItem[] = [
+    { path: "bildanalys:reports/TNR150900.md", kind: "bildanalys", time: Number.MAX_SAFE_INTEGER - 3, tnr: "150900", plats: "Norra grinden", file: "reports/TNR150900.md" },
+    { path: "review:photos", kind: "förslag-bild", time: Number.MAX_SAFE_INTEGER - 2, pending: 2, review: "photos" },
+    { path: "reports/TNR150900.md", kind: "larm", time: ms("2026-06-16T03:00:00"), plats: "Norra grinden", level: "Hög" },
+  ];
+  const rows = buildFeed(items);
+  assert.equal(rows.length, 3, "synthetic bildanalys path must NOT dedup away the report's own larm row");
+  assert.match(rows[0].text, /2 bildfynd att granska/);
+  assert.equal(rows[0].severity, "review");
+  assert.equal(rows[0].review, "photos");
+  const analysing = rows.find((r) => r.kind === "bildanalys")!;
+  assert.match(analysing.text, /📷 Bild mottagen, analys startad — TNR150900 — Norra grinden/);
+  assert.equal(analysing.severity, "info");
+  assert.equal(analysing.stem, "TNR150900", "click opens the report, not the synthetic path");
+});

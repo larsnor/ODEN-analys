@@ -51,7 +51,10 @@ Put 7S report notes in the vault (real intake, or synthetic corpora from the
 separate [7S-generator](https://github.com/larsnor/7S-generator)). ODEN's watcher
 picks them up and analyses automatically — alarms and pending suggestions appear
 as clickable rows in the ODEN panel's feed (confirm/reject from there); naming and
-merging live under the panel's ⋯ menu. In Graph view
+merging live under the panel's ⋯ menu. Spotted something the analysis missed?
+**Right-click any report note → "ODEN: Flagga som larm"** — the report elevates
+with the reason *flaggad av operatör* (right-click again to remove the flag).
+In Graph view
 you'll see six colour-coded node types (objektet, larm, aktör, plats, återkomst,
 entities) with raw messages hidden by the `-file:TNR` filter.
 
@@ -66,7 +69,9 @@ default and entirely optional; detection never depends on it.
 3. In Obsidian: **Settings → ODEN** → check the Ollama address + model, press
    **"Testa anslutning"**.
 4. In the ODEN panel, click the **📷 Bild** chip to turn it on (you'll get a
-   one-time warning about speed). Photos are then analysed and every finding —
+   one-time warning about speed). New photo reports are then analysed **as they
+   arrive**: the feed shows *"📷 Bild mottagen, analys startad"* while the model
+   works, then *"📷 N bildfynd att granska →"* — click it and every finding —
    plate, vehicle, person — is **proposed for your confirmation** (per item, over
    the photo). Nothing is written without you accepting it (`föreslagen-av:
    llm-vision`). Ollama can also run on a stronger machine on the network (set the

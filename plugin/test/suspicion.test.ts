@@ -9,7 +9,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { parseReport, Report } from "../src/parse.ts";
-import { analyzeSuspicion, scoreReport, DEFAULT_SUSPICION } from "../src/suspicion.ts";
+import { analyzeSuspicion, scoreReport, DEFAULT_SUSPICION, OPERATOR_FLAG_SIGNAL } from "../src/suspicion.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "fixtures");
@@ -90,4 +90,23 @@ test("confirmedBehaviours (photo/text LLM, operator-confirmed) feed the score, d
   const withDup = { ...dupText, confirmedBehaviours: [{ key: "beteende:optik", label: "x", weight: 2 }] };
   const optikCount = scoreReport(withDup).reasons.filter((r) => r.key === "beteende:optik").length;
   assert.equal(optikCount, 1, "keyword + confirmed same concept → counted once");
+});
+
+test("OPERATOR_FLAG_SIGNAL elevates a benign report with the operator-provenance reason", () => {
+  const benign = parseReport(
+    ['---', 'id: F', 'typ: 7S-rapport', 'tnr: "121200"', 'tidpunkt: "2026-06-15T12:00:00"', "lat: 59.40", "lon: 17.90", "sagesman: AQ", "---",
+     "", "**Händelse:** Personbil passerade söderut."].join("\n"),
+    "f",
+  );
+  // Midday, far from the objektet, no behaviour → well below the threshold.
+  const before = scoreReport(benign);
+  assert.ok(before.score < (DEFAULT_SUSPICION.threshold ?? 5), "fixture must start un-elevated");
+  // The operator flags the report (file-menu) → the signal rides confirmedBehaviours.
+  const flagged = { ...benign, confirmedBehaviours: [OPERATOR_FLAG_SIGNAL] };
+  const after = scoreReport(flagged);
+  assert.ok(after.score >= 9, "flag alone reaches the Hög band");
+  assert.ok(after.reasons.some((r) => r.key === "operatörsflagga" && r.label === "flaggad av operatör"));
+  // Idempotent: injecting twice cannot double-count (dedup by key).
+  const twice = { ...benign, confirmedBehaviours: [OPERATOR_FLAG_SIGNAL, OPERATOR_FLAG_SIGNAL] };
+  assert.equal(scoreReport(twice).score, after.score);
 });

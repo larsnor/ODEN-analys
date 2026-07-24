@@ -198,8 +198,17 @@ export function buildRecurrences(clusters: LocationCluster[], actors: ActorHypot
 
 /** Build the live event/alarm feed items from the current analysis. DERIVED events
  *  only (identifications + alarms + pending-review nudges), never raw messages.
- *  `corroboration` = canonical plate → observation files whose photo backs it. */
-export function buildFeedItems(bundle: AnalysisBundle, s: PluginState, corroboration: Map<string, Set<string>>): FeedItem[] {
+ *  `corroboration` = canonical plate → observation files whose photo backs it.
+ *  `analyzingPhotos` = report files whose images the VLM is analysing RIGHT NOW
+ *  (transient, in-memory) → a pinned "Bild mottagen, analys startad" row each.
+ *  `photoPending` = un-actioned photo findings count → one pinned review row. */
+export function buildFeedItems(
+  bundle: AnalysisBundle,
+  s: PluginState,
+  corroboration: Map<string, Set<string>>,
+  analyzingPhotos: ReadonlySet<string> = new Set(),
+  photoPending = 0,
+): FeedItem[] {
   const folder = s.entitiesFolder.replace(/\/+$/, "");
   const inFolder = (name: string) => (folder ? `${folder}/${name}` : name);
   const ms = (t: string) => Date.parse(t) || 0;
@@ -258,9 +267,20 @@ export function buildFeedItems(bundle: AnalysisBundle, s: PluginState, corrobora
   if (pendingMarks > 0) {
     items.push({ path: "review:marks", kind: "förslag-märke", time: Number.MAX_SAFE_INTEGER - 1, pending: pendingMarks, review: "marks" });
   }
+  if (photoPending > 0) {
+    items.push({ path: "review:photos", kind: "förslag-bild", time: Number.MAX_SAFE_INTEGER - 2, pending: photoPending, review: "photos" });
+  }
+
+  // Transient: images being analysed right now — one pinned row per report. The
+  // synthetic path keeps the row from dedup-replacing the report's own larm row;
+  // `file` is the real click target.
+  let t = Number.MAX_SAFE_INTEGER - 3;
+  for (const f of [...analyzingPhotos].sort()) {
+    const r = bundle.reports.find((x) => x.file === f);
+    items.push({ path: `bildanalys:${f}`, kind: "bildanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f });
+  }
 
   // Nudge: relevant locations still a bare MGRS grid, not yet named/skipped.
-  let t = Number.MAX_SAFE_INTEGER - 2;
   for (const c of buildLocations(bundle.reports, bundle.suspicion)) {
     if (!isMgrsGrid(c.key)) continue;
     if (s.locationNicknames[c.key] || s.locationNameAsked[c.key]) continue;

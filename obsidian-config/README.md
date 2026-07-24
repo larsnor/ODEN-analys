@@ -55,7 +55,7 @@ and colors markers to match the graph: **gold bullseye = objektet**, **red
 triangle = pending suspect (`#larm`)**, **blue spy icon = confirmed actor
 (`#aktör`)**, **amber dot = reported place (`#plats`, derived from messages —
 a place with coordinates belongs on the map, not just in the graph)**, **green
-pin = predefined place (`#fördefinierad`, created via "Platser i förväg…")**,
+pin = predefined place (`#fördefinierad`, created via "Namngivna platser…")**,
 **violet shield = sensitive predefined place (`#skyddsvärd`)**. Rule order
 matters: later rules override, so the predefined needle/shield wins over the
 plats dot. `showNotePreview: false` makes marker popups show just the note **name**
