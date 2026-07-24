@@ -194,7 +194,7 @@
   ],
   "frontMatterKey": "location",
   "chosenMapMode": "auto",
-  "saveHistory": true,
+  "saveHistory": false,
   "letZoomBeyondMax": false,
   "queryForFollowActiveNote": "path:\"$PATH$\"",
   "supportRealTimeGeolocation": false,

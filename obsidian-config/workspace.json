@@ -263,13 +263,9 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Öppna snabbväxlare": false,
+      "switcher:Öppna snabbväxlare": true,
+      "command-palette:Öppna kommandopalett": true,
       "graph:Öppna grafvy": false,
-      "canvas:Skapa ny canvas": false,
-      "daily-notes:Öppna dagens anteckning": false,
-      "templates:Infoga mall": false,
-      "command-palette:Öppna kommandopalett": false,
-      "bases:Skapa ny bas": false,
       "7s-analys:ODEN — indexera & sammanfatta": false,
       "obsidian-map-view:Open map view": false
     }

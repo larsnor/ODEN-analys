@@ -59,7 +59,9 @@ pin = predefined place (`#fördefinierad`, created via "Platser i förväg…")*
 **violet shield = sensitive predefined place (`#skyddsvärd`)**. Rule order
 matters: later rules override, so the predefined needle/shield wins over the
 plats dot. `showNotePreview: false` makes marker popups show just the note **name**
-(not the frontmatter). The map **centre is set per-operation** by ODEN's
+(not the frontmatter). Declutter: `mapControlsMinimized: true` collapses the
+on-map control stack to a single button, and `saveHistory: false` drops the map
+search-history dropdown. The map **centre is set per-operation** by ODEN's
 "Konfigurera operationsområde", so the committed centre is only a starting point.
 
 **Map View's own map tools feed ODEN** (they cannot be hidden, so they work
@@ -93,11 +95,25 @@ the **graph**, and the **ODEN panel** as **pinned** tabs — pinned so clicking 
 report opens it in a *new* tab instead of hijacking one of the panels. Session
 state (`lastOpenFiles`, the active leaf, and any open report file/title) is
 stripped from the committed template — Obsidian repopulates that as the operator
-works.
+works. The `left-ribbon.hiddenItems` block also hides the **quick switcher** and
+**command palette** ribbon icons (both stay reachable via `Cmd-O` / `Cmd-P`), so
+with `core-plugins.json` applied the ribbon is exactly three icons: **ODEN**,
+**Map View**, **Graph**.
+
+## `core-plugins.json` — operator-minimal Obsidian
+
+Copy to `<vault>/.obsidian/core-plugins.json`. Disables the Obsidian core features
+an ODEN operator never uses — Canvas, Daily notes, Templates, Note composer,
+Bookmarks, Outline, Word count, Tag pane, Bases, Sync, Outgoing links — which also
+removes their ribbon icons, sidebar tabs and menu entries. Kept on: File explorer,
+Search, Quick switcher, Graph, Backlinks, Properties, Page preview, Command
+palette, File recovery. Everything is re-enableable per-vault under
+Settings → Core plugins.
 
 ### IMPORTANT — apply with Obsidian CLOSED
-Obsidian caches `graph.json`, the Map View `data.json`, `app.json` **and**
-`workspace.json` in memory and **rewrites them on close / on any settings change**.
+Obsidian caches `graph.json`, the Map View `data.json`, `app.json`,
+`core-plugins.json` **and** `workspace.json` in memory and **rewrites them on
+close / on any settings change**.
 Writing any of them while Obsidian is open will be overwritten. Procedure: **quit
 Obsidian → copy the files in → reopen.** (Or add the colour groups / filter by hand
 while it's open.)
@@ -107,5 +123,6 @@ state) and ignores `defaultState` — so after updating the map config, either o
 a fresh map view, or use ODEN's ⋯ menu → **"Visa ODEN-lagren på kartan"**, which
 re-asserts the current ODEN query on the live pane.
 
-The colors only show once entity notes exist — run **Bygg entiteter (Jobb A)**
-(or let the watcher auto-build), and confirm actors/marks to see those classes.
+The colors only show once entity notes exist — the watcher auto-builds them as
+reports arrive (**⋯ → Avancerat → "Uppdatera lägesbild"** is the manual nudge),
+and confirming actors/marks reveals those classes.

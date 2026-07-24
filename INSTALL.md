@@ -49,8 +49,9 @@ operator decisions (you'll be warned).
 ## 6. Add 7S reports and analyse
 Put 7S report notes in the vault (real intake, or synthetic corpora from the
 separate [7S-generator](https://github.com/larsnor/7S-generator)). ODEN's watcher
-picks them up; use the ODEN panel (the ⋯ menu) to derive actors, review mark
-nominations, run the suspicion analysis, name/merge entities, etc. In Graph view
+picks them up and analyses automatically — alarms and pending suggestions appear
+as clickable rows in the ODEN panel's feed (confirm/reject from there); naming and
+merging live under the panel's ⋯ menu. In Graph view
 you'll see six colour-coded node types (objektet, larm, aktör, plats, återkomst,
 entities) with raw messages hidden by the `-file:TNR` filter.
 
