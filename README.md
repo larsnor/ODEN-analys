@@ -30,10 +30,10 @@ operationsområdet, namnge platser och börja.
 
 Vill man öva först finns mappen `demo/` i valvet: en syntetisk övningskorpus
 över fjorton dygn med knappt 350 rapporter, foton, en dold spaningscell och en
-demonstration. Dra `batch-01` till `inkorg/` och se ODEN arbeta, fortsätt sedan
-batch för batch – inga extra verktyg behövs, och facit ligger bredvid. För
-skarp drift raderar man `demo/`, sätter sitt riktiga område och låter intaget
-leverera rapporterna till `inkorg/`.
+demonstration. Kör kommandot *"ODEN: Mata demodata"* så spelas den upp i
+korpusens egen rytm över den tid du väljer – inga extra verktyg behövs, och
+facit ligger bredvid. För skarp drift raderar man `demo/`, sätter sitt riktiga
+område och låter intaget leverera rapporterna till `inkorg/`.
 
 AI-förmågorna (📷 bild · 📝 text · 💬 chat) är valfria: installera
 [Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b`, så körs allt

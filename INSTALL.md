@@ -83,9 +83,11 @@ fjorton dygn kring HvSS Vällinge, knappt 350 rapporter varav en del med foton,
 en dold spaningscell och en demonstration. Inga riktiga personer eller fordon
 förekommer.
 
-Sätt operationsområdet till `59.2622,17.712`, dra innehållet i `demo/batch-01/`
-till `inkorg/`, och se ODEN analysera direkt. Fortsätt sedan batch för batch i
-egen takt – granska förslag, flagga larm, bevaka och fråga i chatten. Facit
+Sätt operationsområdet till `59.2622,17.712` och kör kommandot **"ODEN: Mata
+demodata"** – välj speltid (15 minuter är lagom) så droppar rapporterna in i
+korpusens egen rytm; samma kommando pausar och återupptar. Granska förslag,
+flagga larm, bevaka och fråga i chatten under tiden. Den som hellre matar för
+hand drar innehållet i `demo/batch-01/` till `inkorg/`, batch för batch. Facit
 ligger i `demo/facit.json` när du vill rätta dig själv.
 
 Egna korpusar, med andra platser och hotbilder, genereras med
@@ -127,6 +129,9 @@ du bekräftar eller avvisar (`föreslagen-av: llm`).
   filtrering; kör `⋯ → "Visa ODEN-lagren på kartan"` så återställs den.
 - **Grafen är tom** – noderna syns först när entitetsnoter skapats; mata in
   data och bekräfta förslag.
+- **Högerklicksmenyerna saknar alternativ** – det är inställningen *Förenklade
+  menyer* (på som standard), som bara visar ODEN-valen och det vanligaste.
+  Stäng av den under **Settings → ODEN** om du behöver hela Obsidian-menyn.
 - **AI-chipsen blir grå** – kontrollera att Ollama kör (`ollama list`) och
   testa anslutningen i inställningarna. ODEN arbetar deterministiskt vidare
   tills anslutningen är tillbaka.

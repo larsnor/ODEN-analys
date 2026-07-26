@@ -23,3 +23,22 @@
 .workspace-split.mod-root .mod-new-tab {
   display: none !important;
 }
+
+/* --- Lugnare gränssnitt (v1.1.0) ------------------------------------------ */
+
+/* Göm statusraden nere till höger (ordantal m.m. — inget operatören behöver) */
+.status-bar {
+  display: none !important;
+}
+
+/* Göm valv-växlaren och hjälp-knappen längst ner i vänsterlisten.
+ * Inställningar (kugghjulet) behålls. aria-label matchas på både engelska och
+ * svenska eftersom Obsidians språk kan variera. */
+.workspace-ribbon [aria-label="Manage vaults"],
+.workspace-ribbon [aria-label="Hantera valv"],
+.workspace-ribbon [aria-label="Open vault switcher"],
+.workspace-ribbon [aria-label="Help"],
+.workspace-ribbon [aria-label="Hjälp"],
+.workspace-ribbon [aria-label="Open help"] {
+  display: none !important;
+}

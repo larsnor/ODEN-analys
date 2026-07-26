@@ -124,9 +124,11 @@ cat > "$VAULT/demo/LÄS-MIG.md" <<'EOF'
 eller fordon). Sätt först operationsområdet till `59.2622,17.712`
 (kommandot "ODEN: Konfigurera operationsområde").
 
-Dra sedan innehållet i `batch-01/` till mappen `inkorg/` — ODEN analyserar
-direkt. Fortsätt med nästa batch i din egen takt. Bildmappar ska följa med
-sina rapporter (markera hela batchens innehåll).
+Kör sedan kommandot **"ODEN: Mata demodata"** och välj speltid (15 minuter är
+lagom) — rapporterna droppar in i korpusens egen rytm, och samma kommando
+pausar och återupptar. Vill du hellre mata för hand: dra innehållet i
+`batch-01/` till mappen `inkorg/`, batch för batch (bildmappar ska följa med
+sina rapporter — markera hela batchens innehåll).
 
 När du är klar: `facit.json` visar sanningen per rapport (`civil` /
 `hostile` = spaningscellen / `protester`) — jämför med vad du hittade.

@@ -26,8 +26,10 @@ import {
   PluginSettingTab,
   Setting,
   TFile,
+  TFolder,
   WorkspaceLeaf,
 } from "obsidian";
+import { demoSchedule } from "./demo";
 import { ParseIssue, parseMapSeed, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
@@ -120,6 +122,9 @@ interface SevenSSettings {
   protectedLon: number;
   /** Live vault watcher → alerts-with-pointer on new activity. */
   watcherEnabled: boolean;
+  /** Trim Obsidian's context menus to ODEN's items + a small whitelist —
+   *  a preference (not a judgement; survives operation resets). */
+  simplifiedMenus: boolean;
   /** Alert keys already surfaced (so only NEW activity raises a notice). */
   seenAlerts: Record<string, true>;
   /** Map-seed notes (Map View "New note here") the operator chose to ignore —
@@ -200,6 +205,7 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   protectedLat: DEFAULT_SUSPICION.protectedLat,
   protectedLon: DEFAULT_SUSPICION.protectedLon,
   watcherEnabled: true,
+  simplifiedMenus: true,
   seenAlerts: {},
   mapSeedHandled: {},
   autoBuildEntities: true,
@@ -250,6 +256,11 @@ const ODEN_ICON_SVG =
 function nomKey(n: PhotoNomination): string {
   return n.kind === "plate" ? `plate:${n.value}` : `${n.kind}:${n.label}`;
 }
+
+/** "Förenklade menyer": context-menu whitelist (lowercased title prefixes, en+sv).
+ *  ODEN's own items ("ODEN: …") are always kept. */
+const MENU_KEEP_FILE = ["byt namn", "rename", "radera", "delete", "ta bort"];
+const MENU_KEEP_EDITOR = ["kopiera", "copy", "klistra in", "paste"];
 
 export default class SevenSPlugin extends Plugin {
   settings: SevenSSettings = DEFAULT_SETTINGS;
@@ -309,6 +320,19 @@ export default class SevenSPlugin extends Plugin {
       callback: () => void this.runUpdateSituation(),
     });
 
+    // Demo playback: moves reports from demo/ into inkorg/ in compressed real
+    // rhythm — the tool-free way to experience a gradually growing operation.
+    // Toggles pause/resume when a run is active.
+    this.addCommand({
+      id: "feed-demo",
+      name: "ODEN: Mata demodata",
+      checkCallback: (checking) => {
+        if (!(this.app.vault.getAbstractFileByPath("demo") instanceof TFolder)) return false;
+        if (!checking) this.toggleDemoFeed();
+        return true;
+      },
+    });
+
     this.addRibbonIcon(ODEN_ICON_ID, "ODEN — indexera & sammanfatta", () =>
       void this.runSummary(),
     );
@@ -340,7 +364,15 @@ export default class SevenSPlugin extends Plugin {
               .onClick(() => void this.toggleWatch(target)),
           );
         }
+        this.simplifyMenu(menu, MENU_KEEP_FILE);
       }),
+    );
+    // Multi-selection + editor right-click menus get the same diet.
+    this.registerEvent(
+      this.app.workspace.on("files-menu", (menu) => this.simplifyMenu(menu, MENU_KEEP_FILE)),
+    );
+    this.registerEvent(
+      this.app.workspace.on("editor-menu", (menu) => this.simplifyMenu(menu, MENU_KEEP_EDITOR)),
     );
 
     // Live watcher: recompute on vault changes (debounced); baseline once
@@ -358,6 +390,8 @@ export default class SevenSPlugin extends Plugin {
 
   onunload(): void {
     if (this.debounceTimer) window.clearTimeout(this.debounceTimer);
+    if (this.demoTimer !== null) window.clearTimeout(this.demoTimer);
+    this.demoRunning = false;
     // Obsidian does NOT detach custom views on plugin unload — without this, a
     // plugin reload (toggle off/on) leaves an ORPHANED panel bound to the dead
     // plugin instance, so every button silently does nothing. Detach so the
@@ -1334,6 +1368,31 @@ export default class SevenSPlugin extends Plugin {
     }
   }
 
+  /** "Förenklade menyer": trim a context menu to ODEN's items + a small
+   *  whitelist. The menu's item list is NOT public API, so every access is
+   *  feature-detected — on any unexpected shape the menu is left untouched
+   *  (full menus, never broken ones). A deferred second pass catches items
+   *  other plugins add after this handler runs. Separators (empty titles)
+   *  hide too, so the trimmed menu has no stray dividers. */
+  simplifyMenu(menu: Menu, keep: string[]): void {
+    if (!this.settings.simplifiedMenus) return;
+    const pass = () => {
+      const items = (menu as unknown as { items?: unknown[] }).items;
+      if (!Array.isArray(items)) return;
+      for (const raw of items) {
+        const it = raw as { dom?: unknown; titleEl?: unknown };
+        const dom = it.dom instanceof HTMLElement ? it.dom : null;
+        if (!dom) continue;
+        const titleEl = it.titleEl instanceof HTMLElement ? it.titleEl : dom;
+        const title = (titleEl.textContent ?? "").trim().toLowerCase();
+        const keepIt = title.startsWith("oden") || keep.some((k) => title.startsWith(k));
+        if (!keepIt) dom.style.display = "none";
+      }
+    };
+    pass();
+    window.setTimeout(pass, 0);
+  }
+
   /** The ⋯ menu — the operator's occasional actions. Rare maintenance flows are
    *  tucked one level down under "Avancerat…" (a second Menu at the same spot —
    *  public API only, no undocumented setSubmenu). */
@@ -1348,6 +1407,13 @@ export default class SevenSPlugin extends Plugin {
     menu.addItem((i) => i.setTitle("Namnge plats…").setIcon("map-pin").onClick(() => void this.openLocationNamer()));
     menu.addItem((i) => i.setTitle("Namngivna platser…").setIcon("landmark").onClick(() => void this.openManagePlaces()));
     menu.addItem((i) => i.setTitle("Bevakningslista…").setIcon("telescope").onClick(() => void this.openWatchlist()));
+    if (this.app.vault.getAbstractFileByPath("demo") instanceof TFolder) {
+      menu.addItem((i) =>
+        i.setTitle(this.demoRunning ? "Pausa demomatning" : "Mata demodata…")
+          .setIcon(this.demoRunning ? "pause" : "play")
+          .onClick(() => this.toggleDemoFeed()),
+      );
+    }
     menu.addSeparator();
     menu.addItem((i) => i.setTitle("Avancerat…").setIcon("settings-2").onClick(() => this.openAdvancedMenu(evt)));
     menu.showAtMouseEvent(evt);
@@ -2142,6 +2208,75 @@ export default class SevenSPlugin extends Plugin {
     await this.revealPanel();
     await this.recomputeAndAlert(false);
     new Notice("ODEN: lägesbild uppdaterad.");
+  }
+
+  // --- Demo playback (operator-commanded moves demo/ → inkorg/) --------------
+  private demoTimer: number | null = null;
+  private demoRunning = false;
+
+  /** Command/menu toggle: running → pause; otherwise ask for a window and start. */
+  toggleDemoFeed(): void {
+    if (this.demoRunning) {
+      if (this.demoTimer !== null) window.clearTimeout(this.demoTimer);
+      this.demoTimer = null;
+      this.demoRunning = false;
+      new Notice("ODEN: demomatning pausad — kör kommandot igen för att fortsätta.");
+      return;
+    }
+    new DemoFeedModal(this.app, (minutes) => this.startDemoFeed(minutes)).open();
+  }
+
+  /** The queue is whatever remains under demo/ — moved files are gone, so pause/
+   *  resume (and app restarts) need no persisted state. Only files under demo/
+   *  are ever touched; the move is an explicit operator command. */
+  private startDemoFeed(minutes: number): void {
+    const reports = this.app.vault
+      .getMarkdownFiles()
+      .filter((f) => f.path.startsWith("demo/") && /^TNR\d+\.md$/.test(f.name))
+      .sort((a, b) => a.name.localeCompare(b.name)); // TNR = DDHHMM → chronological
+    if (reports.length === 0) {
+      new Notice("ODEN: demo/ innehåller inga rapporter (klart, eller redan matat).");
+      return;
+    }
+    const offsets = demoSchedule(reports.map((f) => f.name.slice(3, 9)), minutes);
+    this.demoRunning = true;
+    new Notice(`ODEN: matar ${reports.length} rapporter över ~${minutes} min — i korpusens egen rytm.`);
+    const step = (i: number) => {
+      if (!this.demoRunning) return;
+      void this.moveDemoReport(reports[i]).then(() => {
+        if (i + 1 >= reports.length) {
+          this.demoRunning = false;
+          this.demoTimer = null;
+          new Notice("ODEN: demodata slut — facit finns i demo/facit.json.", 10000);
+          return;
+        }
+        this.demoTimer = window.setTimeout(() => step(i + 1), offsets[i + 1] - offsets[i]);
+      });
+    };
+    this.demoTimer = window.setTimeout(() => step(0), offsets[0]);
+  }
+
+  /** Move one report into inkorg/, its photo folder(s) first so embeds resolve
+   *  the moment the report lands (folder names contain `_<tnr>-`, the same
+   *  contract the packager uses). */
+  private async moveDemoReport(report: TFile): Promise<void> {
+    try {
+      if (!(this.app.vault.getAbstractFileByPath("inkorg") instanceof TFolder)) {
+        await this.app.vault.createFolder("inkorg");
+      }
+      const tnr = report.name.slice(3, -3);
+      const parent = report.parent;
+      if (parent instanceof TFolder) {
+        for (const child of [...parent.children]) {
+          if (child instanceof TFolder && child.name.includes(`_${tnr}-`)) {
+            await this.app.fileManager.renameFile(child, normalizePath(`inkorg/${child.name}`));
+          }
+        }
+      }
+      await this.app.fileManager.renameFile(report, normalizePath(`inkorg/${report.name}`));
+    } catch (err) {
+      console.error("ODEN: demo move failed", report.path, err);
+    }
   }
 
   /** File-menu: operator flags/unflags a browsed report as an alarm. The flag is
@@ -3055,6 +3190,20 @@ class SevenSSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
+      .setName("Förenklade menyer")
+      .setDesc(
+        "Visa bara ODEN-val och de vanligaste alternativen (byt namn, radera, " +
+          "kopiera/klistra in) i högerklicksmenyerna. Stäng av om en Obsidian-" +
+          "uppdatering skulle ändra menyerna.",
+      )
+      .addToggle((t) =>
+        t.setValue(this.plugin.settings.simplifiedMenus).onChange(async (v) => {
+          this.plugin.settings.simplifiedMenus = v;
+          await this.plugin.saveSettings();
+        }),
+      );
+
+    new Setting(containerEl)
       .setName("Bygg fordonsnoder automatiskt")
       .setDesc(
         "Skapa noder för återkommande fordon automatiskt när nya meddelanden " +
@@ -3314,6 +3463,49 @@ class PickStringModal extends FuzzySuggestModal<{ value: string; label: string }
 }
 
 /** Generic confirm/cancel dialog for a destructive action. */
+/** Ask for the demo playback window (minutes) before starting the feed. */
+class DemoFeedModal extends Modal {
+  constructor(
+    app: App,
+    private readonly onSubmit: (minutes: number) => void,
+  ) {
+    super(app);
+  }
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Mata demodata" });
+    contentEl.createEl("p", {
+      text:
+        "Rapporterna flyttas från demo/ till inkorg/ i korpusens egen rytm, " +
+        "komprimerad till det tidsfönster du väljer. Kör kommandot igen för att pausa.",
+    }).style.cssText = "opacity:.8;font-size:.9em;";
+    const row = contentEl.createDiv();
+    row.style.cssText = "display:flex;gap:8px;align-items:center;margin:8px 0;";
+    row.createEl("span", { text: "Speltid (minuter):" });
+    const input = row.createEl("input", { type: "number" });
+    input.value = "15";
+    input.min = "1";
+    input.style.width = "80px";
+    const btns = contentEl.createDiv();
+    btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;margin-top:10px;";
+    const start = btns.createEl("button", { text: "Starta", cls: "mod-cta" });
+    const submit = () => {
+      const m = Math.max(1, Math.round(Number(input.value) || 15));
+      this.close();
+      this.onSubmit(m);
+    };
+    start.onclick = submit;
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submit();
+    });
+    btns.createEl("button", { text: "Avbryt" }).onclick = () => this.close();
+    window.setTimeout(() => input.focus(), 0);
+  }
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
 class ConfirmModal extends Modal {
   constructor(
     app: App,

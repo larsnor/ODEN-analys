@@ -44,12 +44,18 @@ I mappen `demo/` ligger en syntetisk övningskorpus: fjorton dygn kring HvSS
 Vällinge med knappt 350 rapporter (en del med foton), en dold spaningscell och
 en demonstration. Inga riktiga personer eller fordon förekommer.
 
-Sätt operationsområdet till demokoordinaten `59.2622,17.712`. Dra sedan
-innehållet i `demo/batch-01` till `inkorg/` – i Obsidians filpanel eller i
-Finder/Utforskaren – och se flödet vakna. Fortsätt med `batch-02`, `batch-03`
-och så vidare i din egen takt; granska förslagen, flagga, bevaka och fråga i
-chatten. Kör du Ollama kan du slå på 📷-chipet och dra en batch med foton – då
-ser du *"Bild mottagen, analys startad"* följt av bildfynd att granska.
+Sätt operationsområdet till demokoordinaten `59.2622,17.712`. Kör sedan
+kommandot **"ODEN: Mata demodata"** (finns även i `⋯`-menyn), välj hur lång tid
+uppspelningen ska ta – 15 minuter är lagom första gången – och luta dig
+tillbaka. Rapporterna droppar in i korpusens egen rytm: lugna nätter är lugna,
+och när spaningscellen rör sig blir det plötsligt bråttom. Granska förslagen,
+flagga, bevaka och fråga i chatten medan det pågår; samma kommando pausar och
+återupptar. Kör du Ollama kan du slå på 📷-chipet – då ser du *"Bild mottagen,
+analys startad"* följt av bildfynd att granska när fotorapporterna kommer.
+
+Vill man hellre mata för hand går det förstås också: dra innehållet i
+`demo/batch-01` till `inkorg/` (i Obsidians filpanel eller i Finder), och
+fortsätt batch för batch.
 
 När du är klar visar `demo/facit.json` hur det faktiskt låg till – jämför gärna
 med vad du själv hittade. Vill du börja om kör du *"Konfigurera
