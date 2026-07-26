@@ -61,7 +61,7 @@ export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): Rende
   body.push(`**Slag:** ${e.slag}  `);
   body.push(`**Antal observationer:** ${e.count}  `);
   if (corroborated > 0) {
-    body.push(`**📷 Bildstyrkt:** ${corroborated} observation(er) med foto som bekräftar plåten  `);
+    body.push(`**📷 Bildstyrkt:** ${corroborated} observation(er) med foto som bekräftar regplåten  `);
   }
   if (e.firstSeen && e.lastSeen) {
     body.push(`**Tidsspann:** ${e.firstSeen} → ${e.lastSeen}  `);
@@ -71,7 +71,7 @@ export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): Rende
 
   if (e.slag === "fordon-reg-full" && e.resolvedPartials.length) {
     body.push(
-      "**Partiella observationer som säkert avser denna plåt** " +
+      "**Partiella observationer som säkert avser denna regplåt** " +
         "(auto-sammanslagna, deterministisk): " +
         e.resolvedPartials.map((p) => `\`${p}\``).join(", "),
     );
@@ -79,7 +79,7 @@ export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): Rende
   }
   if (e.slag === "fordon-reg-partiell" && e.candidateFulls.length) {
     body.push(
-      "_Tvetydig partiell plåt — möjliga fullständiga plåtar (kandidater, " +
+      "_Tvetydig partiell regplåt — möjliga fullständiga regplåtar (kandidater, " +
         "EJ auto-sammanslagna): " +
         e.candidateFulls.map((c) => `\`${c}\``).join(", ") +
         ". Kräver operatörsbekräftelse._",
@@ -87,7 +87,7 @@ export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): Rende
     body.push("");
   }
   if (e.slag === "fordon-reg-partiell" && !e.candidateFulls.length) {
-    body.push("_Ingen matchande fullständig plåt observerad i materialet ännu._");
+    body.push("_Ingen matchande fullständig regplåt observerad i materialet ännu._");
     body.push("");
   }
 

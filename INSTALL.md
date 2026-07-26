@@ -1,51 +1,59 @@
 # Installera ODEN
 
-ODEN är ett Obsidian-plugin. Det distribueras via
-[GitHub-releaser](https://github.com/larsnor/ODEN-analys/releases/latest) som två
-zippar — **inte** via Obsidians community-katalog:
+ODEN är ett plugin till [Obsidian](https://obsidian.md) och distribueras via
+[GitHub-releaser](https://github.com/larsnor/ODEN-analys/releases/latest) – inte
+via Obsidians community-katalog. Varje release innehåller två zippar, och vilken
+man väljer beror på var man börjar:
 
 | Zip | För vem |
 |---|---|
-| `ODEN-valv-<v>.zip` | **Nya användare (rekommenderas)** — ett komplett, färdigkonfigurerat valv med ODEN, kartpluginet Map View, demodata och en Välkommen-guide. |
+| `ODEN-valv-<v>.zip` | **Ny användare (rekommenderas)** – ett komplett, färdigkonfigurerat valv med ODEN, kartpluginet Map View, demodata och en Välkommen-guide. |
 | `ODEN-plugin-<v>.zip` | Den som redan har ett eget Obsidian-valv och vill lägga in ODEN där. |
 
-ODEN gör **inga nätverksanrop**; det enda som någonsin rör nätet är Map Views
-karttiles (och den valfria lokala AI:n pratar bara med din egen dator).
+ODEN gör inga nätverksanrop. Det enda som någonsin rör nätet är Map Views
+karttiles, och den valfria AI:n pratar bara med din egen dator.
 
 ---
 
-## Väg A — Färdigt valv (rekommenderas)
+## Väg A – Färdigt valv (rekommenderas)
 
-1. **Installera Obsidian** (gratis): [obsidian.md/download](https://obsidian.md/download).
-   - macOS: öppna dmg-filen, dra Obsidian till Program.
-   - Windows: kör installeraren.
-   - Linux: AppImage eller .deb.
-2. **Ladda ner och packa upp `ODEN-valv-<v>.zip`** där du vill ha valvet
-   (t.ex. Dokument). Du får en mapp `ODEN-valv/`.
-3. **Öppna valvet:** starta Obsidian → **"Open folder as vault"** → välj
-   `ODEN-valv` → svara **"Trust author and enable plugins"**.
+Tre steg, sedan är allt igång:
 
-Vid första start ska du se: mörkt tema, tre ikoner i vänsterlisten (ODEN, karta,
-graf), fyra paneler (karta · Välkommen-noten / graf · ODEN-panelen) och noten
-**Välkommen.md** öppen med den fortsatta checklistan (operationsområde → platser →
-demodata eller skarp drift).
+1. **Installera Obsidian** (gratis) från
+   [obsidian.md/download](https://obsidian.md/download). På macOS öppnar man
+   dmg-filen och drar Obsidian till Program, på Windows kör man installeraren,
+   och på Linux finns AppImage och .deb.
+2. **Ladda ner `ODEN-valv-<v>.zip`** från senaste releasen och packa upp den
+   där du vill ha ditt arbetsvalv, till exempel i Dokument. Du får en mapp som
+   heter `ODEN-valv`.
+3. **Öppna valvet:** starta Obsidian, välj **"Open folder as vault"**, peka ut
+   `ODEN-valv` och svara **"Trust author and enable plugins"** när Obsidian
+   frågar.
 
-Det medföljande kartpluginet [Map View](https://github.com/esm7/obsidian-map-view)
-(MIT-licens, licensfil medföljer) är förinstallerat — inget behöver hämtas från
-Obsidians katalog.
+Vid första start ska det se ut så här: mörkt tema, tre ikoner i vänsterlisten
+(ODEN, kartan och grafen), fyra paneler – kartan och Välkommen-noten överst,
+grafen och ODEN-panelen under – och noten **Välkommen.md** öppen med den
+fortsatta checklistan. Därifrån tar guiden vid: sätt operationsområdet, namnge
+platser, och testa gärna demodatan innan skarp drift.
 
-## Väg B — Manuell installation i eget valv
+Kartpluginet [Map View](https://github.com/esm7/obsidian-map-view) följer med
+förinstallerat (MIT-licens, licensfilen ligger bredvid pluginet) – inget behöver
+hämtas från Obsidians katalog.
 
-Ur `ODEN-plugin-<v>.zip`:
+## Väg B – Manuell installation i eget valv
 
-1. Kopiera mappen `7s-analys/` (innehåller `main.js` + `manifest.json`) till
-   `<ditt-valv>/.obsidian/plugins/7s-analys/`. Aktivera sedan **ODEN** under
-   **Settings → Community plugins** (stäng av Restricted mode om det frågas).
-2. Installera **Map View** (krävs för kartan): **Settings → Community plugins →
-   Browse → sök "Map View" (av esm7) → Install → Enable**. ODEN fungerar utan den
-   (text/graf-analysen påverkas inte), men kartan behöver den.
-3. **Applicera konfigurationen — med Obsidian HELT AVSLUTAT** (Obsidian skriver
-   annars över filerna när det stängs):
+Har man redan ett valv man vill använda tar man `ODEN-plugin-<v>.zip` i stället:
+
+1. Kopiera mappen `7s-analys/` (med `main.js` och `manifest.json`) till
+   `<ditt-valv>/.obsidian/plugins/7s-analys/` och aktivera **ODEN** under
+   **Settings → Community plugins**. Frågar Obsidian om *Restricted mode* så
+   stäng av det.
+2. Installera **Map View**, som behövs för kartan: **Settings → Community
+   plugins → Browse**, sök på *"Map View"* (av esm7), installera och aktivera.
+   ODEN fungerar för övrigt utan den – text- och grafanalysen påverkas inte –
+   men utan Map View blir det förstås ingen karta.
+3. Applicera konfigurationen – **med Obsidian helt avslutat**, eftersom Obsidian
+   annars skriver över filerna när det stängs:
 
    | Från zippen | Till |
    |---|---|
@@ -56,77 +64,82 @@ Ur `ODEN-plugin-<v>.zip`:
    | `obsidian-config/map-view-data.json` | `<valv>/.obsidian/plugins/obsidian-map-view/data.json` |
    | `obsidian-config/oden-lock.css` | `<valv>/.obsidian/snippets/oden-lock.css` |
 
-   Starta om Obsidian och aktivera `oden-lock` under **Settings → Appearance →
-   CSS snippets**. Se `obsidian-config/README.md` för vad varje fil gör.
-   (Graffärgerna syns först när entitetsnoter finns.)
+   Starta sedan om Obsidian och aktivera `oden-lock` under **Settings →
+   Appearance → CSS snippets**. Vad varje fil gör beskrivs i
+   `obsidian-config/README.md`. Graffärgerna syns för övrigt först när det
+   finns entitetsnoter att färglägga.
 
-## Efter installation: sätt operationsområdet
+## Efter installationen: sätt operationsområdet
 
 Kör kommandot **"ODEN: Konfigurera operationsområde"** (`Cmd/Ctrl-P`) och ange
-det skyddade objektets koordinat (`lat,lon` eller MGRS). ODEN mäter närhet mot
-punkten och centrerar kartan dit. Byte av område senare **rensar operatörens
-beslut** (du varnas först).
+det skyddade objektets koordinat, som `lat,lon` eller en MGRS-ruta. ODEN mäter
+närhet mot den punkten och centrerar kartan dit. Byter man område senare rensas
+operatörens beslut – man varnas först.
 
-## Demoläge (lär dig ODEN utan verktyg)
+## Demoläge – lär dig ODEN utan verktyg
 
-I det färdiga valvet finns `demo/` — en syntetisk övningskorpus (14 dygn kring
-HvSS Vällinge, ~480 rapporter varav foton, en dold spaningscell och en
-demonstration; inga riktiga personer/fordon):
+I det färdiga valvet ligger mappen `demo/`: en syntetisk övningskorpus över
+fjorton dygn kring HvSS Vällinge, knappt 350 rapporter varav en del med foton,
+en dold spaningscell och en demonstration. Inga riktiga personer eller fordon
+förekommer.
 
-1. Sätt operationsområdet till `59.2622,17.712`.
-2. Dra innehållet i `demo/batch-01/` till `inkorg/` — ODEN analyserar direkt.
-3. Fortsätt batch för batch; granska förslag, flagga larm, bevaka, fråga i chatten.
+Sätt operationsområdet till `59.2622,17.712`, dra innehållet i `demo/batch-01/`
+till `inkorg/`, och se ODEN analysera direkt. Fortsätt sedan batch för batch i
+egen takt – granska förslag, flagga larm, bevaka och fråga i chatten. Facit
+ligger i `demo/facit.json` när du vill rätta dig själv.
 
-Egna korpusar (andra platser/hotbilder) genereras med
+Egna korpusar, med andra platser och hotbilder, genereras med
 [7S-generator](https://github.com/larsnor/7S-generator).
 
 ## Skarp drift
 
-1. Radera `demo/` och ev. övningsinnehåll i `inkorg/`.
-2. Sätt ditt riktiga operationsområde; namnge kända platser i förväg
-   (`⋯ → Namngivna platser…`, skyddsvärda platser larmar vid närhet).
-3. Låt intaget (källappen) leverera 7S-rapporter till `inkorg/` — ODEN:s
-   bevakare analyserar automatiskt.
+Radera `demo/` och eventuellt övningsinnehåll i `inkorg/`, sätt ditt riktiga
+operationsområde och namnge kända platser i förväg (`⋯ → Namngivna platser…` –
+skyddsvärda platser larmar vid närhet). Låt sedan intaget leverera
+7S-rapporterna till `inkorg/`, så analyserar ODEN dem automatiskt.
 
 ## Valfritt: lokal AI (Ollama)
 
-ODEN:s kärna är deterministisk — **detektionen beror aldrig på AI**. Chipsen i
-panelen ger extra räckvidd: **📷 Bild** (skyltar/fordon/personer i foton — mest
-värde vid registreringsskyltar och låg bemanning), **📝 Text** (kännetecken och
-beteenden i fritext som de fasta vokabulärerna missar), **💬 Chat** (naturligt
-språk i frågelådan). Allt körs lokalt; varje fynd är ett **förslag** du bekräftar
-eller avvisar (`föreslagen-av: llm`).
+ODENs kärna är deterministisk och detektionen är aldrig beroende av AI. Chipsen
+i panelen ger extra räckvidd: **📷 Bild** läser foton – störst nytta vid
+registreringsskyltar och låg bemanning – **📝 Text** hittar kännetecken och
+beteenden i fritext som de fasta ordlistorna missar, och **💬 Chat** svarar på
+frågor i naturligt språk. Allt körs lokalt, och varje fynd är ett förslag som
+du bekräftar eller avvisar (`föreslagen-av: llm`).
 
-1. Installera **[Ollama](https://ollama.com)** (lokal, offline modellserver).
-2. `ollama pull qwen3-vl:4b` (≈3 GB; standard. `:8b` är noggrannare men kräver
-   ≥32 GB RAM — siffror i `docs/VISION_VALIDATION.md`).
-3. Obsidian → **Settings → ODEN** → kontrollera adress + modell → **"Testa
-   anslutning"**.
-4. Slå på chipsen i panelen (engångsvarning om hastighet visas). Ollama kan även
-   köras på en starkare maskin i nätverket (ändra adressen).
+1. Installera [Ollama](https://ollama.com), en lokal modellserver som kör helt
+   offline.
+2. Kör `ollama pull qwen3-vl:4b` i en terminal (cirka 3 GB; standardvalet.
+   `:8b` är noggrannare men kräver minst 32 GB RAM – siffror finns i
+   `docs/VISION_VALIDATION.md`).
+3. Öppna **Settings → ODEN**, kontrollera adress och modell, och tryck
+   **"Testa anslutning"**.
+4. Slå på chipsen i panelen (en engångsvarning om hastighet visas). Ollama kan
+   för övrigt köras på en starkare maskin i nätverket – ändra bara adressen.
 
 ## Felsökning
 
-- **"Restricted mode" blockerar pluginen** → Settings → Community plugins →
-  Turn off Restricted mode (eller svara "Trust author…" när valvet öppnas).
-- **macOS säger att Obsidian inte kan öppnas** → högerklicka på appen → Öppna
-  (Gatekeeper, endast första gången).
-- **Kartan visar inte ODEN-lagren** (en öppen kartpanel behåller sin egen
-  filtrering) → `⋯ → "Visa ODEN-lagren på kartan"`.
-- **Grafen är tom** → färgerna/noderna syns först när entitetsnoter skapats;
-  mata in data och bekräfta förslag.
-- **Ollama-chipsen blir grå** → kontrollera att Ollama kör (`ollama list`) och
-  testa anslutningen i inställningarna; ODEN faller tillbaka till
-  deterministiskt läge tills anslutningen är tillbaka.
-- **Air-gapped drift**: Map View cachar visade karttiles lokalt; för-ladda
-  området genom att panorera/zooma i förväg med nät. (Automatiserad
-  tile-förprovisionering är planerad — se `TODO.md`.)
+- **"Restricted mode" blockerar pluginen** – Settings → Community plugins →
+  Turn off Restricted mode, eller svara *"Trust author…"* när valvet öppnas.
+- **macOS vägrar öppna Obsidian** – högerklicka på appen och välj Öppna
+  (Gatekeeper, bara första gången).
+- **Kartan visar inte ODEN-lagren** – en öppen kartpanel behåller sin egen
+  filtrering; kör `⋯ → "Visa ODEN-lagren på kartan"` så återställs den.
+- **Grafen är tom** – noderna syns först när entitetsnoter skapats; mata in
+  data och bekräfta förslag.
+- **AI-chipsen blir grå** – kontrollera att Ollama kör (`ollama list`) och
+  testa anslutningen i inställningarna. ODEN arbetar deterministiskt vidare
+  tills anslutningen är tillbaka.
+- **Air-gapped drift** – Map View sparar visade karttiles lokalt; panorera och
+  zooma igenom området i förväg medan nät finns, så finns kartan kvar när nätet
+  försvinner. (Automatiserad förprovisionering av tiles är planerad, se
+  `TODO.md`.)
 
 ## Detekteringens räckvidd
 
-Se `docs/RE-ID_VALIDATION.md`, `docs/BEHAVIOUR_VALIDATION.md` och (för
-vision-modellen) `docs/VISION_VALIDATION.md`. Kort: den deterministiska
-kännetecken-re-identifieringen är ett högprecisions-*frö* — den hittar aldrig på
-bevis, men har begränsad täckning på fri prosa. Plåt-re-identifiering och
-närhet/tid-poängen är de robusta delarna. AI-lagren är nomineringsgrindade —
-modellen föreslår, operatören bekräftar.
+Se `docs/RE-ID_VALIDATION.md`, `docs/BEHAVIOUR_VALIDATION.md` och, för
+vision-modellen, `docs/VISION_VALIDATION.md`. I korthet: re-identifiering via
+regplåt och närhet/tid-poängen är de robusta delarna. Den
+kännetecken-baserade re-identifieringen är ett högprecisions-frö – den hittar
+aldrig på bevis, men har begränsad täckning på fri prosa. AI-lagren föreslår
+bara; operatören bekräftar varje fynd.

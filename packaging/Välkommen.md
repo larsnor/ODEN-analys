@@ -1,80 +1,89 @@
-# Välkommen till ODEN 👁️
+# Välkommen till ODEN
 
-ODEN analyserar 7S-lägesrapporter: känner igen återkommande fordon och kännetecken,
-kopplar ihop dem till aktörer, poängsätter misstänkt aktivitet och larmar vid ny
-aktivitet. **ODEN föreslår — du som operatör avgör.** Ingen koppling skapas utan din
-bekräftelse, och all analys går att granska i efterhand.
+Det här valvet är färdigt att använda: ODEN-panelen nere till höger, kartan och
+grafen överst, och allt fungerar utan internet. ODEN läser de 7S-rapporter som
+landar i mappen `inkorg/`, känner igen fordon och kännetecken som återkommer,
+poängsätter misstänkt aktivitet och larmar när något händer. Grundregeln genom
+hela systemet är enkel: **ODEN föreslår – du avgör.** Ingen koppling skapas utan
+att du bekräftat den, och varje bedömning går att granska i efterhand.
 
-Det här valvet är färdigkonfigurerat: ODEN-panelen (nere till höger), kartan och
-grafen är på plats, och allt fungerar utan internet.
+## Kom igång
 
-## Kom igång (checklista)
+Det första man gör är att tala om för ODEN vad som ska bevakas. Tryck
+`Cmd/Ctrl-P` och kör kommandot **"ODEN: Konfigurera operationsområde"** – ange
+koordinaten (`lat,lon` eller en MGRS-ruta) så centreras kartan dit och
+🎯 Objektet dyker upp.
 
-1. **Sätt operationsområdet.** Tryck `Cmd/Ctrl-P` och kör
-   **"ODEN: Konfigurera operationsområde"**. Ange koordinaten för det som ska
-   bevakas (`lat,lon` eller en MGRS-ruta). Kartan centreras dit och 🎯 Objektet
-   skapas.
-2. **Namnge kända platser.** Panelens `⋯`-meny → **"Namngivna platser…"** — lägg in
-   grindar, förråd och infarter i förväg. Markera känsliga platser som
-   **skyddsvärda** så larmar ODEN vid aktivitet i närheten. Tips: högerklicka i
-   kartan → *"Copy geolocation as front matter"* och klistra in positionen.
-3. **Lär känna panelen.** Överst: 🌙/☀︎ (tema), `＋ Obs` (egen observation),
-   `⋯` (meny). Chipsen **📷 Bild · 📝 Text · 💬 Chat** slår på de valfria
-   AI-förmågorna (kräver Ollama, se nedan) — utan dem kör ODEN helt
-   deterministiskt. I flödet **Händelser & larm** dyker allt nytt upp; klickbara
-   förslagsrader (🔗 🎒 📷 📝) öppnar granskning där du bekräftar eller avvisar.
-   Längst ner: frågelådan — fråga t.ex. *"vilka larm har vi?"* eller ange en
-   registreringsskylt.
-4. **Dina operatörsverktyg.** Högerklicka på en rapport →
-   **"ODEN: Flagga som larm"** (rapporten larmas med skälet *flaggad av
-   operatör*). Högerklicka på en rapport, ett fordon, en aktör eller ett
-   kännetecken → **"ODEN: Bevaka"** — den hamnar i 🔭 **Bevakningslistan** överst
-   i panelen och ny aktivitet markeras med *+N nya*. Bevakning påverkar aldrig
-   misstankepoängen.
+Passa sedan på att namnge de platser du redan känner till: grindar, förråd,
+infarter. Det gör du i panelens `⋯`-meny under **"Namngivna platser…"**. Markerar
+du en plats som **skyddsvärd** larmar ODEN vid aktivitet i närheten – praktiskt
+för det där förrådet som ligger lite avsides. Ett tips: högerklicka i kartan och
+välj *"Copy geolocation as front matter"*, så kan positionen klistras rakt in i
+formuläret.
 
-## Testa med demodata (rekommenderas första gången)
+Panelen är enkel att hitta i. Överst sitter temaknappen (🌙/☀︎), `＋ Obs` för att
+skriva en egen observation, och `⋯`-menyn. Raden med **📷 Bild · 📝 Text ·
+💬 Chat** slår på de valfria AI-förmågorna (kräver Ollama, mer om det nedan) –
+utan dem arbetar ODEN helt deterministiskt, vilket räcker långt. I flödet
+**Händelser & larm** dyker allt nytt upp; klickar man på en förslagsrad (🔗, 🎒,
+📷 eller 📝) öppnas granskningen där du bekräftar eller avvisar fynden, och när
+inget återstår hamnar du tillbaka i flödet. Längst ner finns frågelådan – prova
+*"vilka larm har vi?"* eller skriv in en regplåt.
 
-Mappen `demo/` innehåller en syntetisk övningskorpus: 14 dygn kring **HvSS
-Vällinge** med ~480 rapporter (varav foton), en dold spaningscell och en
-demonstration. Så här "matar" du in den — inga verktyg behövs:
+Två handgrepp till är bra att kunna. Ser du en rapport som analysen borde ha
+reagerat på – högerklicka på den och välj **"ODEN: Flagga som larm"**, så larmas
+den med skälet *flaggad av operatör*. Och vill du hålla extra koll på något –
+en rapport, ett fordon, en aktör eller ett kännetecken – väljer du
+**"ODEN: Bevaka"**. Då hamnar den i 🔭 **Bevakningslistan** överst i panelen, och
+ny aktivitet markeras med *+N nya* tills du tittat. Bevakningen påverkar aldrig
+misstankepoängen – den styr bara vad du ser.
 
-1. Sätt operationsområdet till demokoordinaten: `59.2622,17.712`.
-2. Dra mappen **`demo/batch-01`**:s innehåll till **`inkorg/`** (i Obsidians
-   filpanel eller i Finder/Utforskaren). ODEN läser rapporterna direkt — se
-   flödet reagera.
-3. Fortsätt med `batch-02`, `batch-03` … i din egen takt. Granska förslag,
-   flagga, bevaka, fråga i chatten.
-4. Med **Ollama** igång: slå på 📷-chipet och dra en batch med foton — se
-   *"Bild mottagen, analys startad"* följt av bildfynd att granska.
+## Testa med demodata
 
-Klart att börja om? **"ODEN: Konfigurera operationsområde"** med ny koordinat
-rensar alla beslut (du varnas först); radera sedan innehållet i `inkorg/`.
+I mappen `demo/` ligger en syntetisk övningskorpus: fjorton dygn kring HvSS
+Vällinge med knappt 350 rapporter (en del med foton), en dold spaningscell och
+en demonstration. Inga riktiga personer eller fordon förekommer.
 
-Vill du generera egna korpusar (andra platser, andra hotbilder)? Se
-[7S-generator](https://github.com/larsnor/7S-generator).
+Sätt operationsområdet till demokoordinaten `59.2622,17.712`. Dra sedan
+innehållet i `demo/batch-01` till `inkorg/` – i Obsidians filpanel eller i
+Finder/Utforskaren – och se flödet vakna. Fortsätt med `batch-02`, `batch-03`
+och så vidare i din egen takt; granska förslagen, flagga, bevaka och fråga i
+chatten. Kör du Ollama kan du slå på 📷-chipet och dra en batch med foton – då
+ser du *"Bild mottagen, analys startad"* följt av bildfynd att granska.
+
+När du är klar visar `demo/facit.json` hur det faktiskt låg till – jämför gärna
+med vad du själv hittade. Vill du börja om kör du *"Konfigurera
+operationsområde"* igen med en ny koordinat (alla beslut rensas, du varnas
+först) och tömmer `inkorg/`.
+
+Vill du generera egna korpusar, med andra platser och hotbilder, finns
+verktyget [7S-generator](https://github.com/larsnor/7S-generator).
 
 ## Skarp drift
 
-1. Radera mappen `demo/` (och ev. övningsinnehåll i `inkorg/`).
-2. Sätt ditt riktiga operationsområde och namnge platserna i förväg.
-3. Låt intaget (t.ex. Signal-appen/källappen) leverera 7S-rapporter till
-   `inkorg/` — ODEN:s bevakare plockar upp dem automatiskt.
+Radera mappen `demo/` och eventuellt övningsinnehåll i `inkorg/`. Sätt ditt
+riktiga operationsområde och namnge platserna i förväg. Sedan är det bara att
+låta intaget leverera 7S-rapporter till `inkorg/` – ODEN plockar upp dem
+automatiskt.
 
-## Ollama — valfri AI-förstärkning
+## Ollama – valfri AI-förstärkning
 
-ODEN:s kärna är deterministisk och **detektionen är aldrig beroende av AI**.
-Chipsen 📷/📝/💬 ger extra räckvidd (läser foton, hittar kännetecken i fritext,
-svarar i naturligt språk) via en **lokal** språkmodell — inget lämnar datorn.
+ODENs kärna är deterministisk och fungerar helt utan AI. Men med en lokal
+språkmodell får systemet extra räckvidd: **📷 Bild** läser foton
+(registreringsskyltar, fordon, personer), **📝 Text** hittar kännetecken och
+beteenden i fritexten som de fasta ordlistorna missar, och **💬 Chat** låter dig
+fråga med naturligt språk. Allt körs lokalt på din egen dator – inget skickas
+någonstans. Och som i resten av ODEN gäller samma regel: modellen föreslår
+bara, du bekräftar varje fynd.
 
-1. Installera [Ollama](https://ollama.com) (gratis, macOS/Windows/Linux).
-2. I en terminal: `ollama pull qwen3-vl:4b` (≈3 GB, engångsnedladdning).
-3. Obsidian → **Inställningar → ODEN** → knappen **"Testa anslutning"**.
-4. Slå på chipsen i panelen. Allt modellen hittar är **förslag** som du
-   bekräftar eller avvisar — aldrig automatiska beslut.
+Så här kommer du igång: installera [Ollama](https://ollama.com) (gratis, finns
+för macOS, Windows och Linux), kör `ollama pull qwen3-vl:4b` i en terminal
+(cirka 3 GB, laddas ned en gång), och tryck **"Testa anslutning"** under
+**Inställningar → ODEN**. Slå sedan på chipsen i panelen.
 
 ## Mer
 
-- Installationsalternativ och felsökning: `INSTALL.md` i releasen /
-  [GitHub](https://github.com/larsnor/ODEN-analys).
-- Skärmfilmer (korta genomgångar): *kommer — länkas här när de är publicerade.*
-- Den här noten kan raderas när du inte behöver den längre.
+Fler installationsvägar och felsökning finns i `INSTALL.md` (i releasen och på
+[GitHub](https://github.com/larsnor/ODEN-analys)). Korta skärmfilmer är på
+gång och länkas här när de är klara. Den här noten kan du radera när den har
+gjort sitt.

@@ -2272,7 +2272,7 @@ export default class SevenSPlugin extends Plugin {
 const CHAT_HINT =
   'Skriv en fråga om larm, aktörer, fordon, farkoster, platser eller kännetecken — ' +
   't.ex. "vilka larm har vi?", "visa drönarobservationer", "återkommande fordon", ' +
-  '"sammanfatta läget vid Köpmanholm", eller en plåt.';
+  '"sammanfatta läget vid Köpmanholm", eller en regplåt.';
 
 /** The plugin's only UI: a passive text panel that renders Markdown. */
 class SevenSTextView extends ItemView {
@@ -2578,7 +2578,7 @@ class SevenSTextView extends ItemView {
         const tag = nom.kind === "plate" ? "📷 Skylt" : nom.kind === "vehicle" ? "📷 Fordon" : "📷 Person";
         const val =
           nom.kind === "plate"
-            ? `${nom.value}${nom.conflict ? " ⚠ avviker från textplåt" : ""}`
+            ? `${nom.value}${nom.conflict ? " ⚠ avviker från regplåten i texten" : ""}`
             : nom.label;
         const statusTxt = status === "confirmed" ? "  ·  ✓ bekräftad" : status === "rejected" ? "  ·  ✗ avvisad" : "";
         const span = row.createEl("span", { text: `${tag}: ${val}${statusTxt}` });

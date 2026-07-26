@@ -170,7 +170,7 @@ const TARGET_CUES: { target: Target; words: string[] }[] = [
   { target: "aktor", words: ["aktör", "aktörer", "aktören", "misstänkt person", "agent", "gärningsman"] },
   { target: "plats", words: ["plats", "platser", "platsen", "hotspot", "hotspots", "område", "områden"] },
   { target: "kannetecken", words: ["kännetecken", "märke", "märken", "ryggsäck", "keps", "mössa", "dekal", "optik", "kikare"] },
-  { target: "fordon", words: ["fordon", "bil", "bilar", "plåt", "plåtar", "reg", "registreringsskylt", "registreringsnummer", "nummerplåt"] },
+  { target: "fordon", words: ["fordon", "bil", "bilar", "plåt", "plåtar", "regplåt", "regplåtar", "reg", "registreringsskylt", "registreringsnummer", "nummerplåt"] },
 ];
 
 /** Which domain type is the operator asking about? A named craft TYPE (lastbil,

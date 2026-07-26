@@ -11,33 +11,37 @@ byggd för att kunna granskas och valideras rad för rad.
 
 ## Kom igång på 10 minuter
 
-Du behöver inte känna till Obsidian sedan tidigare — allt är färdigkonfigurerat.
+Man behöver inte känna till Obsidian sedan tidigare – allt är
+färdigkonfigurerat och det är tre steg från nedladdning till fungerande system:
 
-1. **Installera Obsidian** (gratis): hämta från [obsidian.md](https://obsidian.md/download)
-   (macOS: dra till Program; Windows: kör installeraren; Linux: AppImage/deb).
+1. **Installera Obsidian** (gratis) från
+   [obsidian.md/download](https://obsidian.md/download). På macOS drar man
+   appen till Program, på Windows kör man installeraren, på Linux finns
+   AppImage och .deb.
 2. **Ladda ner `ODEN-valv-<version>.zip`** från
    **[senaste releasen](https://github.com/larsnor/ODEN-analys/releases/latest)**
-   och packa upp den där du vill ha ditt arbetsvalv (t.ex. Dokument).
-3. **Öppna det i Obsidian:** starta Obsidian → **"Open folder as vault"** → välj
-   mappen `ODEN-valv` → svara **"Trust author and enable plugins"** när Obsidian
-   frågar.
+   och packa upp den där du vill ha ditt arbetsvalv, till exempel i Dokument.
+3. **Öppna valvet:** starta Obsidian, välj **"Open folder as vault"**, peka ut
+   mappen `ODEN-valv` och svara **"Trust author and enable plugins"** när
+   Obsidian frågar.
 
-Klart. Noten **Välkommen.md** ligger öppen och leder dig vidare — sätt
+Sedan är det klart. Noten **Välkommen.md** ligger öppen och leder vidare – sätt
 operationsområdet, namnge platser och börja.
 
-**Vill du öva först?** Valvet innehåller `demo/` — en syntetisk övningskorpus
-(14 dygn, ~480 rapporter med foton och en dold spaningscell). Dra `batch-01` till
-`inkorg/` och se ODEN arbeta; fortsätt batch för batch. Inga extra verktyg behövs.
+Vill man öva först finns mappen `demo/` i valvet: en syntetisk övningskorpus
+över fjorton dygn med knappt 350 rapporter, foton, en dold spaningscell och en
+demonstration. Dra `batch-01` till `inkorg/` och se ODEN arbeta, fortsätt sedan
+batch för batch – inga extra verktyg behövs, och facit ligger bredvid. För
+skarp drift raderar man `demo/`, sätter sitt riktiga område och låter intaget
+leverera rapporterna till `inkorg/`.
 
-**Skarp drift?** Radera `demo/`, sätt ditt riktiga område och låt intaget
-leverera rapporter till `inkorg/`.
+AI-förmågorna (📷 bild · 📝 text · 💬 chat) är valfria: installera
+[Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b`, så körs allt
+lokalt på den egna datorn. Modellen föreslår bara – du bekräftar. Detektionen
+är aldrig beroende av AI.
 
-**Valfri AI-förstärkning (📷 bild · 📝 text · 💬 chat):** installera
-[Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b` — allt körs lokalt,
-och modellen föreslår bara; du bekräftar. Detektionen är aldrig beroende av AI.
-
-Fler installationsvägar (eget valv, felsökning): **[`INSTALL.md`](INSTALL.md)**.
-Korta skärmfilmer: *kommer — länkas här.*
+Fler installationsvägar och felsökning finns i **[`INSTALL.md`](INSTALL.md)**.
+Korta skärmfilmer är på gång och länkas här när de är klara.
 
 ## Struktur
 
@@ -103,7 +107,7 @@ Detaljerad design finns i [`docs/PLUGIN_DESIGN.md`](docs/PLUGIN_DESIGN.md) och
 meddelandeformatet i [`docs/FORMAT_SPEC.md`](docs/FORMAT_SPEC.md).
 
 ## Detekteringens räckvidd (ärligt)
-Den **plåtbaserade** re-identifieringen (exakt matchning) och **geometrin/tiden**
+Den **regplåtsbaserade** re-identifieringen (exakt matchning) och **geometrin/tiden**
 (närhet + tid på dygnet) är robusta. De två **fasta vokabulärerna** är
 högprecisions-*frön* med validerad men begränsad täckning på oberoende formulerad
 prosa — de hittar aldrig på bevis mot en civil, men missar mycket:
@@ -117,9 +121,9 @@ prosa — de hittar aldrig på bevis mot en civil, men missar mycket:
 **Bildanalys (valfri, lokal LLM):** ODEN kan läsa bifogade foton med en lokal
 vision-modell (Ollama, `qwen3-vl:4b` — mätt i
 [`docs/VISION_VALIDATION.md`](docs/VISION_VALIDATION.md)): skyltar, fordon (märke/
-färg), personer (kön/ålder/klädfärg/utrustning). Den är **avstängd som standard**,
-slås på med 📷-chippen i panelen, och är **nomineringsgrindad** — modellen föreslår,
-operatören bekräftar per fynd. Störst nytta: skyltar och låg bemanning. Detektionen
+färg), personer (kön/ålder/klädfärg/utrustning). Den är **avstängd som standard**
+och slås på med 📷-chippen i panelen; modellen föreslår, operatören bekräftar
+varje fynd. Störst nytta: registreringsskyltar och låg bemanning. Detektionen
 beror aldrig på den; driftläget (deterministiskt + valfria LLM-lager) syns
 direkt i panelens lägesstrip.
 
