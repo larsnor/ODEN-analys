@@ -457,12 +457,29 @@ All from live operator testing:
 - Map View live vault got showNotePreview:false (marker popups showed
   frontmatter). 190 tests. Tagged v0.9.1.
 
+## ONBOARDING & PACKAGING (2026-07-26, post-v1.0.1)
+Entry point for GitHub-link-only novices (Swedish-only, per operator decision).
+scripts/package.sh v2 builds TWO artifacts: **ODEN-plugin-<v>.zip** (existing-vault
+users) and **ODEN-valv-<v>.zip** — the long-deferred template vault, now shipped:
+preconfigured `.obsidian/` (all config templates + ODEN build + **Map View pinned
+6.1.4 BUNDLED** — verified MIT, release assets fetched+cached at package time,
+LICENSE included), `Välkommen.md` onboarding note (auto-open via the workspace
+template), `inkorg/`, and `demo/` — the seed-2026 HvSS corpus regenerated
+deterministically at package time and split into 14 chronological drag-in batches
+(+ `facit.json`) so a TEST user needs NO Python: "feeding" = dragging a batch into
+inkorg/. Zips built with Python zipfile (macOS `zip` drops the UTF-8 name flag →
+Windows mojibake on Välkommen.md — found & fixed). README rewritten as the novice
+front door ("Kom igång på 10 minuter": Obsidian → valv-zip från senaste release →
+Open folder as vault/Trust plugins); INSTALL.md rewritten in Swedish (Väg A färdigt
+valv / Väg B manuell + Ollama + felsökning). Zips published as GitHub Release
+assets on the version tag. Obsidian itself stays unbundled (proprietary; rugged/
+air-gapped app-bundling remains an ops track). Screencasts NEXT — storyboards now
+target this 3-step install as chapter 1.
+
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but
   not yet written into the spec — DEFERRED pending the other developer's
   possibly-updated format spec (may change our end anyway).
-- Operator template-vault zip (preconfigured `.obsidian/`): deferred until the
-  plugin exists (layout must include plugin panel).
 - INCREMENTAL/TEMPORAL dynamics (operator-flagged, to REVIEW after Step 4):
   tests run against the COMPLETE vault, but realistically the vault accretes —
   reports arrive gradually, mark nominations are approved over time, and NEW data

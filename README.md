@@ -9,23 +9,47 @@ operatören — ODEN föreslår, människan avgör.
 All analys är **deterministisk** och körbar utan nätverk eller språkmodell; den är
 byggd för att kunna granskas och valideras rad för rad.
 
+## Kom igång på 10 minuter
+
+Du behöver inte känna till Obsidian sedan tidigare — allt är färdigkonfigurerat.
+
+1. **Installera Obsidian** (gratis): hämta från [obsidian.md](https://obsidian.md/download)
+   (macOS: dra till Program; Windows: kör installeraren; Linux: AppImage/deb).
+2. **Ladda ner `ODEN-valv-<version>.zip`** från
+   **[senaste releasen](https://github.com/larsnor/ODEN-analys/releases/latest)**
+   och packa upp den där du vill ha ditt arbetsvalv (t.ex. Dokument).
+3. **Öppna det i Obsidian:** starta Obsidian → **"Open folder as vault"** → välj
+   mappen `ODEN-valv` → svara **"Trust author and enable plugins"** när Obsidian
+   frågar.
+
+Klart. Noten **Välkommen.md** ligger öppen och leder dig vidare — sätt
+operationsområdet, namnge platser och börja.
+
+**Vill du öva först?** Valvet innehåller `demo/` — en syntetisk övningskorpus
+(14 dygn, ~480 rapporter med foton och en dold spaningscell). Dra `batch-01` till
+`inkorg/` och se ODEN arbeta; fortsätt batch för batch. Inga extra verktyg behövs.
+
+**Skarp drift?** Radera `demo/`, sätt ditt riktiga område och låt intaget
+leverera rapporter till `inkorg/`.
+
+**Valfri AI-förstärkning (📷 bild · 📝 text · 💬 chat):** installera
+[Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b` — allt körs lokalt,
+och modellen föreslår bara; du bekräftar. Detektionen är aldrig beroende av AI.
+
+Fler installationsvägar (eget valv, felsökning): **[`INSTALL.md`](INSTALL.md)**.
+Korta skärmfilmer: *kommer — länkas här.*
+
 ## Struktur
 
 | Mapp | Vad |
 |------|-----|
 | [`plugin/`](plugin/) | Obsidian-pluginet (TypeScript). Självständigt — testerna kör mot fixturerna i [`plugin/test/fixtures/`](plugin/test/fixtures/). |
-| [`obsidian-config/`](obsidian-config/) | Färdig Obsidian-konfiguration: graffärger, Map View-regler och ett "lås panelerna"-snitt. |
+| [`obsidian-config/`](obsidian-config/) | Färdig Obsidian-konfiguration: graffärger, Map View-regler, arbetsyta och ett "lås panelerna"-snitt. |
+| [`packaging/`](packaging/) | Onboarding-material som paketeras in i valv-zippen (Välkommen-noten). |
 | [`docs/`](docs/) | Format-spec, plugin-design, överlämningsanteckningar och frontmatter-schema. |
 | [`archive/`](archive/) | Avvecklat/referens: äldre generator, tidig Python-prototyp, dataset-zip. Ingår inte i pipelinen. |
 
-## Installation
-Steg-för-steg (installera Obsidian → Map View-pluginet → ODEN → applicera
-konfigurationen): se **[`INSTALL.md`](INSTALL.md)**. Obsidian och Map View är
-tredjepartsprogram som operatören installerar själv (de ingår inte). Distribueras
-som en zip (`npm run package` → `dist/ODEN-<version>.zip`), inte via Obsidians
-community-katalog.
-
-## Snabbstart (utveckling)
+## Utveckling
 
 ### Bygg och testa pluginet
 ```bash
@@ -34,23 +58,27 @@ npm install
 npm run typecheck   # inga typfel
 npm test            # kör hela testsviten mot fixturerna
 npm run build       # skapar main.js
-npm run package     # bygger + paketerar dist/ODEN-<version>.zip
+npm run package     # bygger dist/ODEN-plugin-<v>.zip + dist/ODEN-valv-<v>.zip
 ```
-Kopiera sedan `plugin/main.js` + `plugin/manifest.json` till
+Kopiera `plugin/main.js` + `plugin/manifest.json` till
 `<din-vault>/.obsidian/plugins/7s-analys/` och aktivera pluginet i Obsidian.
 (`main.js` byggs lokalt och versionshanteras inte — kör `npm run build`.)
+
+Paketeringen kräver dessutom `7s-generator` på PATH (demokorpusen genereras
+deterministiskt vid paketering) och nätverk första gången (Map View-releasen
+hämtas pinnad och cachas; MIT-licens, licensfilen följer med i zippen).
 
 ### Generera och mata in testdata
 Testkorpusar skapas och matas in med det fristående verktyget
 **[7S-generator](https://github.com/larsnor/7S-generator)** (eget repo, CLI, inga
 beroenden). Det producerar samma 7S-format som pluginet läser:
 ```bash
-python3 -m corpusgen generate --aoi 60.345,17.422 --area airport \
+7s-generator generate --aoi 60.345,17.422 --area airport \
   --from 2026-06-15 --days 14 --callsigns AQ,BQ,CQ,DQ --out ./corpus_tierp
-python3 -m corpusgen add-hostiles --corpus ./corpus_tierp --type recon
-python3 -m corpusgen feed --corpus ./corpus_tierp --vault /sökväg/till/Vault
+7s-generator add-hostiles --corpus ./corpus_tierp --type recon
+7s-generator feed --corpus ./corpus_tierp --dest /sökväg/till/valv/inkorg
 ```
-Sätt sedan Objektets koordinat i ODEN till samma AOI (t.ex. via
+Sätt sedan Objektets koordinat i ODEN till samma AOI (kommandot
 "Konfigurera operationsområde"). Pluginets egna tester är självständiga och
 behöver inte verktyget — de kör mot den incheckade snapshoten i
 [`plugin/test/fixtures/`](plugin/test/fixtures/).
@@ -84,7 +112,7 @@ prosa — de hittar aldrig på bevis mot en civil, men missar mycket:
 - **beteendevokabulären** (`suspicion.ts THREAT_INDICATORS`) — mätt i
   [`docs/BEHAVIOUR_VALIDATION.md`](docs/BEHAVIOUR_VALIDATION.md) (~24 % → ~62–74 %
   recall efter en avgränsad, precisionsspärrad utökning; resten är öppen vokabulär =
-  framtida språkmodellsarbete).
+  språkmodellens 📝-förmåga).
 
 **Bildanalys (valfri, lokal LLM):** ODEN kan läsa bifogade foton med en lokal
 vision-modell (Ollama, `qwen3-vl:4b` — mätt i
@@ -92,8 +120,10 @@ vision-modell (Ollama, `qwen3-vl:4b` — mätt i
 färg), personer (kön/ålder/klädfärg/utrustning). Den är **avstängd som standard**,
 slås på med 📷-chippen i panelen, och är **nomineringsgrindad** — modellen föreslår,
 operatören bekräftar per fynd. Störst nytta: skyltar och låg bemanning. Detektionen
-beror aldrig på den (§8.2); driftläget (deterministiskt + valfria LLM-lager) syns
+beror aldrig på den; driftläget (deterministiskt + valfria LLM-lager) syns
 direkt i panelens lägesstrip.
 
 ## Licens
-MIT — se [`LICENSE`](LICENSE).
+MIT — se [`LICENSE`](LICENSE). Den paketerade valv-zippen innehåller även
+[Map View](https://github.com/esm7/obsidian-map-view) (MIT, © esm7) med dess
+licensfil.
