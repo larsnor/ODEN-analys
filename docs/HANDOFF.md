@@ -1,7 +1,8 @@
 # 7S Intelligence Analysis Project — Handoff Summary
 
 > **STATUS — read first (this is a historical handoff).** The plugin is **built and
-> shipped (v0.1.0)** and has evolved beyond this document. The **code** and the
+> shipped (v0.9.1)**; this document is a chronological build log — older sections
+> describe the machine/paths/UI of their time. The **code** and the
 > validation notes ([`RE-ID_VALIDATION.md`](RE-ID_VALIDATION.md),
 > [`BEHAVIOUR_VALIDATION.md`](BEHAVIOUR_VALIDATION.md)) are the source of truth; the
 > current developer guide is [`../plugin/README.md`](../plugin/README.md). Known drift
@@ -360,6 +361,102 @@ always on.
   text) → suspicion, deduped vs keyword hits. 164 tests (photo_analysis 10,
   text_reasoning 6, ids photo-plate, suspicion confirmedBehaviours). Menu unchanged.
 
+## EXPLICIT DOMAIN MODEL + FARKOST (v0.7.0, 2026-07-19)
+src/domain.ts NAMES the observed-thing taxonomy in one place (person/craft/mark/
+place/larm — the query targets AND the graph node classes) and OWNS the new
+craft/farkost dimension: CRAFT_TAXONOMY (bil/lastbil/…/båt/fartyg/…/drönare/
+helikopter/flygplan) with medium (mark/vatten/luft), plated (re-id via Job A),
+`threat` weight (drone 3, helicopter 2, boat/fartyg/flygplan 1 — STACKS with
+proximity/time in suspicion), queryCue, and precision-gated keywords + compound-
+safe stems (one matcher for prose, vision-typ mapping and query steering).
+FROZEN re-identifiability boundary: craft TYPE is always a scored observation;
+re-id needs a plate (ground), name/reg (water, future) or a distinctive mark —
+the machine NEVER merges two generic craft. src/craft.ts extracts one observation
+per type per report (sole-full-plate = the re-id bridge → "lastbil RJK241");
+query.ts widened to target×shape (farkost target, e.g. "visa drönarobservationer",
+"återkommande traktorer"). 184 tests. Tagged v0.7.0.
+
+## CRASH + RESTORE (2026-07-24, new machine)
+Laptop crash. Verified NOTHING lost: repo re-cloned at v0.7.0 == origin/main ==
+last reflog entry of the old disk's partially-recovered .git; obsidian-config
+files byte-identical (the "recovered" OneDrive copies were rate-limited download
+stubs, not corruption). New machine user is `larsnordstrom` (was `larsno`) —
+old Claude sessions/plans did NOT carry over; this doc + the code are the memory.
+Toolchain reinstalled: Homebrew node 26, Python via pyenv, Ollama with
+qwen3-vl:4b + :8b already pulled. 7S-generator (separate repo) at v0.3.0,
+editable-installed (`pip install -e ".[images]"` → `7s-generator` on PATH).
+Live test vault is now **~/ObsidianVaults/ODEN-test** (outside ~/Documents —
+OneDrive sync fought the old location) with corpora from 7s-generator
+(~/corpus_hvss_vallinge text-only; ~/corpus_hvss_images 371 reports/106 images,
+AOI HvSS Vällinge 59.26239628419817,17.712273532270785, seed 2026).
+
+## OPERATOR-SURFACE SIMPLIFICATION (v0.8.0, 2026-07-25)
+Verified-redundant analysis: everything the manual analysis commands did also
+runs on every debounced watcher recompute (Job A auto-build, suspicion + larm
+notes, mark/actor nominations + their clickable feed rows) — so the palette went
+**17 → 7 commands**: setup, ny observation, namngivna platser, visa kartlagren,
+analysera bilder, tolka text, + ONE escape hatch **"Uppdatera lägesbild"**
+(full recompute; for watcher-off / immediate refresh). ⋯ menu → 5 operator items
++ **"Avancerat…"** second-level Menu (public API only, no setSubmenu) holding
+refresh/merges/undo/nollställ. NEW: `clearAllJudgements` (new operation area)
+also empties the panel chat (`clearChat()` — chat is DOM-only, but answers
+grounded in the previous operation must not linger); 🌙/☀︎ header button toggles
+Obsidian dark/light (feature-detected vault.setConfig + css-change trigger).
+Bin 2 lockdown shipped as templates + applied live: NEW obsidian-config/
+core-plugins.json (operator-minimal: canvas/daily-notes/templates/bookmarks/
+tag-pane/bases/sync/outgoing-link etc. OFF), ribbon → 3 icons (ODEN/Map/Graph),
+Map View controls minimized + saveHistory off; app.json propertiesInDocument
+hidden; workspace.json template = pinned map/graph/ODEN tabs (session state
+stripped). Tagged v0.8.0.
+
+## NAMNGIVNA PLATSER + PHOTO AUTO + LARM-FLAGG (v0.9.0, 2026-07-25)
+- **"Platser i förväg" → "Namngivna platser"** everywhere; the panel screen now
+  lists BOTH kinds: operator-created places (radie + skyddsvärd) AND named report
+  grids (`📍 namn — grid`, "Ta bort namn" via removeLocationNickname, keeps
+  locationNameAsked). Named-by-operator report places deliberately get NO
+  skyddsvärd/radius (capability stays with the operator-created kind); storage/
+  tags/map icons unchanged — the unification is the operator-facing concept.
+- **📷 auto-vision on arrival**: the watcher now auto-runs the VLM on newly
+  arrived image reports (NOT in baseline — startup silent). Transient feed rows
+  "📷 Bild mottagen, analys startad — TNR…" (synthetic `bildanalys:` path so a
+  report's larm row never dedups away; in-memory analyzingPhotos set threaded
+  into buildFeedItems like lastCorroboration) → pinned "📷 N bildfynd att
+  granska →" (review:"photos"). 60s health backoff; run-once cache unchanged;
+  session attachment-hash memo so feed refreshes never re-read image bytes.
+- **Operator larm-flag**: file-menu (right-click a TNR note, explorer + tab)
+  "ODEN: Flagga som larm"/"Ta bort larmflagga" → settings.operatorFlagged rides
+  the confirmedBehaviours channel via OPERATOR_FLAG_SIGNAL (suspicion.ts, weight
+  9 = Hög, reason "flaggad av operatör"); wiped by new operation area. Tagged v0.9.0.
+
+## OPERATOR-FEEDBACK FIXES (v0.9.1, 2026-07-26)
+All from live operator testing:
+- **Graph visibility**: mark notes (Job B + 🎒 text-marks) and place-less person
+  suspects were ORPHANS under `-file:TNR` + showOrphans:false (they linked only
+  TNR messages) → never showed. Now a direct **[[Objektet]]** edge (marks always;
+  suspects only as fallback when no plats/fordon edge resolved).
+- **Review UX everywhere** (actors/marks/photo/text): pending first, decided
+  after (reversed); deciding the LAST pending item auto-returns to the feed
+  (revealActorsOrFeed / revealMarksOrFeed / showPhotoReviewOrFeed /
+  showTextReviewOrFeed).
+- **Photo review bug**: accepted vehicle/person findings were never counted as
+  decided (only plates/rejections) → the row re-rendered untouched. Decisions now
+  tracked for all kinds (photoNominationStatus); decided rows stay greyed with
+  ✓/✗ + "↺ Ångra beslut" (undoPhotoNomination withdraws plate/annotation + recon
+  signals).
+- **Chat citations clickable**: MarkdownRenderer builds [[TNR]] anchors but a
+  custom view must route internal-link clicks itself (delegated handler on
+  chatLogEl → openLinkText).
+- **📝 mirrors 📷**: watcher auto-runs text extraction on new reports with
+  "📝 Meddelande mottaget, analyseras — TNR…" rows (one row per report when both
+  photo+text in flight) → "📝 N textfynd att granska →" (review:"texts").
+- **Textfynd evidence**: clusterTextMarks kept only files + first-seen label →
+  review rows were unactionable ("röd — 3 rapporter", no references). Nominations
+  now carry members[] (tnr/tidpunkt/plats + THAT report's phrasing) and the most
+  descriptive variant as title; review renders evidence cards with clickable
+  TNRs; the confirmed 🎒 note lists the same observations.
+- Map View live vault got showNotePreview:false (marker popups showed
+  frontmatter). 190 tests. Tagged v0.9.1.
+
 ## OPEN / DEFERRED
 - FORMAT_SPEC + schema additions for `källa` and image attachments: AGREED but
   not yet written into the spec — DEFERRED pending the other developer's
@@ -384,21 +481,47 @@ always on.
   DEFERRED (noticed during Step-1 testing).
 - Minor: in-water coordinate jitter artifact (cosmetic, undecided); drop-in
   graph.json with colour groups (offered, not built).
+- INSTRUCTIONAL SCREENCASTS (planned, not built): 4 × 30–45s silent walkthroughs
+  (setup+platser · navigate UI · deterministic-vs-AI+verification · operator
+  reactions) as interactive HTML players (screenshots + animated cursor + timed
+  captions) rendered to MP4 via Playwright+ffmpeg, for the README. Plan agreed
+  2026-07-24; storyboards must target the post-v0.9.1 UI. Operator captures the
+  screenshots (shot-list to be provided); everything else reproducible.
+- TEXT-MARK DISTINCTIVENESS FLOOR (offered, not built): bare single-attribute
+  text-marks ("röd") can nominate — a deterministic stoplist mirroring vocab.ts's
+  "bare noise is never nominated" rule would suppress them; today the operator
+  handles it via Avvisa (persisted).
 
 ## NEXT STEP
-Build plugin step 1 (skeleton) in VS Code / Claude Code, on the actual machine
-where Obsidian runs. Read PLUGIN_DESIGN.md fully first. Keep the plugin in its
-own folder, separate from the Python data-mimic.
+The plugin is BUILT and shipped (v0.9.1). Next agreed piece of work: the
+instructional screencasts (see OPEN / DEFERRED). After that, candidates:
+regenerate/extend corpora for measured runs, the incremental/temporal dynamics
+review, and the text-mark distinctiveness floor.
 
-## Environment notes
-- Apple Silicon Mac, Obsidian + Map View, local Ollama for the optional LLM.
-- Data-mimic needs Python 3 + PIL (gen_images only). Plugin will need Node/npm.
-- Vault path used in testing: /Users/larsno/Documents/7S-Test
+## Environment notes (post-restore, 2026-07-24 →)
+- Apple Silicon Mac (user `larsnordstrom` — the pre-crash machine was `larsno`;
+  paths in older sections above reflect that machine).
+- Node 26 via Homebrew (`/opt/homebrew/bin`), Python 3.14 via pyenv,
+  Ollama local with qwen3-vl:4b (default) + :8b.
+- Live test vault: **/Users/larsnordstrom/ObsidianVaults/ODEN-test** (kept
+  outside ~/Documents — OneDrive sync clobbered a vault there once). Obsidian +
+  Map View installed; Bin 2 config applied (see v0.8.0 section). Plugin installed
+  by copying plugin/main.js + manifest.json into
+  `<vault>/.obsidian/plugins/7s-analys/` (safe while Obsidian runs; `.obsidian`
+  CONFIG files only with Obsidian closed).
+- Releases are tagged (v0.8.0/v0.9.0/v0.9.1); `npm run package` builds
+  dist/ODEN-<version>.zip.
 
-## How to run the data mimic (recap)
+## How to generate + feed test data (7S-generator, replaces the old data mimic)
+The Python data-mimic scripts are historical — corpus generation lives in the
+separate repo [7S-generator](https://github.com/larsnor/7S-generator) (v0.3.0,
+`pip install -e ".[images]"` from its clone → `7s-generator` CLI):
 ```
-python3 generate_reports.py          # regenerate reports/ + attachments/ (seed 1947)
-python3 feed_reports.py --source ./reports --vault /Users/larsno/Documents/7S-Test
-# at 7S> prompt: send | send 2 | auto | auto 5 | status | reset | quit
-# feeder copies referenced images into <vault>/attachments/ automatically
+7s-generator generate --aoi 59.26239628419817,17.712273532270785 --area suburban \
+  --from 2026-06-15 --days 14 --name "HvSS Vällinge" --seed 2026 \
+  --images --photos --obsidian --out ~/corpus_hvss_images
+7s-generator add-hostiles   --corpus ~/corpus_hvss_images --type recon --photos
+7s-generator add-protesters --corpus ~/corpus_hvss_images --type demonstranter
+7s-generator feed --corpus ~/corpus_hvss_images --dest ~/ObsidianVaults/ODEN-test/inkorg
+# at the > prompt: reset | auto 15 | send N | pause | resume | status | quit
 ```
