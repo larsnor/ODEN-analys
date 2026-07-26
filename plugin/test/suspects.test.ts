@@ -125,3 +125,15 @@ test("larm note links place + vehicle DIRECTLY so it survives message-node filte
   assert.match(note.markdown, /\*\*Fordon:\*\* \[\[RJK241\|RJK241\]\]/, "direct larm↔fordon edge");
   assert.match(note.markdown, /\[\[TNR500000\|TNR500000\]\]/, "message link kept for traceability");
 });
+
+test("person suspect with no resolvable place hub falls back to an [[Objektet]] edge (graph-visible)", () => {
+  const reports = [report({ tnr: "600000", plats: "33VXF 11111 22222", symbol: "mörka kläder, kikare", handelse: "Person står stilla och betraktar grinden." })];
+  const [s] = buildSuspects(reports, analyzeSuspicion(reports, PROT));
+  assert.equal(s.kind, "person");
+  // No locStemOf at all → no plats edge possible → the note must carry the fallback.
+  const bare = renderSuspectNote(s);
+  assert.match(bare.markdown, /\*\*Operationsområde:\*\* \[\[Objektet\]\]/, "fallback non-TNR edge");
+  // With a resolving place hub the fallback is unnecessary and absent.
+  const linked = renderSuspectNote(s, undefined, () => "📍 Grinden");
+  assert.doesNotMatch(linked.markdown, /\[\[Objektet\]\]/, "no redundant Objektet edge when a plats edge exists");
+});

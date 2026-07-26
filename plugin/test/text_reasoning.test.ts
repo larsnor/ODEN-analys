@@ -79,3 +79,21 @@ test("clusterTextMarks: same mark twice in ONE report is not a pattern", () => {
   ];
   assert.equal(clusterTextMarks(entries).length, 0, "one report → no re-id");
 });
+
+test("clusterTextMarks: nominations carry per-report evidence (tnr/time/place + that report's phrasing) and the most descriptive label", () => {
+  const entry = (file: string, tnr: string, tidpunkt: string, plats: string, label: string) => ({
+    file, tnr, tidpunkt, plats, sagesman: "AQ",
+    marks: [{ key: "jacka röd", label }],
+  });
+  const [nom] = clusterTextMarks([
+    entry("reports/TNR150900.md", "150900", "2026-06-15T09:00:00", "Norra grinden", "röd"),
+    entry("reports/TNR161000.md", "161000", "2026-06-16T10:00:00", "Bryggan", "röd jacka med kapuschong"),
+  ]);
+  assert.equal(nom.label, "röd jacka med kapuschong", "longest phrasing is the representative label");
+  assert.equal(nom.members.length, 2);
+  assert.deepEqual(
+    nom.members.map((m) => [m.tnr, m.plats, m.label]),
+    [["150900", "Norra grinden", "röd"], ["161000", "Bryggan", "röd jacka med kapuschong"]],
+    "members keep report identity + per-report phrasing, chronologically",
+  );
+});

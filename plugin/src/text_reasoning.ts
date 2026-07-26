@@ -139,10 +139,24 @@ export interface TextMarkEntry {
   marks: TextMark[];
 }
 
+/** One observation of a clustered text-mark — the operator-actionable context
+ *  (WHICH report, when, where, and how THAT report phrased it). */
+export interface TextMarkMember {
+  file: string;
+  tnr: string;
+  tidpunkt: string;
+  plats: string;
+  /** The mark label as extracted from THIS report (phrasing may vary per report). */
+  label: string;
+}
+
 export interface TextMarkNomination {
   key: string;
-  label: string; // representative (first-seen) label
+  /** Representative label: the LONGEST member phrasing (most descriptive variant). */
+  label: string;
   files: string[];
+  /** Per-report evidence — the review renders these as clickable TNR references. */
+  members: TextMarkMember[];
   count: number; // distinct reports
   firstSeen: string;
   lastSeen: string;
@@ -151,21 +165,31 @@ export interface TextMarkNomination {
 /** A distinctive text-mark seen in ≥2 distinct reports is a re-id nomination —
  *  mirrors Job B's "seen once is not a pattern" rule. */
 export function clusterTextMarks(entries: TextMarkEntry[]): TextMarkNomination[] {
-  const byKey = new Map<string, { label: string; byFile: Map<string, string> }>();
+  const byKey = new Map<string, Map<string, TextMarkMember>>(); // key → file → member
   for (const e of entries) {
     for (const m of e.marks) {
-      if (!byKey.has(m.key)) byKey.set(m.key, { label: m.label, byFile: new Map() });
-      byKey.get(m.key)!.byFile.set(e.file, e.tidpunkt);
+      if (!byKey.has(m.key)) byKey.set(m.key, new Map());
+      const byFile = byKey.get(m.key)!;
+      if (!byFile.has(e.file)) {
+        byFile.set(e.file, { file: e.file, tnr: e.tnr, tidpunkt: e.tidpunkt, plats: e.plats, label: m.label });
+      }
     }
   }
   const out: TextMarkNomination[] = [];
-  for (const [key, { label, byFile }] of byKey) {
+  for (const [key, byFile] of byKey) {
     if (byFile.size < 2) continue;
-    const times = [...byFile.values()].filter(Boolean).sort();
+    const members = [...byFile.values()].sort(
+      (a, b) => a.tidpunkt.localeCompare(b.tidpunkt) || a.tnr.localeCompare(b.tnr),
+    );
+    const times = members.map((m) => m.tidpunkt).filter(Boolean);
+    // The longest phrasing is the most descriptive representative ("röd jacka
+    // med kapuschong" beats a bare "röd" from another report).
+    const label = members.reduce((best, m) => (m.label.length > best.length ? m.label : best), members[0].label);
     out.push({
       key,
       label,
-      files: [...byFile.keys()],
+      files: members.map((m) => m.file),
+      members,
       count: byFile.size,
       firstSeen: times[0] ?? "",
       lastSeen: times[times.length - 1] ?? "",

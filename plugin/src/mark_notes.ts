@@ -10,7 +10,7 @@
 import { markLabel } from "./marks";
 import { MarkNomination } from "./jobb";
 import { mdText } from "./mdsafe";
-import { GENERATOR, METOD, RenderedNote, noteStem } from "./notes_common";
+import { GENERATOR, METOD, OBJEKTET_STEM, RenderedNote, noteStem } from "./notes_common";
 
 export function markFilename(nom: MarkNomination): string {
   return nom.id.replace(/[\\/:*?"<>|.\s]/g, "_") + ".md";
@@ -48,7 +48,11 @@ export function renderMarkNote(nom: MarkNomination): RenderedNote {
   body.push(`**Kategori:** ${nom.object}  `);
   body.push(`**Antal observationer:** ${nom.count}  `);
   body.push(`**Tidsspann:** ${nom.firstSeen} → ${nom.lastSeen}  `);
-  if (nom.sagesmän.length) body.push(`**Sagesmän:** ${nom.sagesmän.join(", ")}`);
+  if (nom.sagesmän.length) body.push(`**Sagesmän:** ${nom.sagesmän.join(", ")}  `);
+  // Direct edge to the AOI node — the observation links below point at TNR
+  // messages, which the graph filter (-file:TNR) hides; without a non-TNR edge
+  // the confirmed mark would be an orphan (showOrphans:false) and never show.
+  body.push(`**Operationsområde:** [[${OBJEKTET_STEM}]]`);
   body.push("");
   body.push("## Observationer");
   for (const m of nom.members) {

@@ -16,9 +16,11 @@ export type FeedKind =
   | "aktör"
   | "larm"
   | "bildanalys"
+  | "textanalys"
   | "förslag-aktör"
   | "förslag-märke"
   | "förslag-bild"
+  | "förslag-text"
   | "namnge-plats";
 
 export interface FeedItem {
@@ -36,7 +38,7 @@ export interface FeedItem {
   reasons?: string[]; // larm reasons (already operator-phrased)
   pending?: number; // number of suggestions awaiting review
   /** Clicking a suggestion row opens a review screen / action instead of a note. */
-  review?: "actors" | "marks" | "place" | "photos";
+  review?: "actors" | "marks" | "place" | "photos" | "texts";
   /** For a "namnge-plats" row: the MGRS grid to name. */
   place?: string;
   /** Vehicle has ≥1 photo-corroborated plate observation (§6.7). */
@@ -52,7 +54,7 @@ export interface FeedRow {
   text: string;
   stem: string; // note stem for [[..]] / open
   severity: "larm" | "info" | "review";
-  review?: "actors" | "marks" | "place" | "photos";
+  review?: "actors" | "marks" | "place" | "photos" | "texts";
   place?: string;
 }
 
@@ -70,12 +72,16 @@ function label(item: FeedItem): string {
       return `⚠ Misstänkt aktivitet${item.plats ? " — " + item.plats : ""}${item.reasons && item.reasons.length ? " (" + item.reasons.join(", ") + ")" : ""}`;
     case "bildanalys":
       return `📷 Bild mottagen, analys startad — TNR${item.tnr}${item.plats ? " — " + item.plats : ""}`;
+    case "textanalys":
+      return `📝 Meddelande mottaget, analyseras — TNR${item.tnr}${item.plats ? " — " + item.plats : ""}`;
     case "förslag-aktör":
       return `🔗 ${item.pending} aktörsförslag att granska →`;
     case "förslag-märke":
       return `🎒 ${item.pending} kopplingsförslag att granska →`;
     case "förslag-bild":
       return `📷 ${item.pending} bildfynd att granska →`;
+    case "förslag-text":
+      return `📝 ${item.pending} textfynd att granska →`;
     case "namnge-plats":
       return `📍 Namnge plats ${item.place} →`;
   }

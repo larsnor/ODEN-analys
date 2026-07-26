@@ -199,15 +199,18 @@ export function buildRecurrences(clusters: LocationCluster[], actors: ActorHypot
 /** Build the live event/alarm feed items from the current analysis. DERIVED events
  *  only (identifications + alarms + pending-review nudges), never raw messages.
  *  `corroboration` = canonical plate → observation files whose photo backs it.
- *  `analyzingPhotos` = report files whose images the VLM is analysing RIGHT NOW
- *  (transient, in-memory) → a pinned "Bild mottagen, analys startad" row each.
- *  `photoPending` = un-actioned photo findings count → one pinned review row. */
+ *  `analyzingPhotos`/`analyzingTexts` = report files the VLM/LLM is analysing
+ *  RIGHT NOW (transient, in-memory) → a pinned "…analys" row each.
+ *  `photoPending`/`textPending` = un-actioned findings counts → one pinned
+ *  review row per capability. */
 export function buildFeedItems(
   bundle: AnalysisBundle,
   s: PluginState,
   corroboration: Map<string, Set<string>>,
   analyzingPhotos: ReadonlySet<string> = new Set(),
   photoPending = 0,
+  analyzingTexts: ReadonlySet<string> = new Set(),
+  textPending = 0,
 ): FeedItem[] {
   const folder = s.entitiesFolder.replace(/\/+$/, "");
   const inFolder = (name: string) => (folder ? `${folder}/${name}` : name);
@@ -270,14 +273,22 @@ export function buildFeedItems(
   if (photoPending > 0) {
     items.push({ path: "review:photos", kind: "förslag-bild", time: Number.MAX_SAFE_INTEGER - 2, pending: photoPending, review: "photos" });
   }
+  if (textPending > 0) {
+    items.push({ path: "review:texts", kind: "förslag-text", time: Number.MAX_SAFE_INTEGER - 3, pending: textPending, review: "texts" });
+  }
 
-  // Transient: images being analysed right now — one pinned row per report. The
-  // synthetic path keeps the row from dedup-replacing the report's own larm row;
-  // `file` is the real click target.
-  let t = Number.MAX_SAFE_INTEGER - 3;
+  // Transient: reports being analysed right now (photo VLM / text LLM) — one
+  // pinned row per report. The synthetic path keeps the row from dedup-replacing
+  // the report's own larm row; `file` is the real click target.
+  let t = Number.MAX_SAFE_INTEGER - 4;
   for (const f of [...analyzingPhotos].sort()) {
     const r = bundle.reports.find((x) => x.file === f);
     items.push({ path: `bildanalys:${f}`, kind: "bildanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f });
+  }
+  for (const f of [...analyzingTexts].sort()) {
+    if (analyzingPhotos.has(f)) continue; // one in-progress row per report is enough
+    const r = bundle.reports.find((x) => x.file === f);
+    items.push({ path: `textanalys:${f}`, kind: "textanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f });
   }
 
   // Nudge: relevant locations still a bare MGRS grid, not yet named/skipped.

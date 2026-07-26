@@ -95,3 +95,10 @@ test("Job B: confirmed mark note is idempotent and provenance-marked", () => {
   assert.match(a.markdown, /slag: kannetecken/);
   assert.ok(a.filename.startsWith("marke-") && a.filename.endsWith(".md"));
 });
+
+test("confirmed mark note carries a non-TNR [[Objektet]] edge so it shows in the filtered graph", () => {
+  const noms = buildMarkNominations(loadReports()).nominations;
+  assert.ok(noms.length > 0, "corpus yields nominations");
+  const note = renderMarkNote(noms[0]);
+  assert.match(note.markdown, /\*\*Operationsområde:\*\* \[\[Objektet\]\]/);
+});

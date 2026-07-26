@@ -10,7 +10,7 @@ import { Suspect } from "./suspects";
 import { safeFilename } from "./entity_notes";
 import { safeAgentFilename } from "./notenames";
 import { mdText } from "./mdsafe";
-import { GENERATOR, METOD, RenderedNote, StemLinker, noteStem } from "./notes_common";
+import { GENERATOR, METOD, OBJEKTET_STEM, RenderedNote, StemLinker, noteStem } from "./notes_common";
 import { Nicknames, placeLabel } from "./places";
 
 /** Readable graph label ("⚠️ RJK241"), disambiguated by agent key. The ⚠️ emoji
@@ -50,17 +50,25 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Ste
   // A vehicle suspect links straight to its vehicle entity node → a direct
   // larm↔fordon edge (keeps the larm node connected when messages are hidden).
   if (s.kind === "fordon") body.push(`  \n**Fordon:** [[${safeFilename(s.label).replace(/\.md$/, "")}|${mdText(s.label)}]]`);
-  body.push("");
-  body.push("## Observationer");
+  const obsLines: string[] = [];
+  let anyPlaceEdge = false;
   for (const o of s.obs) {
     const stem = noteStem(o.file);
     // Keep the message link (traceability) AND link the place directly → the larm
     // node stays in the graph (via a plats edge) even with TNR nodes filtered out.
     const locStem = locStemOf?.(o.plats);
+    if (locStem) anyPlaceEdge = true;
     const lbl = mdText(placeLabel(o.plats, nicks));
     const place = locStem ? `[[${locStem}|${lbl}]]` : lbl;
-    body.push(`- [[${stem}|TNR${mdText(o.tnr)}]] — ${mdText(o.tidpunkt)} — ${place}`);
+    obsLines.push(`- [[${stem}|TNR${mdText(o.tnr)}]] — ${mdText(o.tidpunkt)} — ${place}`);
   }
+  // Fallback non-TNR edge: a person suspect whose place never resolved to a hub
+  // (e.g. an operator-flagged report at an unclustered spot) would otherwise be
+  // an orphan (-file:TNR + showOrphans:false) and never show in the graph.
+  if (s.kind !== "fordon" && !anyPlaceEdge) body.push(`  \n**Operationsområde:** [[${OBJEKTET_STEM}]]`);
+  body.push("");
+  body.push("## Observationer");
+  body.push(...obsLines);
   body.push("");
   body.push(
     "_Misstänkt agent. Verifiera i ODEN-panelen för att skapa en bekräftad aktör. " +
