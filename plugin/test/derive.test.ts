@@ -12,6 +12,7 @@ import { dirname, join } from "node:path";
 import {
   buildFeedItems,
   buildRecurrences,
+  buildWatchStatus,
   confirmedActorNotes,
   foldedConfirmedActors,
   locationLinker,
@@ -237,4 +238,53 @@ test("buildFeedItems: analysing photos pin 'bildanalys' rows; pending findings o
   // Nothing analysing / pending → neither row.
   const none = buildFeedItems(bundle, state(), new Map());
   assert.equal(none.filter((i) => i.kind === "bildanalys" || i.kind === "förslag-bild").length, 0);
+});
+
+test("buildWatchStatus: vehicle watch resolves count/lastSeen; fresh counts from baseline; -1 baseline = no fresh yet", () => {
+  const reports = loadCorpus();
+  const bundle = bundleFrom(reports);
+  const plate = bundle.jobA.entities[0];
+  assert.ok(plate, "corpus yields a plate entity");
+  const key = `fordon:${plate.canonical}`;
+  const mk = (baseline: number) =>
+    state({ watchlist: { [key]: { kind: "fordon", label: plate.canonical, ref: plate.canonical, addedAt: "2026-06-15", baseline } } });
+  // Un-initialised baseline (-1): treated as current count → fresh 0.
+  const fresh0 = buildWatchStatus(bundle, mk(-1));
+  assert.equal(fresh0.length, 1);
+  assert.equal(fresh0[0].count, plate.count);
+  assert.equal(fresh0[0].fresh, 0);
+  assert.equal(fresh0[0].lastSeen, plate.lastSeen);
+  assert.ok(fresh0[0].stem, "note stem resolvable");
+  // Baseline below current count → fresh = delta.
+  const fresh = buildWatchStatus(bundle, mk(plate.count - 2));
+  assert.equal(fresh[0].fresh, 2);
+});
+
+test("buildWatchStatus: a watched report (händelse) is a static bookmark — never fresh", () => {
+  const reports = loadCorpus();
+  const bundle = bundleFrom(reports);
+  const r = reports[0];
+  const s = state({ watchlist: { [`händelse:${r.file}`]: { kind: "händelse", label: `TNR${r.tnr}`, ref: r.file, addedAt: "x", baseline: 0 } } });
+  const [row] = buildWatchStatus(bundle, s);
+  assert.equal(row.count, 1);
+  assert.equal(row.fresh, 0, "baseline 0 vs count 1 must NOT read as new activity");
+  assert.equal(row.lastSeen, r.tidpunkt);
+});
+
+test("buildFeedItems: a watched entity with fresh activity yields an amber 🔭 row; without fresh it does not", () => {
+  const reports = loadCorpus();
+  const bundle = bundleFrom(reports);
+  const plate = bundle.jobA.entities[0];
+  const watchFresh = buildWatchStatus(
+    bundle,
+    state({ watchlist: { [`fordon:${plate.canonical}`]: { kind: "fordon", label: plate.canonical, ref: plate.canonical, addedAt: "x", baseline: plate.count - 1 } } }),
+  );
+  const items = buildFeedItems(bundle, state(), new Map(), new Set(), 0, new Set(), 0, watchFresh);
+  const row = items.find((i) => i.kind === "bevakad");
+  assert.ok(row, "bevakad row present");
+  assert.equal(row!.count, 1);
+  assert.equal(row!.watchKey, `fordon:${plate.canonical}`);
+  // No fresh → no row.
+  const watchSeen = watchFresh.map((w): typeof w => ({ ...w, fresh: 0 }));
+  assert.equal(buildFeedItems(bundle, state(), new Map(), new Set(), 0, new Set(), 0, watchSeen).filter((i) => i.kind === "bevakad").length, 0);
 });

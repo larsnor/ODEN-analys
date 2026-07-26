@@ -54,6 +54,11 @@ as clickable rows in the ODEN panel's feed (confirm/reject from there); naming a
 merging live under the panel's ⋯ menu. Spotted something the analysis missed?
 **Right-click any report note → "ODEN: Flagga som larm"** — the report elevates
 with the reason *flaggad av operatör* (right-click again to remove the flag).
+Want to keep an eye on something specific? **Right-click a report, vehicle,
+actor or kännetecken → "ODEN: Bevaka"** — it joins the 🔭 **Bevakningslista**
+pinned at the top of the panel, and new observations of it appear as amber
+🔭 rows in the log (watching never affects the suspicion score; manage the list
+under ⋯ → "Bevakningslista…").
 In Graph view
 you'll see six colour-coded node types (objektet, larm, aktör, plats, återkomst,
 entities) with raw messages hidden by the `-file:TNR` filter.

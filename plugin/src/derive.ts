@@ -11,8 +11,11 @@
 import { Report } from "./parse";
 import { SuspicionAnalysis, haversineM } from "./suspicion";
 import { ActorHypothesis, ActorResult, buildActorHypotheses, foldActorMerges } from "./actor";
-import { buildSuspects, suspectHypotheses, isActorCandidate } from "./suspects";
+import { buildSuspects, suspectHypotheses, isActorCandidate, Suspect } from "./suspects";
 import { actorFilename, renderActorNote } from "./actor_notes";
+import { suspectFilename } from "./suspect_notes";
+import { safeAgentFilename } from "./notenames";
+import { TextMarkNomination } from "./text_reasoning";
 import { buildLocations, LocationCluster, locationFilename, resolveLocationKey } from "./location_notes";
 import { recurrenceFilename, RecurrencePair } from "./recurrence_notes";
 import { safeFilename } from "./entity_notes";
@@ -21,7 +24,7 @@ import { AnalysisBundle } from "./alerts";
 import { FeedItem } from "./feed";
 import { isMgrsGrid, placeLabel } from "./places";
 import { suspicionLevel, reasonPhrases } from "./present";
-import { NearLinker, StemLinker, noteStem } from "./notes_common";
+import { NearLinker, StemLinker, noteStem, resolveMerge } from "./notes_common";
 
 /** The operator-judgement fields the derivation reads — a structural subset of the
  *  plugin's settings, so callers pass `settings` directly. Decision maps are typed
@@ -37,6 +40,104 @@ export interface PluginState {
   actorDecisions: Record<string, string>;
   markDecisions: Record<string, string>;
   actorThreshold: number;
+  watchlist?: Record<string, WatchEntry>;
+}
+
+// --- Bevakningslista (watchlist, 🔭) ----------------------------------------
+
+/** One operator "keep an eye on this" nomination. Stored in settings (wiped with
+ *  the operation area like every judgement). VISIBILITY ONLY — the watchlist
+ *  never feeds the suspicion score (no-fishing: operator interest must not
+ *  inflate machine evidence; "Flagga som larm" is the tool for suspicion). */
+export interface WatchEntry {
+  kind: "fordon" | "aktör" | "person" | "märke" | "textmärke" | "händelse";
+  label: string;
+  /** Stable analysis key: plate canonical / actor hypothesis id / suspect agent
+   *  key / Job B signature / text-mark key / report file path. */
+  ref: string;
+  addedAt: string;
+  /** Observation count when watched (or last marked seen); fresh = count −
+   *  baseline. -1 = not yet initialised — the shell repairs it on first status. */
+  baseline: number;
+}
+
+/** Current status of one watched entity — panel section + "🔭 Bevakad" feed rows. */
+export interface WatchRow {
+  key: string;
+  kind: WatchEntry["kind"];
+  label: string;
+  count: number;
+  lastSeen: string;
+  /** New observations since the watch was added / last marked seen. */
+  fresh: number;
+  /** Note stem to open on click (undefined until the entity's note exists). */
+  stem?: string;
+}
+
+/** Resolve every watchlist entry against the current analysis. `textMarks` and
+ *  `suspects` are passed in (not in the bundle) — only needed when entries of
+ *  those kinds exist. A watched actor id survives merges via resolveMerge. */
+export function buildWatchStatus(
+  bundle: AnalysisBundle,
+  s: PluginState,
+  textMarks: TextMarkNomination[] = [],
+  suspects: Suspect[] = [],
+): WatchRow[] {
+  const folder = s.entitiesFolder.replace(/\/+$/, "");
+  const inFolder = (name: string) => (folder ? `${folder}/${name}` : name);
+  const entries = Object.entries(s.watchlist ?? {});
+  if (entries.length === 0) return [];
+  const confirmedActors = foldActorMerges(
+    bundle.actors.hypotheses.filter((h) => s.actorDecisions[h.id] === "confirmed"),
+    s.actorMerges,
+  );
+  const rows: WatchRow[] = [];
+  for (const [key, w] of entries) {
+    let count = 0;
+    let lastSeen = "";
+    let stem: string | undefined;
+    let label = w.label;
+    switch (w.kind) {
+      case "fordon": {
+        const e = bundle.jobA.entities.find((x) => x.canonical === w.ref);
+        if (e) { count = e.count; lastSeen = e.lastSeen; stem = noteStem(inFolder(safeFilename(e.canonical))); label = e.canonical; }
+        break;
+      }
+      case "aktör": {
+        const canon = resolveMerge(w.ref, s.actorMerges);
+        const h = confirmedActors.find((x) => x.id === canon);
+        if (h) { count = h.chain.length; lastSeen = h.lastSeen; stem = noteStem(inFolder(actorFilename(h, s.actorNames[h.id]))); }
+        break;
+      }
+      case "person": {
+        const su = suspects.find((x) => x.key === w.ref);
+        if (su) { count = su.obs.length; lastSeen = su.lastSeen; stem = noteStem(inFolder(suspectFilename(su))); }
+        break;
+      }
+      case "märke": {
+        const n = bundle.jobB.nominations.find((x) => x.signature === w.ref);
+        if (n) { count = n.count; lastSeen = n.lastSeen; stem = noteStem(inFolder(markFilename(n))); }
+        break;
+      }
+      case "textmärke": {
+        const n = textMarks.find((x) => x.key === w.ref);
+        if (n) { count = n.count; lastSeen = n.lastSeen; label = n.label; stem = noteStem(inFolder(safeAgentFilename(`🎒 ${n.label}`, "textmark:" + n.key))); }
+        break;
+      }
+      case "händelse": {
+        const r = bundle.reports.find((x) => x.file === w.ref);
+        count = 1; // a single report never gains activity — the watch is a bookmark
+        lastSeen = r?.tidpunkt ?? "";
+        stem = noteStem(w.ref);
+        break;
+      }
+    }
+    const baseline = w.baseline < 0 ? count : w.baseline;
+    // A watched single report is a bookmark — it can never gain activity.
+    const fresh = w.kind === "händelse" ? 0 : Math.max(0, count - baseline);
+    rows.push({ key, kind: w.kind, label, count, lastSeen, fresh, stem });
+  }
+  return rows.sort((a, b) => b.fresh - a.fresh || a.label.localeCompare(b.label, "sv"));
 }
 
 // --- Actors ----------------------------------------------------------------
@@ -211,6 +312,7 @@ export function buildFeedItems(
   photoPending = 0,
   analyzingTexts: ReadonlySet<string> = new Set(),
   textPending = 0,
+  watch: WatchRow[] = [],
 ): FeedItem[] {
   const folder = s.entitiesFolder.replace(/\/+$/, "");
   const inFolder = (name: string) => (folder ? `${folder}/${name}` : name);
@@ -258,6 +360,14 @@ export function buildFeedItems(
       level: suspicionLevel(row.score),
       reasons: reasonPhrases(row.reasons),
     });
+  }
+
+  // Watched entities with NEW activity — amber 🔭 rows at the observation's own
+  // time (visibility only; the watchlist never feeds the score). Synthetic path
+  // so the entity's own row survives; clicking marks the activity seen.
+  for (const wr of watch) {
+    if (wr.fresh <= 0) continue;
+    items.push({ path: `bevakad:${wr.key}`, kind: "bevakad", time: ms(wr.lastSeen), label: wr.label, count: wr.fresh, file: wr.stem, watchKey: wr.key });
   }
 
   // Pending suggestions awaiting operator review — pinned to the top so they are

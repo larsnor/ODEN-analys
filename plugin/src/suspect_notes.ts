@@ -32,6 +32,7 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Ste
     `metod: ${METOD.larm}`,
     "tags: [larm]",
     `agent: ${kindWord}`,
+    `agent_nyckel: "${s.key.replace(/"/g, "'")}"`,
     `namn: "${s.label.replace(/"/g, "'")}"`,
     `nivå: ${s.level}`,
     `antal_observationer: ${s.obs.length}`,

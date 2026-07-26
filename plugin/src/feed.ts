@@ -15,6 +15,7 @@ export type FeedKind =
   | "kännetecken"
   | "aktör"
   | "larm"
+  | "bevakad"
   | "bildanalys"
   | "textanalys"
   | "förslag-aktör"
@@ -47,15 +48,19 @@ export interface FeedItem {
    *  "bildanalys" row keyed `bildanalys:<file>` so it never dedups away the
    *  report's own larm row) — the real vault path to open. */
   file?: string;
+  /** For a "bevakad" row: the watchlist key — clicking marks the activity seen
+   *  (baseline reset) in addition to opening the entity note. */
+  watchKey?: string;
 }
 
 export interface FeedRow {
   kind: FeedKind;
   text: string;
   stem: string; // note stem for [[..]] / open
-  severity: "larm" | "info" | "review";
+  severity: "larm" | "info" | "review" | "bevakad";
   review?: "actors" | "marks" | "place" | "photos" | "texts";
   place?: string;
+  watchKey?: string;
 }
 
 function label(item: FeedItem): string {
@@ -70,6 +75,8 @@ function label(item: FeedItem): string {
       return `Aktör bekräftad: ${item.label}`;
     case "larm":
       return `⚠ Misstänkt aktivitet${item.plats ? " — " + item.plats : ""}${item.reasons && item.reasons.length ? " (" + item.reasons.join(", ") + ")" : ""}`;
+    case "bevakad":
+      return `🔭 Bevakad: ${item.label} — +${item.count} nya observationer`;
     case "bildanalys":
       return `📷 Bild mottagen, analys startad — TNR${item.tnr}${item.plats ? " — " + item.plats : ""}`;
     case "textanalys":
@@ -101,8 +108,9 @@ export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
       kind: it.kind,
       text: label(it),
       stem: noteStem(it.file ?? it.path),
-      severity: it.review ? "review" : it.kind === "larm" ? "larm" : "info",
+      severity: it.review ? "review" : it.kind === "larm" ? "larm" : it.kind === "bevakad" ? "bevakad" : "info",
       review: it.review,
       place: it.place,
+      watchKey: it.watchKey,
     }));
 }

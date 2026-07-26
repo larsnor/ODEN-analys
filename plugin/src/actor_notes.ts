@@ -43,6 +43,7 @@ export function renderActorNote(
     "---",
     "typ: entitet",
     "slag: aktör",
+    `id: "${h.id}"`,
     `namn: "${name}"`,
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
