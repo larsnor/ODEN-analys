@@ -1,11 +1,12 @@
 /*
- * Mark entity note rendering — Job B, written ONLY after operator confirmation
- * (PLUGIN_DESIGN §5, §6.1, §6.4). Pure TS, Obsidian-free.
+ * Mark entity note rendering — mark nomination output, written ONLY after
+ * operator confirmation. Pure TS, Obsidian-free.
  *
- * Provenance (two axes, §6.4): `källa: 7s-plugin` = the plugin wrote the file;
+ * Provenance (two axes): `källa: 7s-plugin` = the plugin wrote the file;
  * `föreslagen-av: deterministisk` + `bekräftad-av: operatör` = deterministic
- * extraction nominated it, a human confirmed it. `metod: jobb-b` tags the note
- * so per-job pruning never lets a Job A run delete it (and vice-versa).
+ * extraction nominated it, a human confirmed it. `metod: jobb-b` (mark
+ * nomination) tags the note so per-job pruning never lets a plate re-id run
+ * delete it (and vice-versa).
  */
 import { markLabel } from "./marks";
 import { MarkNomination } from "./jobb";

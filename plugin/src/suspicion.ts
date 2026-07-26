@@ -1,5 +1,5 @@
 /*
- * §6.5/§6.6 — transparent suspicion score (pure TS, Obsidian-free). NO LLM.
+ * Transparent suspicion score (pure TS, Obsidian-free). NO LLM.
  *
  * A weighted, EXPLAINABLE sum — never just a number. Every contribution is a
  * named reason with its weight, so a reviewer sees exactly why something scored.
@@ -10,10 +10,10 @@
  * sighting is individually scorable by:
  *   - proximity to the protected object (robust; haversine, works off MGRS-derived coords)
  *   - time of day (robust; night activity)
- *   - recon-behaviour indicators in Händelse (the TUNABLE surface — the LLM lifts this later)
+ *   - recon-behaviour indicators in Händelse (the TUNABLE surface — the 📝 text capability lifts its ceiling)
  * The team then surfaces as a spatio-temporal CONCENTRATION of elevated reports.
  *
- * Per-entity suspicion (§6.5) is also provided for entities that DO exist
+ * Per-entity suspicion is also provided for entities that DO exist
  * (recurring vehicles): recurrence + aggregated proximity/night.
  */
 import { Report } from "./parse";
@@ -66,8 +66,8 @@ export const OPERATOR_FLAG_SIGNAL = { key: "operatörsflagga", label: "flaggad a
 /**
  * Threat-behaviour indicators (the TUNABLE / domain-specific surface, isolated
  * like vocab.ts). Covers the four hostility modes — reconnaissance, sabotage,
- * infiltration and terrorism — each a category of behavioural signals. The LLM
- * (later) lifts the open-vocabulary ceiling this fixed list cannot reach.
+ * infiltration and terrorism — each a category of behavioural signals. The 📝 text
+ * capability lifts the open-vocabulary ceiling this fixed list cannot reach.
  *
  * `weight` defaults to 2; HIGH-CONFIDENCE signals (breaching tools, tampering,
  * an unattended package) are weight 3, so a single such signal at night reaches
@@ -86,7 +86,7 @@ export const OPERATOR_FLAG_SIGNAL = { key: "operatörsflagga", label: "flaggad a
 // hostile verbs) plus a few unambiguous hostile phrases, each checked to fire on 0
 // benign sentences. Ambiguous concepts that cannot be separated from benign life by
 // a keyword (filming/photographing, measuring, leaving-a-package vs a delivery) are
-// deliberately LEFT to the geo+time weighting and to Phase B — not forced in. FROZEN.
+// deliberately LEFT to the geo+time weighting and the 📝 text capability — not forced in. FROZEN.
 export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: number; stems: string[] }> = [
   // --- Reconnaissance: surveillance / optics / counter-surveillance ----------
   { key: "observation", label: "övervakning/spaning", stems: [
@@ -208,7 +208,7 @@ export function scoreReport(report: Report, opts: SuspicionOpts = DEFAULT_SUSPIC
     if (hit) reasons.push({ key: `beteende:${ind.key}`, label: `hotindikator: ${ind.label} ("${hit}")`, weight: ind.weight ?? 2 });
   }
 
-  // 3b. Operator-CONFIRMED recon behaviours from an attached photo (§6.7). Already
+  // 3b. Operator-CONFIRMED recon behaviours from an attached photo. Already
   //     gated (llm-vision → operatör confirmed) and restricted to the recon subset
   //     at nomination time, so they simply add their weight here — deduped against
   //     a text keyword that already found the same concept.

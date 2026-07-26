@@ -1,5 +1,5 @@
 /*
- * Job B — mark extraction + normalization (PLUGIN_DESIGN §6.2). Pure TS, ZERO
+ * Mark extraction + normalization for mark nomination. Pure TS, ZERO
  * Obsidian imports → testable outside Obsidian.
  *
  * Deterministic floor: segment the Symbol prose into clauses, classify each
@@ -9,7 +9,7 @@
  * canonical attribute-set with a stable `signature`.
  *
  * This module NOMINATES nothing and MERGES nothing — it only extracts. Matching
- * lives in jobb.ts; the asymmetry principle (§6.1) is enforced there.
+ * lives in jobb.ts; the asymmetry principle is enforced there.
  */
 import { Report } from "./parse";
 import {
@@ -34,7 +34,7 @@ export interface NormAttr {
   value: string;
 }
 
-/** A mark detected in one report, after normalization (§6.2 step 1+2). */
+/** A mark detected in one report, after normalization. */
 export interface NormalizedMark {
   file: string;
   tnr: string;
@@ -46,7 +46,7 @@ export interface NormalizedMark {
   attrs: NormAttr[];
   /** Stable matching key: "object#dim:value|dim:value" over SIGNATURE dims. */
   signature: string;
-  /** True iff all of the category's identity dims are populated (§6.2 floor).
+  /** True iff all of the category's identity dims are populated.
    *  Non-distinctive marks (e.g. a bare noise backpack) are never nominated. */
   distinctive: boolean;
   /** Source clause(s) this mark came from — the audit trace. */
@@ -196,12 +196,12 @@ function buildSignature(object: ObjectCategory, attrs: NormAttr[]): { signature:
  * Returns one NormalizedMark per detected object mark (may be several).
  */
 export function extractMarks(report: Report): NormalizedMark[] {
-  // New format: the descriptive content is the free-prose `Händelse`; the old
-  // format put marks in the telegraphic `Symbol`. Read BOTH (joined) so the
-  // extractor works on either — old corpus has no Händelse → falls back to
-  // Symbol (no regression). NB: free-prose Händelse is harder for the
-  // deterministic vocabulary than the old telegraphic Symbol — that recall gap
-  // is the honest signal for where the LLM (open-vocab) is needed.
+  // The free-prose Händelse format carries the descriptive content in
+  // `Händelse`; the telegraphic Symbol format puts marks in `Symbol`. Read BOTH
+  // (joined) so the extractor works on either — a Symbol-format corpus has no
+  // Händelse and falls back to Symbol. NB: free-prose Händelse is harder for
+  // the deterministic vocabulary than telegraphic Symbol — that recall gap is
+  // the honest signal for where the LLM (open-vocab) is needed.
   const source = [report.handelse, report.symbol].filter(Boolean).join(". ");
   const clauses = segment(source);
   const corefFlagged = clauses.some((c) => containsAny(c.lower, COREF_CUES));

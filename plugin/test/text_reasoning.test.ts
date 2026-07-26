@@ -1,7 +1,7 @@
 /*
  * Text-reasoning judgement layer (pure) — LLM JSON in, mark/behaviour nominations
  * out, no live Ollama. Canned responses stand in for the model; accuracy is
- * measured separately (a harness pass over the behaviour OOD corpora, later).
+ * measured separately (a harness pass over the behaviour OOD corpora).
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";

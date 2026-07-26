@@ -1,7 +1,7 @@
 /*
- * Job B — mark nomination (PLUGIN_DESIGN §6.1, §6.2). Pure TS, Obsidian-free.
+ * Mark nomination. Pure TS, Obsidian-free.
  *
- * Asymmetry principle: Job B NOMINATES candidate mark-matches, it NEVER
+ * Asymmetry principle: this job NOMINATES candidate mark-matches, it NEVER
  * auto-merges (a false merge = phantom pattern). The output is a set of
  * candidate clusters the operator confirms/rejects elsewhere (main.ts).
  *

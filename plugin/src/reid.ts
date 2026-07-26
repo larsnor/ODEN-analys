@@ -1,16 +1,15 @@
 /*
- * Job A — deterministic ID re-identification (PLUGIN_DESIGN §6.1, §6.4).
+ * Plate re-identification — deterministic ID re-identification.
  *
- * Pure TS, ZERO Obsidian imports → testable outside Obsidian (§10, §11).
+ * Pure TS, ZERO Obsidian imports → testable outside Obsidian.
  *
- * Scope of Job A: strictly deterministic identifiers (registration plates here;
- * personnummer/phone could slot into the same machinery later). Only Job A may
- * **auto-merge**, and ONLY when resolution is certain — a false merge creates a
- * phantom pattern, the dangerous failure mode (§6.1 asymmetry principle).
+ * Scope: strictly deterministic identifiers (registration plates here;
+ * personnummer/phone could slot into the same machinery later). Only this job
+ * may **auto-merge**, and ONLY when resolution is certain — a false merge
+ * creates a phantom pattern, the dangerous failure mode (asymmetry principle).
  *
- * De-hardcoding vs the prototype (bin3_prototype/entity_lib.py): the prototype
- * seeded a CANONICAL_FULL list so a partial could resolve to a full plate that
- * never appeared. That is removed here. A partial resolves ONLY against full
+ * No canonical plate list is seeded, so a partial can never resolve to a full
+ * plate that was never seen. A partial resolves ONLY against full
  * plates actually observed in the corpus:
  *   - exactly one observed full matches  → AUTO-MERGE (certain).
  *   - several observed fulls match        → AMBIGUOUS → candidate, never merged.
@@ -66,7 +65,7 @@ interface PlateMention {
   report: Report;
 }
 
-/** Observed-full plates matching a partial mask (`.` = wildcard, §6.4). */
+/** Observed-full plates matching a partial mask (`.` = wildcard). */
 function matchObservedFulls(partial: string, observedFulls: string[]): string[] {
   // partial contains only [A-Z0-9.]; '.' is already a valid regex wildcard.
   const rx = new RegExp("^" + partial + "$");
@@ -127,9 +126,10 @@ function finishEntity(
 }
 
 /**
- * Build vehicle entities from plate identifiers via deterministic Job A
- * resolution. Plate identifiers come from `ids.ts` — extracted from links AND
- * prose — so this works whether or not Bin 1 pre-links (§6.0 decoupling).
+ * Build vehicle entities from plate identifiers via deterministic plate
+ * re-identification. Plate identifiers come from `ids.ts` — extracted from
+ * links AND prose — so this works whether or not the intake app (källappen)
+ * pre-links.
  * Pure: same reports in → same entities out (idempotent).
  */
 export function buildPlateEntities(reports: Report[]): JobAResult {

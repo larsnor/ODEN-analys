@@ -1,12 +1,12 @@
 /*
- * Deterministic text query interface (PLUGIN_DESIGN §7.1). Pure TS, Obsidian-free
+ * Deterministic text query interface. Pure TS, Obsidian-free
  * → testable outside Obsidian.
  *
  * This is the DEGRADED/no-LLM mode that is also the foundation: the operator's
  * input is parsed by a DETERMINISTIC keyword parser into a StructuredQuery, the
  * interpretation is ECHOED back (so a misread is visible and corrected at the
- * query, §7.1 guardrail 1), and the answer is computed deterministically from the
- * knowledge base with a citation per row (guardrails 2–4). A chat LLM (§7.1) only
+ * query), and the answer is computed deterministically from the
+ * knowledge base with a citation per row. A chat LLM only
  * needs to produce the same StructuredQuery and NARRATE the result — findings
  * never originate in a model.
  *
@@ -14,7 +14,7 @@
  * A query is a TARGET (which domain type: report · fordon · kännetecken · aktör ·
  * plats · larm · farkost) crossed with a SHAPE (how to render it: detail · list ·
  * timeline · summary), narrowed by FILTERS (time / place / observer / minCount),
- * with a GUARD axis for the identity-assertion write-wall (§7.1 guardrail 6): an
+ * with a GUARD axis for the identity-assertion write-wall: an
  * identity question ("är dessa samma?") is REFUSED, routed to the evidence flow,
  * never answered yes/no.
  */
@@ -35,7 +35,7 @@ import type { CraftObservation } from "./craft";
 export interface KB {
   reports: Report[];
   vehicles: PlateEntity[];
-  /** CONFIRMED mark entities only (operator-approved Job B nominations). */
+  /** CONFIRMED mark entities only (operator-approved mark nominations). */
   marks: MarkNomination[];
   /** CONFIRMED actor hypotheses (operator-approved), folded for merges. */
   actors: ActorHypothesis[];
@@ -217,7 +217,7 @@ export function parseQuery(raw: string): StructuredQuery {
   const observer = parseObserver(raw);
   const finish = (q: Omit<StructuredQuery, "echo" | "raw">): StructuredQuery => ({ ...q, echo: describe(q), raw });
 
-  // Identity assertion → write-wall (route to §9.3, never assert).
+  // Identity assertion → write-wall (route to the evidence/confirm flow, never assert).
   if (hasWord(lower, "samma") && (lower.includes("?") || hasAnyWord(lower, ["är", "aktör", "person", "fordon"]))) {
     return finish({ shape: "detail", target, guard: true, time, place, observer });
   }
@@ -323,7 +323,7 @@ function vehicleDetail(q: StructuredQuery, kb: KB): QueryAnswer {
     for (const o of v.observations) lines.push(`- ${cite(o)} — ${mdText(o.tidpunkt)} — ${mdText(o.plats)}`);
     return answer(q, lines, v.observations.length);
   }
-  // Fall back to a mark of the same term (old entity behaviour).
+  // Fall back to a mark matching the same term.
   const t2 = (q.term ?? "").toLowerCase();
   const mk = kb.marks.find((m) => m.signature.toLowerCase().includes(t2) || m.label.toLowerCase().includes(t2));
   if (mk) return markDossier(q, mk);

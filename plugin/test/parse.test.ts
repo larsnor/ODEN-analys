@@ -1,5 +1,5 @@
 /*
- * Parser tests — run OUTSIDE Obsidian (PLUGIN_DESIGN §10).
+ * Parser tests — run OUTSIDE Obsidian.
  * Uses Node's built-in test runner; no test framework dependency.
  *
  *   npm test        (node --test --import tsx test/*.test.ts)
@@ -36,7 +36,7 @@ test("classifyLink distinguishes full / partial plates / marks", () => {
   assert.equal(classifyLink("RJK241|RJK 241"), "plate-full");
 });
 
-test("parses the documented minimal example (spec §10 shape)", () => {
+test("parses the documented minimal example", () => {
   const text = [
     "---",
     "id: 7S-004",
@@ -83,7 +83,7 @@ test("parses the documented minimal example (spec §10 shape)", () => {
 test("real corpus parses without fatal gaps", () => {
   const { reports, issues, files } = loadCorpus();
   assert.ok(files.length >= 100, `expected a sizeable corpus, got ${files.length}`);
-  // Every report must have an id and tnr (spec §4 hard requirements).
+  // Every report must have an id and tnr (FORMAT_SPEC hard requirements).
   assert.deepEqual(issues, [], `unexpected parse issues: ${JSON.stringify(issues.slice(0, 5))}`);
   for (const r of reports) {
     assert.notEqual(r.id, "", `${r.file} missing id`);

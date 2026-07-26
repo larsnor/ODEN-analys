@@ -1,5 +1,5 @@
 /*
- * Job A re-identification tests — run OUTSIDE Obsidian (PLUGIN_DESIGN §10).
+ * Plate re-identification tests — run OUTSIDE Obsidian.
  * Measures the deterministic core against the real corpus + ground_truth.json.
  *
  *   npm test
@@ -78,7 +78,7 @@ test("real corpus: all 5 tracked plates recovered, 0 false merges", () => {
   const result = buildPlateEntities(reports);
   const score = scoreJobA(result, gt);
 
-  // The dangerous failure mode (§6.1): zero phantom merges.
+  // The dangerous failure mode: zero phantom merges.
   assert.equal(score.falseMerges, 0, `false merges: ${score.falseMergeDetails.join("; ")}`);
   assert.equal(score.precision, 1);
 
@@ -106,8 +106,8 @@ test("real corpus: recurring vehicles clustered, most noise stays singleton", ()
     assert.ok(canon.has(p), `POI plate ${p} should be a recurring entity`);
   }
   for (const p of ["ABC123", "DEF456", "GHK78L", "MRT902"]) {
-    // Commuters recur as the same full-plate vehicle — Job A clusters them;
-    // down-ranking them as benign is a later (suspicion) concern, not Job A.
+    // Commuters recur as the same full-plate vehicle — plate re-identification
+    // clusters them; down-ranking them as benign is a later (suspicion) concern.
     assert.ok(canon.has(p), `commuter plate ${p} should be a recurring entity`);
   }
   // The vast majority of noise plates are unique singletons (75 in this corpus).

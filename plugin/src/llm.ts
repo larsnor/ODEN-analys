@@ -1,8 +1,8 @@
 /*
  * Ollama client (the swappable LLM engine). Thin HTTP wrapper around a LOCAL
- * Ollama server — no cloud, no keys (§8.2). Today it serves the vision capability
- * (photo → PhotoSighting); the same client + model will later serve text-reasoning
- * (qwen3-vl is a full language model, so one pulled model covers both).
+ * Ollama server — no cloud, no keys. It serves the vision capability
+ * (photo → PhotoSighting) and text-reasoning (qwen3-vl is a full language
+ * model, so one pulled model covers both).
  *
  * Degrade-not-crash: any failure returns null / {ok:false}; the caller drops to
  * deterministic and greys the capability chip. Detection never depends on this.
@@ -123,10 +123,3 @@ export class OllamaText {
   }
 }
 
-/** Deterministic stub for CI (no live Ollama) — returns a preset sighting. */
-export class FakePhotoVision implements PhotoVision {
-  constructor(private canned: PhotoSighting | null = null) {}
-  analyzePhoto(): Promise<PhotoSighting | null> {
-    return Promise.resolve(this.canned);
-  }
-}

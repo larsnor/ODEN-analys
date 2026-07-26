@@ -1,5 +1,5 @@
 /*
- * New Bin 1 format — parser tests against the two REAL example messages
+ * The intake app (källappen) format — parser tests against the two REAL example messages
  * (Händelse-centric, signal_* frontmatter, MGRS grids, mojibake). OUTSIDE Obsidian.
  */
 import { strict as assert } from "node:assert";
@@ -34,7 +34,7 @@ test("parses new-format msg1 (boat, frontmatter coords, no Symbol/links)", () =>
   assert.equal(r.lat, 58.62877);
   assert.equal(r.sedan, "-");
   assert.equal(r.symbol, undefined); // Symbol optional, absent here
-  assert.equal(r.links.length, 0); // NO wikilinks in the new format
+  assert.equal(r.links.length, 0); // NO wikilinks in this format
   // old fields absent, parser tolerant (no throw)
   assert.equal(r.slag, undefined);
 });

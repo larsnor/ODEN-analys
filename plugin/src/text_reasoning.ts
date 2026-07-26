@@ -12,7 +12,7 @@
  *     one signal.
  *
  * Iron rule as everywhere: the LLM NOMINATES, the operator confirms. Nothing here
- * reaches the graph or the score without a human accept (§6.3, föreslagen-av: llm).
+ * reaches the graph or the score without a human accept (föreslagen-av: llm).
  * Accuracy is UNMEASURED — safe because gated; a harness pass (reusing the
  * behaviour OOD corpora) quantifies the lift before operational trust.
  */
@@ -163,7 +163,7 @@ export interface TextMarkNomination {
 }
 
 /** A distinctive text-mark seen in ≥2 distinct reports is a re-id nomination —
- *  mirrors Job B's "seen once is not a pattern" rule. */
+ *  mirrors mark nomination's "seen once is not a pattern" rule. */
 export function clusterTextMarks(entries: TextMarkEntry[]): TextMarkNomination[] {
   const byKey = new Map<string, Map<string, TextMarkMember>>(); // key → file → member
   for (const e of entries) {

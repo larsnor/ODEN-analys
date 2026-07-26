@@ -1,19 +1,20 @@
 /*
- * Pure 7S report parser — Bin 3, Step 1 (skeleton).
+ * Pure 7S report parser.
  *
  * DELIBERATELY has ZERO Obsidian imports so the analysis core stays testable
- * outside Obsidian (PLUGIN_DESIGN §10, §11). This module only *reads/parses*;
- * it derives no knowledge, merges nothing, nominates nothing. Re-identification
- * (Job A/B/C) belongs to later steps.
+ * outside Obsidian. This module only *reads/parses*; it derives no knowledge,
+ * merges nothing, nominates nothing. Re-identification and nomination (plate
+ * re-id, mark nomination, actor derivation) live in the analysis modules.
  *
- * Format contract: FORMAT_SPEC.md (§4 frontmatter, §5 body, §6 links).
+ * Format contract: the 7S format contract (docs/FORMAT_SPEC.md).
  * Note: real `bin1-intag` reports also carry `källa` and `bilagor` — agreed but
  * not yet written into FORMAT_SPEC v1.0 — so we read them DEFENSIVELY (optional).
  */
 import { findMgrsLatLon, LatLon } from "./mgrs";
 
 /** Link reference as it literally appears in a message — a raw ref, NOT an
- *  Entity. Bin 1 emits refs; deriving Entities is the plugin's job (§4). */
+ *  Entity. The intake app (källappen) emits refs; deriving Entities is this
+ *  plugin's job. */
 export type LinkKind = "plate-full" | "plate-partial" | "mark";
 
 export interface LinkRef {
@@ -21,9 +22,9 @@ export interface LinkRef {
   kind: LinkKind;
 }
 
-/** In-memory model of one 7S message (PLUGIN_DESIGN §4). */
+/** In-memory model of one 7S message. */
 export interface Report {
-  // --- frontmatter (§4) ---
+  // --- frontmatter ---
   id: string;
   typ: string;
   tnr: string;
@@ -32,42 +33,42 @@ export interface Report {
   lat?: number;
   lon?: number;
   sagesman: string;
-  /** Provenance (§2). Optional: present on bin1-intag data, not yet in spec. */
+  /** Provenance. Optional: present on bin1-intag data, not yet in spec. */
   källa?: string;
-  /** Image attachments (§6.7). Optional: present on data, not yet in spec. */
+  /** Image attachments. Optional: present on data, not yet in spec. */
   bilagor?: string[];
-  /** Signal transport metadata (NEW format). `signalAvsandareId` is a stable
+  /** Signal transport metadata (Händelse format). `signalAvsandareId` is a stable
    *  per-sender identity — usable as a source/"same observer" key. */
   signalAvsandareId?: string;
   signalTidpunkt?: string;
 
-  // --- body 7S (§5) ---
-  // OLD format fields — parsed but unused; tolerated for backward compatibility.
+  // --- body 7S ---
+  // Telegraphic Symbol-format fields — parsed but unused; still accepted.
   styrka?: string;
   slag?: string;
   sysselsattning?: string;
-  /** NEW format: free-prose event narrative — replaces Slag/Styrka/Sysselsättning. */
+  /** Free-prose event narrative (Händelse format) — replaces Slag/Styrka/Sysselsättning. */
   handelse?: string;
-  /** NEW format: follow-up / "since" field (often "-"). */
+  /** Händelse-format follow-up / "since" field (often "-"). */
   sedan?: string;
-  /** Body "Ställe" — place name and/or MGRS grid. Carries the grid in the new
-   *  format even when frontmatter `plats`/`lat`/`lon` are absent. */
+  /** Body "Ställe" — place name and/or MGRS grid. Carries the grid in the
+   *  Händelse format even when frontmatter `plats`/`lat`/`lon` are absent. */
   stalle?: string;
   /** True when lat/lon were derived from an MGRS grid (no frontmatter coords). */
   coordsFromMgrs?: boolean;
-  /** Symbol field prose — distinguishing marks. Optional in the new format. */
+  /** Symbol field prose — distinguishing marks. Optional in the Händelse format. */
   symbol?: string;
 
   // --- derived-at-parse (no analysis, just extraction) ---
   links: LinkRef[]; // [[...]] targets found in body
   embeds: string[]; // ![[...]] image embeds found in body
 
-  /** Operator-confirmed plates read from attached photos (§6.7). NOT from
-   *  frontmatter — injected post-parse from settings so Job A treats a
-   *  photo-only plate as if typed. */
+  /** Operator-confirmed plates read from attached photos. NOT from
+   *  frontmatter — injected post-parse from settings so plate re-identification
+   *  treats a photo-only plate as if typed. */
   photoPlates?: string[];
   /** Operator-confirmed behaviour signals from an LLM finding — a photo (recon
-   *  subset) or the text extractor (§6.7). Injected post-parse so the suspicion
+   *  subset) or the text extractor. Injected post-parse so the suspicion
    *  score includes them (structurally a suspicion Signal[]; inlined to avoid a
    *  parse↔suspicion import cycle). */
   confirmedBehaviours?: { key: string; label: string; weight: number }[];
@@ -81,12 +82,12 @@ export interface ParseIssue {
   message: string;
 }
 
-// Swedish plate shape, from FORMAT_SPEC §6.3/§6.4 and bin3_prototype/entity_lib.py.
+// Swedish plate shape, from the 7S format contract (docs/FORMAT_SPEC.md).
 // Allowed letters exclude I O Q V. We accept the wildcard '.' for partials.
 const PLATE_RE = /^[ABCDEFGHJKLMNPRSTUWXYZ.]{3}[0-9.]{2}[0-9ABCDEFGHJKLMNPRSTUWXYZ.]$/;
 const LINK_RE = /(!)?\[\[([^\]]+?)\]\]/g;
 
-/** Classify a link target. No resolution/merging — that is analysis (later). */
+/** Classify a link target. No resolution/merging — that is the analysis layers' job. */
 export function classifyLink(raw: string): LinkKind {
   // Strip an Obsidian alias ("[[target|alias]]") before shape-testing.
   const target = raw.split("|")[0].trim();
@@ -138,8 +139,8 @@ function unquote(v: string): string {
 }
 
 /** Parse a flat-key YAML frontmatter line value. Handles scalars, inline
- *  arrays (`["a", "b"]`). Intentionally minimal — the 7S frontmatter is flat
- *  (§4), so we avoid a full YAML dependency to keep the surface reviewable. */
+ *  arrays (`["a", "b"]`). Intentionally minimal — the 7S frontmatter is flat,
+ *  so we avoid a full YAML dependency to keep the surface reviewable. */
 function parseScalarOrArray(v: string): string | string[] {
   const s = v.trim();
   if (s.startsWith("[") && s.endsWith("]")) {
@@ -175,8 +176,9 @@ function asNumber(v: string | string[] | undefined): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-// Body field labels (§5). Map Swedish label -> Report key. Covers BOTH the old
-// format (Styrka/Slag/Sysselsättning) and the new one (Händelse/Sedan).
+// Body field labels. Map Swedish label -> Report key. Covers both the
+// telegraphic Symbol format (Styrka/Slag/Sysselsättning) and the free-prose
+// Händelse format (Händelse/Sedan).
 const BODY_LABELS: Record<string, keyof Report> = {
   Styrka: "styrka",
   Slag: "slag",
@@ -189,7 +191,7 @@ const BODY_LABELS: Record<string, keyof Report> = {
 
 /** Extract `**Label:** value` body fields. Values may span to the next blank
  *  line; we capture the single logical line after the label (7S fields are one
- *  line/sentence per §5). */
+ *  line/sentence). */
 function parseBodyFields(body: string): Partial<Record<keyof Report, string>> {
   const out: Partial<Record<keyof Report, string>> = {};
   // Match **Label:** then everything up to end-of-line.
@@ -247,7 +249,8 @@ export function parseReport(text: string, file: string, issues?: ParseIssue[]): 
   const { links, embeds } = extractLinksAndEmbeds(body);
 
   // Coordinates: prefer frontmatter; if absent, derive from an MGRS grid in
-  // Ställe/plats (new format ships grids without lat/lon, §6.6 needs coords).
+  // Ställe/plats (the Händelse format ships grids without lat/lon; the map and
+  // spatial clustering need coords).
   const plats = asString(f.get("plats")) ?? "";
   let lat = asNumber(f.get("lat"));
   let lon = asNumber(f.get("lon"));

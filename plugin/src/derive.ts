@@ -2,11 +2,10 @@
  * Derivation layer (pure, Obsidian-free) — the "reasoning" that turns reports +
  * suspicion + operator decisions into the set of nodes to materialise and the feed.
  *
- * This used to live as methods on the Obsidian plugin class (main.ts), reading
- * `this.settings` and therefore untested by the node suite. Extracted here as free
- * functions that take a structural `PluginState` (the plugin's settings satisfy it),
- * so the whole derivation is unit-tested outside Obsidian. main.ts is now a thin
- * shell that reads the vault, calls these, and writes the results.
+ * Pure free functions taking an explicit structural `PluginState` (the plugin's
+ * settings satisfy it), so the whole derivation is unit-tested outside Obsidian.
+ * main.ts is a thin shell that reads the vault, calls these, and writes the
+ * results.
  */
 import { Report } from "./parse";
 import { SuspicionAnalysis, haversineM } from "./suspicion";
@@ -53,7 +52,7 @@ export interface WatchEntry {
   kind: "fordon" | "aktör" | "person" | "märke" | "textmärke" | "händelse";
   label: string;
   /** Stable analysis key: plate canonical / actor hypothesis id / suspect agent
-   *  key / Job B signature / text-mark key / report file path. */
+   *  key / mark-nomination signature / text-mark key / report file path. */
   ref: string;
   addedAt: string;
   /** Observation count when watched (or last marked seen); fresh = count −
@@ -142,7 +141,7 @@ export function buildWatchStatus(
 
 // --- Actors ----------------------------------------------------------------
 
-/** Actors = transitive hypotheses (§6.4) PLUS single-observation suspect agents,
+/** Actors = transitive cross-type hypotheses PLUS single-observation suspect agents,
  *  deduped so an agent already inside a transitive actor isn't repeated. */
 export function mergedActors(reports: Report[], suspicion: SuspicionAnalysis, threshold: number): ActorResult {
   const base = buildActorHypotheses(reports, { threshold });
@@ -319,7 +318,7 @@ export function buildFeedItems(
   const ms = (t: string) => Date.parse(t) || 0;
   const items: FeedItem[] = [];
 
-  // Identified vehicles (Job A entity notes).
+  // Identified vehicles (plate re-identification entity notes).
   for (const e of bundle.jobA.entities) {
     items.push({
       path: inFolder(safeFilename(e.canonical)),
@@ -371,7 +370,7 @@ export function buildFeedItems(
   }
 
   // Pending suggestions awaiting operator review — pinned to the top so they are
-  // visible (click → the confirm/reject review). Human-gated (§6.1).
+  // visible (click → the confirm/reject review). Human-gated.
   const pendingActors = bundle.actors.hypotheses.filter((h) => !s.actorDecisions[h.id]).length;
   const pendingMarks = bundle.jobB.nominations.filter((n) => !s.markDecisions[n.signature]).length;
   if (pendingActors > 0) {

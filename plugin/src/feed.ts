@@ -10,7 +10,6 @@
 import { noteStem } from "./notes_common";
 
 export type FeedKind =
-  | "mottaget"
   | "fordon"
   | "kännetecken"
   | "aktör"
@@ -32,7 +31,6 @@ export interface FeedItem {
   time: number;
   tnr?: string;
   plats?: string;
-  tid?: string; // human-readable time for reports
   label?: string; // entity/actor display name
   count?: number; // observations for an entity
   level?: string; // larm severity word (Hög/Förhöjd/Att bevaka)
@@ -42,7 +40,7 @@ export interface FeedItem {
   review?: "actors" | "marks" | "place" | "photos" | "texts";
   /** For a "namnge-plats" row: the MGRS grid to name. */
   place?: string;
-  /** Vehicle has ≥1 photo-corroborated plate observation (§6.7). */
+  /** Vehicle has ≥1 photo-corroborated plate observation. */
   photo?: boolean;
   /** Click-target override when `path` is synthetic (e.g. a transient
    *  "bildanalys" row keyed `bildanalys:<file>` so it never dedups away the
@@ -65,8 +63,6 @@ export interface FeedRow {
 
 function label(item: FeedItem): string {
   switch (item.kind) {
-    case "mottaget":
-      return `Meddelande TNR${item.tnr} mottaget${item.plats ? " — " + item.plats : ""}${item.tid ? ", " + item.tid : ""}`;
     case "fordon":
       return `Fordon ${item.label} identifierat${item.count ? ` (${item.count} observationer)` : ""}${item.photo ? " 📷" : ""}`;
     case "kännetecken":

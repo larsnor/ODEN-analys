@@ -1,5 +1,5 @@
 /*
- * Job B extraction/normalization unit tests — OUTSIDE Obsidian (§10).
+ * Mark extraction/normalization unit tests — OUTSIDE Obsidian.
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
@@ -121,7 +121,7 @@ test("extraction is idempotent", () => {
   assert.deepEqual(extractMarks(r), extractMarks(r));
 });
 
-// ── Bounded expansion (§ base-rate/specificity): optik / verktyg / teknik ──────
+// ── Bounded expansion (base-rate/specificity): optik / verktyg / teknik ──────
 // COMMON optics are re-id keys ONLY with a distinctive sub-type; RARE tools/tech
 // key on presence. Held-out phrasings (NOT copied from the generator's marks).
 

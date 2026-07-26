@@ -1,9 +1,9 @@
 /*
- * Controlled vocabulary for Job B mark extraction (PLUGIN_DESIGN §6.2).
+ * Controlled vocabulary for mark extraction (mark nomination).
  *
  * DECLARATIVE DATA ONLY — no logic. This is the single audit surface for "what
  * counts as a distinctive mark" and how surface words fold to canonical values
- * (§11 reviewability; §9.1 trigger-3 "utökad vokabulär" = a one-file change).
+ * (reviewability; "utökad vokabulär" = a one-file change).
  *
  * Derived from the real corpus + generate_reports.py. The three recon-cell
  * tells map to three object categories:
@@ -39,7 +39,7 @@ export type AttrDim = "farg" | "marking" | "synlighet" | "position" | "text" | "
  *   a specific item is a fair key on its own.
  *
  * This seed is FROZEN at these six families by design. Broader coverage is an
- * open-vocabulary (LLM) problem — Phase B — NOT more list: a comprehensive
+ * open-vocabulary (LLM) problem — the 📝 text capability — NOT more list: a comprehensive
  * deterministic vocab cannot converge (it spirals and breaks precision either way).
  * Optics also raise the SUSPICION score independently (suspicion.ts
  * THREAT_INDICATORS.optik); this layer only decides whether they LINK sightings.
@@ -157,7 +157,7 @@ export const POSITION_SYNONYMS: Record<string, string> = {
 
 /**
  * Generic / non-distinctive clause markers (lowercased substrings). A clause
- * matching any of these is NOT a distinctive mark and is dropped (§6.2). Covers
+ * matching any of these is NOT a distinctive mark and is dropped. Covers
  * generic clothing, commuter decoys (kostym/kavaj/solglasögon), person
  * descriptors, behaviour, and low-value activity nouns.
  */
@@ -200,7 +200,7 @@ export const EXCLUSIONS: string[] = [
 /** Negation cues — a clause containing one (over an object) emits no mark. */
 export const NEGATION_CUES: string[] = ["inga", "ingen", "inget", "utan", "saknar", "avsaknad", " ej "];
 
-/** Coreference cues — flagged (surfaced) but NOT resolved (§6.2). */
+/** Coreference cues — flagged (surfaced) but NOT resolved. */
 export const COREF_CUES: string[] = ["samma", "som igår", "tidigare sedd", "som ovan", "igen", "återigen", "känns igen"];
 
 /**

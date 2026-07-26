@@ -6,12 +6,13 @@
  * and the sighting → operator-nomination derivation. No network, no Obsidian —
  * so the whole judgement layer is unit-tested with canned JSON (FakeVision).
  *
- * Iron rule (§6.7): images NOMINATE, never assert. Every finding here is a
+ * Iron rule: images NOMINATE, never assert. Every finding here is a
  * suggestion the operator confirms per-item. Provenance on anything materialised
  * from a photo: `föreslagen-av: llm-vision`.
  *
- * Data-model (locked 2026-07-14): a photo PLATE is a re-identification key (→ Job
- * A after confirm); a photo-described VEHICLE/PERSON is a report-local ANNOTATION
+ * Data-model (locked 2026-07-14): a photo PLATE is a re-identification key (→
+ * plate re-identification after confirm); a photo-described VEHICLE/PERSON is a
+ * report-local ANNOTATION
  * (never auto-merged across reports — generic descriptions can't be re-identified).
  * Behaviour from a still is the RECON subset only (optik/observation/registrering)
  * — the severe behaviours are act-not-photograph moments.
@@ -19,8 +20,8 @@
 import { Signal } from "./suspicion";
 import { normalizePlate } from "./vision";
 
-/** Bump when the prompt/schema changes — part of the cache key, so old cached
- *  sightings are re-analysed rather than silently reused (§9.2). */
+/** Bump when the prompt/schema changes — part of the cache key, so stale cached
+ *  sightings are re-analysed rather than silently reused. */
 export const PROMPT_VERSION = "1";
 
 /** The sighting prompt (Swedish). Rules proven in the bake-off: every attribute
@@ -185,7 +186,7 @@ export type PhotoNomination =
 /** Turn a sighting into the per-item review list (locked decision: each plate/
  *  vehicle/person is accepted or rejected on its own). `textPlates` = plates the
  *  human already typed in that report — a photo plate that differs is flagged
- *  `conflict` (§6.7: never silently overrides a typed plate). */
+ *  `conflict` (a photo never silently overrides a typed plate). */
 export function sightingToNominations(s: PhotoSighting, textPlates: string[]): PhotoNomination[] {
   const typed = textPlates.map(normalizePlateRead).filter(Boolean);
   const out: PhotoNomination[] = [];

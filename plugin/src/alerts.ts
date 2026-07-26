@@ -1,9 +1,9 @@
 /*
- * §7.2 — alerts-with-pointer (pure TS, Obsidian-free).
+ * Alerts-with-pointer (pure TS, Obsidian-free).
  *
  * Turns the current analysis state into alert items, each with a TEXT POINTER to
  * where the operator should look in Obsidian's existing graph / Map View / the
- * report. The plugin NEVER opens or drives those views (§7.3) — it only points.
+ * report. The plugin NEVER opens or drives those views — it only points.
  *
  * The watcher (main.ts) diffs these items against a persisted "seen" set so only
  * genuinely NEW activity raises a notice — no flood from the existing corpus.
@@ -24,7 +24,7 @@ export interface Alert {
   key: string;
   kind: AlertKind;
   title: string;
-  /** Where to look — §7.2. Describes clicks; never performs them. */
+  /** Where to look. Describes clicks; never performs them. */
   pointer: string;
   citations: string[]; // note stems for [[..]] links
   rank: number; // higher = more salient (for ordering / notice priority)

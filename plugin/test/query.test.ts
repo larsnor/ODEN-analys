@@ -1,8 +1,8 @@
 /*
- * Query-engine tests — OUTSIDE Obsidian (§10). Pure parse + execute over the real
+ * Query-engine tests — OUTSIDE Obsidian. Pure parse + execute over the real
  * corpus. The engine is a projection of the domain model: TARGET (reports/fordon/
  * kännetecken/aktör/plats/larm/farkost) × SHAPE (detail/list/timeline/summary),
- * with FILTERS and the identity GUARD. The KB uses Job A vehicles + ALL Job B
+ * with FILTERS and the identity GUARD. The KB uses re-identified vehicles + ALL mark
  * nominations, all actors (threshold 1), places, elevated larm, and craft — the
  * engine only cares about the set it is handed.
  */

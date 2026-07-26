@@ -1,5 +1,5 @@
 /*
- * Actor-node rendering — §6.4, written ONLY after operator confirmation.
+ * Actor-node rendering — written ONLY after operator confirmation.
  * Pure TS, Obsidian-free.
  *
  * The materialized actor node is what the GRAPH then shows: a single node that
@@ -7,9 +7,9 @@
  * "Grafen visar; pluginet resonerar" — the plugin reasoned the link, the human
  * confirmed it, and now the graph can display it.
  *
- * Provenance (§6.4): källa: 7s-plugin (plugin wrote it), föreslagen-av:
+ * Provenance: källa: 7s-plugin (plugin wrote it), föreslagen-av:
  * deterministisk + bekräftad-av: operatör. metod: aktor tags it for per-job
- * pruning so Job A / Job B runs never touch it.
+ * pruning so plate re-identification / mark nomination runs never touch it.
  */
 import { ActorHypothesis } from "./actor";
 import { mdText } from "./mdsafe";

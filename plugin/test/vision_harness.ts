@@ -1,8 +1,8 @@
 /*
  * Vision bake-off harness (MANUAL — needs a live Ollama; NOT part of `npm test`).
  *
- * Measures candidate VLMs on ODEN's actual tasks before the model list is frozen
- * (the project's OOD-validation culture: our numbers, not benchmark blog posts).
+ * Measures candidate VLMs on ODEN's actual tasks (the project's OOD-validation
+ * culture: our numbers, not benchmark blog posts).
  *
  *   npx tsx test/vision_harness.ts qwen3-vl:8b llava:7b          # plate passes
  *   npx tsx test/vision_harness.ts --sighting qwen3-vl:8b        # + full JSON
@@ -14,7 +14,7 @@
  *      — the honest field-OCR number.
  *   Each read → exact / near (edit ≤2) / miss (says NONE) / WRONG (confident but
  *   incorrect — the hallucination class that motivates nomination-gating).
- *   3. --sighting: full PhotoSighting JSON prompt (the prompt the plugin will use)
+ *   3. --sighting: full PhotoSighting JSON prompt (the prompt the plugin uses)
  *      on every real image; prints model JSON next to the ground-truth note for
  *      human review, plus a rough person-count delta. Attribute F1 is judged by
  *      the operator from the printout (fuzzy: is "oliv" == "grön"?).
@@ -40,9 +40,9 @@ const PLATE_PROMPT =
   "Reply with ONLY the plate characters (letters and digits, no spaces, no punctuation). " +
   "If no plate is clearly readable, reply exactly NONE.";
 
-// The candidate PhotoSighting prompt (Swedish; lifted into photo_analysis.ts once
-// frozen). Rules: describe only what is CLEARLY visible; prefer "okänd" over a
-// guess; describe attributes, NEVER identity; age only as coarse bands.
+// The candidate PhotoSighting prompt (Swedish; the production copy lives in
+// photo_analysis.ts). Rules: describe only what is CLEARLY visible; prefer "okänd"
+// over a guess; describe attributes, NEVER identity; age only as coarse bands.
 const SIGHTING_PROMPT =
   "Du analyserar ett foto från en säkerhetsobservation. Svara ENDAST med JSON. " +
   "Beskriv bara det som TYDLIGT syns; använd \"okänd\" hellre än att gissa. " +

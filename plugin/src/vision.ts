@@ -1,5 +1,5 @@
 /*
- * Vision adapter (§6.7) — image → plate reading, pure and Obsidian-free.
+ * Vision adapter — image → plate reading, pure and Obsidian-free.
  *
  * Iron rule: images NOMINATE, never assert. A read plate only ever CORROBORATES
  * a plate a human already typed in the message text — it never introduces a new

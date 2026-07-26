@@ -1,5 +1,5 @@
 /*
- * §7.2 alerts-with-pointer — diffing vs the seen-set, pointer content, determinism.
+ * Alerts-with-pointer — diffing vs the seen-set, pointer content, determinism.
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";

@@ -1,5 +1,5 @@
 /*
- * Write-contract ownership (§5.1/§5.2) — which existing files writeOwnedNotes may
+ * Write-contract ownership — which existing files writeOwnedNotes may
  * (over)write. Regression guard: a stray EMPTY file must be overwritable, else a
  * 0-byte note blocks the real content forever → orphan node hidden from the graph
  * (the "confirmed actor shows in list but not in graph" bug).
@@ -60,7 +60,7 @@ test("plugin-owned files are overwritable; genuine user notes are protected", ()
   assert.equal(isOverwritable(USER_NOTE), false, "non-empty, non-owned user note → never touch");
 });
 
-test("image corroboration (§6.7) surfaces on the entity note, and is opt-in", () => {
+test("image corroboration surfaces on the entity note, and is opt-in", () => {
   // Without a corroboration set → byte-identical to the pre-vision output.
   const plain = renderEntityNote(ENTITY);
   assert.doesNotMatch(plain.markdown, /Bildstyrkt|📷|bild_styrkt/);

@@ -1,8 +1,8 @@
 /*
  * Presentation layer (pure) — turns internal analysis facts into OPERATOR
  * language. The single place that decides what the human sees, so the UI never
- * leaks architecture meta (Jobb A/B, Bin, §-refs, raw scores, +weights,
- * "deterministisk", "nominering", signatures).
+ * leaks architecture meta (internal job names, design-doc references, raw
+ * scores, +weights, "deterministisk", "nominering", signatures).
  */
 import { Signal } from "./suspicion";
 

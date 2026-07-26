@@ -1,5 +1,5 @@
 /*
- * Step 6 suspicion scoring — vs the NEW-format corpus + ground_truth_new.json.
+ * Suspicion scoring — vs the NEW-format corpus + ground_truth_new.json.
  * Goal: does the transparent score separate the pure-pattern recon team (which
  * the re-id layers miss entirely) from the high-volume civilian background?
  */

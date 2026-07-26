@@ -1,9 +1,10 @@
 /*
- * §6.4 — transitive cross-type actor derivation. Pure TS, Obsidian-free.
+ * Transitive cross-type actor derivation. Pure TS, Obsidian-free.
  *
  * The core value: an ACTOR can appear as several entity-facets of different
  * types (vehicle, backpack, cap, logo) that NEVER all co-occur in one message.
- * The graph (Bin 2) only shows co-occurrence via shared links; it cannot ASSERT
+ * The graph in the vault/Obsidian configuration only shows co-occurrence via
+ * shared links; it cannot ASSERT
  * that three separate nodes are one actor. This module derives that:
  *
  *   M1: vehicle V  co-occurs with backpack B
@@ -11,18 +12,19 @@
  *   M9: vehicle V  co-occurs with cap C
  *   → V, B, C are facets of one actor (no single message has all three).
  *
- * Mechanics (§6.4): build an association graph (edge = co-occurrence in a
+ * Mechanics: build an association graph (edge = co-occurrence in a
  * message, weighted by #supporting messages), take connected components over
  * edges past an evidence threshold; a component spanning ≥2 entity TYPES is an
- * actor hypothesis. NOMINATE, never auto-merge (§6.1) — present the evidence
+ * actor hypothesis. NOMINATE, never auto-merge — present the evidence
  * chain so the operator sees *why*, then confirm.
  *
- * The threshold is a parameter so the operator can explore §9.3-A ("at the
- * current threshold V–B and B–C don't connect; lower it to T and the component
- * joins") — a legitimate parameter request, not LLM fishing.
+ * The threshold is a parameter so the operator can explore what-if questions
+ * ("at the current threshold V–B and B–C don't connect; lower it to T and the
+ * component joins") — a legitimate parameter request, not LLM fishing.
  *
  * Low over-fit: this is generic union-find over a typed co-occurrence graph; it
- * consumes whatever facets Jobs A/B produce and knows nothing of the vocabulary.
+ * consumes whatever facets plate re-identification and mark nomination produce
+ * and knows nothing of the vocabulary.
  */
 import { Report } from "./parse";
 import { buildPlateEntities } from "./reid";
@@ -136,7 +138,7 @@ class UnionFind {
 export function buildActorHypotheses(reports: Report[], opts: ActorOpts = {}): ActorResult {
   const threshold = Math.max(1, opts.threshold ?? 1);
 
-  // 1. Facets: vehicles (Job A) + distinctive mark clusters (Job B nominations).
+  // 1. Facets: vehicles (plate re-id) + distinctive mark clusters (mark nominations).
   const facets = new Map<string, Facet>();
   for (const v of buildPlateEntities(reports).entities) {
     const id = `fordon:${v.canonical}`;
@@ -272,7 +274,7 @@ export function buildActorHypotheses(reports: Report[], opts: ActorOpts = {}): A
   return { hypotheses, threshold, facetCount: facets.size };
 }
 
-// --- Operator merges (§6.4-follow-up) --------------------------------------
+// --- Operator merges --------------------------------------------------------
 // Two confirmed actor hypotheses can turn out to be the SAME person. The operator
 // asserts that; we persist it as a merge map (absorbed id → survivor id) and fold
 // the hypotheses into ONE combined node at render time. Pure + idempotent so the

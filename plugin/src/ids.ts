@@ -1,18 +1,20 @@
 /*
  * Deterministic identifier extraction (pure TS, Obsidian-free).
  *
- * Decouples analysis from the assumption that Bin 1 pre-links identifiers as
- * `[[wikilinks]]` (§6.0). The new Bin 1 format ships plain prose (Händelse /
- * Ställe / Symbol) and may emit NO links at all — so the plugin extracts verified
- * identifiers ITSELF, from links AND prose, and types them:
+ * Decouples analysis from the assumption that the intake app (källappen)
+ * pre-links identifiers as `[[wikilinks]]`. The Händelse format ships plain
+ * prose (Händelse / Ställe / Symbol) and may emit NO links at all — so the
+ * plugin extracts verified identifiers ITSELF, from links AND prose, and types
+ * them:
  *
- *   actor-identity : plate, personnummer   → Job A auto-merge candidates
+ *   actor-identity : plate, personnummer   → plate re-id auto-merge candidates
  *   location       : MGRS grid             → spatial clustering, NOT actor id
  *   source         : signal sender id      → provenance / "same observer"
  *
  * This is the deterministic floor for "verified clear inputs" the operator asked
  * to generalize (plates today; personnummer/grids now; logos/marks stay soft in
- * Job B). It runs the same regardless of whether Bin 1 links anything.
+ * mark nomination). It runs the same regardless of whether the intake app links
+ * anything.
  */
 import { Report } from "./parse";
 
@@ -24,7 +26,7 @@ export type IdentifierSource =
   | "prose-stalle"
   | "prose-symbol"
   | "frontmatter"
-  | "photo"; // operator-confirmed from an attached photo (§6.7, llm-vision)
+  | "photo"; // operator-confirmed from an attached photo (llm-vision)
 
 export interface Identifier {
   type: IdentifierType;
@@ -77,7 +79,7 @@ function scanProse(text: string, source: IdentifierSource): Identifier[] {
 export function extractIdentifiers(report: Report): Identifier[] {
   const found: Identifier[] = [];
 
-  // 1. Pre-linked identifiers (if Bin 1 still emits them).
+  // 1. Pre-linked identifiers (if the intake app emits them).
   for (const l of report.links) {
     if (l.kind === "plate-full" || l.kind === "plate-partial") {
       const target = l.raw.split("|")[0].trim();
@@ -92,12 +94,12 @@ export function extractIdentifiers(report: Report): Identifier[] {
     }
   }
 
-  // 2. Prose (new format's real content lives here).
+  // 2. Prose (the Händelse format's real content lives here).
   found.push(...scanProse(report.handelse ?? "", "prose-handelse"));
   found.push(...scanProse(report.stalle ?? "", "prose-stalle"));
   found.push(...scanProse(report.symbol ?? "", "prose-symbol"));
 
-  // 2b. Operator-CONFIRMED photo plates (§6.7) — injected as if typed, so Job A
+  // 2b. Operator-CONFIRMED photo plates — injected as if typed, so plate re-id
   //     re-identifies a vehicle whose plate only ever appeared in an image. Only
   //     confirmed plates reach here (main.ts attaches them post-parse).
   for (const p of report.photoPlates ?? []) {
@@ -128,7 +130,7 @@ export function extractIdentifiers(report: Report): Identifier[] {
   );
 }
 
-/** Plate identifiers only (the re-identification key used by Job A / suspects). */
+/** Plate identifiers only (the key used by plate re-identification / suspects). */
 export function plateIdentifiers(report: Report): Identifier[] {
   return extractIdentifiers(report).filter((i) => i.type === "plate");
 }

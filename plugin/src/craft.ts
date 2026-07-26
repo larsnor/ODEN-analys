@@ -10,7 +10,7 @@
  * sighting. The ONE re-id bridge here is the plate — a plated craft in a report
  * that also carries exactly one full plate is linked to it, so a plate entity
  * (reid.ts) can be shown WITH its type ("lastbil RJK241") and craft-type queries
- * ("återkommande traktorer") resolve through Job A. A named-boat identifier →
+ * ("återkommande traktorer") resolve through plate re-identification. A named-boat identifier →
  * re-identifiable watercraft entity is a future extension (domain.ts).
  */
 import { Report } from "./parse";
@@ -26,7 +26,7 @@ export interface CraftObservation {
   /** Inherent threat weight of the type (copied from the taxonomy). */
   threat: number;
   /** The full plate in the SAME report, when there is exactly one (unambiguous)
-   *  and the craft is plated — the re-id bridge to a Job A vehicle entity. */
+   *  and the craft is plated — the re-id bridge to a plate-entity (reid.ts). */
   plate?: string;
   file: string;
   tnr: string;

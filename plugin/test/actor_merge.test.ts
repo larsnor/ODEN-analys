@@ -1,5 +1,5 @@
 /*
- * Operator merges (§6.4-follow-up): two confirmed actor hypotheses the operator
+ * Operator merges: two confirmed actor hypotheses the operator
  * asserts are the SAME person fold into ONE combined node; the emoji filename can
  * be driven by the operator's free-text name. Pure, so testable without Obsidian.
  */

@@ -25,7 +25,7 @@ test("deterministic engine: toQuery = keyword parse, narrate = the answer markdo
   const { query, answer, prose } = await converse(eng, "RJK241", kb());
   assert.equal(query.target, "fordon");
   assert.equal(query.shape, "detail");
-  assert.equal(prose, answer.markdown); // narrate is a pass-through in Phase A
+  assert.equal(prose, answer.markdown); // narrate is a pass-through here
   assert.match(prose, /RJK241/);
   assert.match(prose, /\[\[TNR/); // citations preserved
 });

@@ -1,10 +1,11 @@
 /*
  * MGRS grid → WGS84 lat/lon (pure TS, zero dependencies).
  *
- * The new Bin 1 format sometimes carries an MGRS grid in `Ställe`/`plats` and no
- * lat/lon. Obsidian Map View + spatial clustering (§6.6) need lat/lon, so we
+ * The Händelse format from the intake app (källappen) sometimes carries an MGRS
+ * grid in `Ställe`/`plats` and no
+ * lat/lon. Obsidian Map View + spatial clustering need lat/lon, so we
  * convert. Algorithm ported from proj4's battle-tested mgrs.js (Snyder series,
- * WGS84) — kept inline rather than as a dependency for reviewability (§11).
+ * WGS84) — kept inline rather than as a dependency for reviewability.
  * Verified against an independent oracle (the python `mgrs` lib) across the
  * Swedish UTM zones to ~sub-metre agreement (test/mgrs.test.ts).
  */

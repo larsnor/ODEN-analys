@@ -4,7 +4,7 @@
  * report nodes (and through them to the markers/actors at that spot), so a place
  * with recurring suspicious activity shows up as a spatial hub.
  *
- * We may not edit message files (§5), so the LOCATION note links out to the
+ * We may not edit message files, so the LOCATION note links out to the
  * reports — graph edges are undirected, so the cluster looks the same.
  *
  * "Relevant" = a location that hosts at least one suspicious (elevated) report OR

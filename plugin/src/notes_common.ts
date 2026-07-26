@@ -1,23 +1,22 @@
 /*
  * Shared primitives for the plugin-owned note layer (pure, Obsidian-free).
  *
- * These used to be re-declared in every *_notes.ts module (6× GENERATOR, 6×
- * RenderedNote, 12× stem-strip, two copies of the merge resolver) and the `metod`
- * tags were hard-coded as bare string literals in both the renderers and main.ts —
- * so a reviewer could not tell the constants from the contract. This module is the
- * single source of truth for all of them.
+ * Shared constants/helpers for the *_notes renderers (GENERATOR, RenderedNote,
+ * stem-stripping, the merge resolver, the `metod` tags). This module is the
+ * single source of truth for all of them — the renderers and main.ts use these,
+ * never bare literals, so a reviewer can tell the constants from the contract.
  */
 
 /** Marker written into every plugin-owned note's frontmatter, so the write-contract
- *  (§5.2) can recognise files it owns and may overwrite/prune. */
+ *  can recognise files it owns and may overwrite/prune. */
 export const GENERATOR = "7s-plugin";
 
-/** `metod` tags — the per-job pruning key of the write-contract (§5). A run for one
+/** `metod` tags — the per-job pruning key of the write-contract. A run for one
  *  metod never deletes notes of another. The SINGLE source of truth: both the note
  *  renderers and main.ts's write/prune use these, never bare literals. */
 export const METOD = {
-  jobbA: "jobb-a", // Job A vehicle entities
-  jobbB: "jobb-b", // Job B confirmed marks
+  jobbA: "jobb-a", // plate re-identification vehicle entities
+  jobbB: "jobb-b", // confirmed marks (mark nomination)
   aktor: "aktor", // confirmed actor nodes
   larm: "larm", // suspect/alarm markers
   plats: "plats", // location hubs

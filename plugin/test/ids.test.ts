@@ -1,5 +1,5 @@
 /*
- * Deterministic identifier extraction (ids.ts) + the prose→Job A decoupling.
+ * Deterministic identifier extraction (ids.ts) + the prose→re-identification decoupling.
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
@@ -58,7 +58,7 @@ test("plates and personnummer are extracted from PLAIN PROSE (no links)", () => 
   assert.equal(pnr!.role, "actor");
 });
 
-test("Job A works on prose-only plates (no Bin 1 links)", () => {
+test("plate re-identification works on prose-only plates (no intake links)", () => {
   const reports = [
     mkNew("Volvo reg ABC123 vid grindarna", "Grindarna", "140000"),
     mkNew("Samma bil ABC123 passerade igen", "Grindarna", "150000"),
@@ -76,7 +76,7 @@ test("decoupling preserves old-corpus plate extraction (regression)", () => {
   const reports = readdirSync(dir).filter((f) => f.endsWith(".md")).map((f) => parseReport(readFileSync(join(dir, f), "utf-8"), `reports/${f}`));
   const r = buildPlateEntities(reports);
   const canon = new Set(r.entities.map((e) => e.canonical));
-  // The tracked POI + commuter plates still resolve (now via ids.ts).
+  // The tracked POI + commuter plates resolve via ids.ts.
   for (const p of ["PMR556", "RJK241", "SDG417", "TLP893", "WBN84X", "ABC123", "MRT902"]) {
     assert.ok(canon.has(p), `${p} still recovered after decoupling`);
   }
@@ -95,7 +95,7 @@ test("a linked plate is not double-counted with its prose occurrence", () => {
   assert.equal(plates[0].source, "link", "link provenance preferred");
 });
 
-test("operator-confirmed photo plate is injected into Job A as if typed (§6.7)", () => {
+test("operator-confirmed photo plate is injected into plate re-id as if typed", () => {
   // A "Se bild"-style report: no plate in the text at all.
   const text = [
     "---", "id: P", "typ: 7S-rapport", 'tnr: "080910"', 'tidpunkt: "2026-07-05T02:00:00"', "sagesman: BQ", "---",
@@ -111,7 +111,7 @@ test("operator-confirmed photo plate is injected into Job A as if typed (§6.7)"
   assert.equal(plates[0].value, "RTZ355");
   assert.equal(plates[0].source, "photo", "provenance = photo (llm-vision)");
   assert.equal(plates[0].partial, false);
-  // And Job A now re-identifies the vehicle.
+  // And plate re-identification recovers the vehicle.
   const canon = new Set(buildPlateEntities([r]).entities.map((e) => e.canonical));
-  assert.ok(canon.has("RTZ355"), "photo plate reaches Job A");
+  assert.ok(canon.has("RTZ355"), "photo plate reaches plate re-id");
 });

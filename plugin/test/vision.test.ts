@@ -1,5 +1,5 @@
 /*
- * Vision adapter (§6.7) — the deterministic stub reads the plate embedded in a
+ * Vision adapter — the deterministic stub reads the plate embedded in a
  * JPEG comment; corroboration only ever confirms a plate already in the text.
  */
 import { strict as assert } from "node:assert";

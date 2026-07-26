@@ -1,7 +1,7 @@
 /*
  * Suspect agents (pure) — a suspicious observation identifies an AGENT (a
  * vehicle or a person) that the operator may verify as an actor, EVEN from a
- * single observation. This complements the transitive actor derivation (§6.4):
+ * single observation. This complements the transitive actor derivation:
  * that needs a multi-facet component; a lone suspect never surfaces there.
  *
  * The agent of a report:
@@ -10,7 +10,7 @@
  *     recurring sightings of the same description group into one suspect.
  *
  * Suspects are converted to single-facet ActorHypotheses so the EXISTING actor
- * review + confirm→write flow handles them unchanged (human-gated, §6.1).
+ * review + confirm→write flow handles them unchanged (human-gated).
  */
 import { Report } from "./parse";
 import { SuspicionAnalysis, Signal } from "./suspicion";

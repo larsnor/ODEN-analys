@@ -2,7 +2,7 @@
  * Conversation seam — the chatbox routes through this so the engine
  * (deterministic now, Ollama LLM later) is a drop-in swap. The LLM is only ever
  * a TRANSLATOR (free text → the SAME StructuredQuery) and NARRATOR (deterministic
- * result → prose); findings never originate in the model (§7.1).
+ * result → prose); findings never originate in the model.
  */
 import { executeQuery, KB, parseQuery, QueryAnswer, Shape, StructuredQuery, Target } from "./query";
 import { OllamaOpts, ollamaChat } from "./llm";
@@ -14,7 +14,7 @@ export interface Conversation {
   narrate(answer: QueryAnswer): Promise<string>;
 }
 
-/** Phase A engine: deterministic keyword parser + raw deterministic answer. */
+/** Deterministic engine: keyword parser + raw deterministic answer. */
 export class DeterministicConversation implements Conversation {
   async toQuery(text: string): Promise<StructuredQuery> {
     return parseQuery(text);
@@ -57,9 +57,9 @@ const NARRATE_SYS =
   "svenska. Du hittar ALDRIG på fakta — använd bara det som står i resultatet. " +
   "Är resultatet tomt, säg det kort.";
 
-/** Phase B chat engine (local Ollama). The LLM only REFINES the deterministic
+/** LLM chat engine (local Ollama). The LLM only REFINES the deterministic
  *  parse (intent/kind/term/place) and NARRATES the deterministic answer — findings
- *  never originate in the model (§7.1). Any failure falls back to deterministic. */
+ *  never originate in the model. Any failure falls back to deterministic. */
 export class OllamaConversation implements Conversation {
   constructor(private opts: OllamaOpts) {}
 

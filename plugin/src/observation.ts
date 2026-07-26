@@ -18,7 +18,7 @@ export interface ObservationInput {
   symbol?: string;
 }
 
-/** TNR = DDHHMM from the observation time (matches the Bin 1 convention). */
+/** TNR = DDHHMM from the observation time (matches the intake app's (källappen's) convention). */
 export function tnrFromTidpunkt(iso: string): string {
   const m = iso.match(/^\d{4}-\d{2}-(\d{2})T(\d{2}):(\d{2})/);
   return m ? `${m[1]}${m[2]}${m[3]}` : iso.replace(/\D/g, "").slice(6, 12);

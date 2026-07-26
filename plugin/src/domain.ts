@@ -1,14 +1,14 @@
 /*
  * The explicit observed-thing domain model (pure TS, Obsidian-free) — the SINGLE
- * SOURCE OF TRUTH the rest of the plugin projects from. The model used to be
- * implicit, scattered across five fragments: identifier types (ids.ts), facet
- * kinds (actor.ts), mark categories (vocab.ts), behaviour categories
- * (suspicion.ts), and node classes (notes_common.ts). This file NAMES the whole
- * model in one place and OWNS the craft/farkost dimension it was missing.
+ * SOURCE OF TRUTH the rest of the plugin projects from: identifier types
+ * (ids.ts), facet kinds (actor.ts), mark categories (vocab.ts), behaviour
+ * categories (suspicion.ts), and node classes (notes_common.ts) are all
+ * projections of it. This file NAMES the whole model in one place and OWNS the
+ * craft/farkost dimension.
  *
  * The observed-thing taxonomy — what a 7S report can be ABOUT:
  *   person  → an actor, re-identified transitively via facets (actor.ts / derive.ts)
- *   craft   → a vehicle / vessel / aircraft (THIS module — the new dimension)
+ *   craft   → a vehicle / vessel / aircraft (THIS module)
  *   mark    → a distinctive kännetecken (vocab.ts + marks.ts)
  *   place   → a location (location_notes.ts)
  *   larm    → an elevated report (suspicion.ts)
@@ -19,7 +19,7 @@
  * Craft TYPE is ALWAYS a scored, queryable OBSERVATION. RE-IDENTIFICATION — the
  * claim that two sightings are the SAME craft — needs a stable identifier or a
  * distinctive mark, NEVER the bare type:
- *   plated ground craft → re-id by its PLATE (Job A, reid.ts), exactly as today
+ *   plated ground craft → re-id by its PLATE (plate re-identification, reid.ts)
  *   watercraft          → re-id by a boat NAME/reg (future) or a distinctive mark
  *   drone / aircraft    → re-id by a distinctive mark only (rare)
  *   unplated ground     → re-id by a distinctive mark only
@@ -39,7 +39,7 @@ export interface CraftType {
   /** Operator-facing noun. */
   label: string;
   medium: CraftMedium;
-  /** Carries a registration plate → re-identifiable via Job A (reid.ts). */
+  /** Carries a registration plate → re-identifiable via plate re-id (reid.ts). */
   plated: boolean;
   /** Inherent relevance near the objektet: the suspicion weight the TYPE
    *  contributes, which STACKS with proximity/time. 0 = benign type (surfaces
@@ -69,7 +69,7 @@ export interface CraftType {
  * extraction (keywords), re-id routing (plated), and query steering (queryCue).
  */
 export const CRAFT_TAXONOMY: CraftType[] = [
-  // ── plated ground (re-id via PLATE, Job A) — threat 0 ─────────────────────
+  // ── plated ground (re-id via PLATE, reid.ts) — threat 0 ───────────────────
   // The bare car: the DEFAULT plated vehicle. queryCue=false so "bil"/"fordon"
   // resolves to the fordon (plate-entity) target; the type is still tagged so a
   // plate dossier can read "bil RJK241".

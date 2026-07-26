@@ -1,5 +1,5 @@
 /*
- * Behaviour-indicator coverage (§6.5) — HELD-OUT sentences the generator does NOT
+ * Behaviour-indicator coverage — HELD-OUT sentences the generator does NOT
  * produce, so this is not circular. Recon phrasings must raise a `beteende:*`
  * signal; benign prose (incl. tricky near-misses) must NOT. Isolates behaviour by
  * scoring far from the object in daytime, so ONLY a behaviour hit yields points.

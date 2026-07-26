@@ -1,5 +1,5 @@
 /*
- * Job B nomination + scoring vs the real corpus + ground_truth.json (§10).
+ * Mark nomination + scoring vs the real corpus + ground_truth.json.
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
@@ -25,7 +25,7 @@ function loadGroundTruth(): GroundTruthRow[] {
   return JSON.parse(readFileSync(join(root, "ground_truth.json"), "utf-8"));
 }
 
-test("Job B: full extraction recall over GT tell instances", () => {
+test("Mark nomination: full extraction recall over GT tell instances", () => {
   const reports = loadReports();
   const gt = loadGroundTruth();
   const marks = extractNormalized(reports);
@@ -37,7 +37,7 @@ test("Job B: full extraction recall over GT tell instances", () => {
   assert.equal(s.extractionRecall, 1);
 });
 
-test("Job B: no distinctive false marks on noise/commuter (precision)", () => {
+test("Mark nomination: no distinctive false marks on noise/commuter (precision)", () => {
   const reports = loadReports();
   const gt = loadGroundTruth();
   const marks = extractNormalized(reports);
@@ -47,7 +47,7 @@ test("Job B: no distinctive false marks on noise/commuter (precision)", () => {
   assert.equal(s.extractionPrecision, 1);
 });
 
-test("Job B: each tell category collapses to exactly one signature", () => {
+test("Mark nomination: each tell category collapses to exactly one signature", () => {
   const reports = loadReports();
   const gt = loadGroundTruth();
   const marks = extractNormalized(reports);
@@ -58,14 +58,14 @@ test("Job B: each tell category collapses to exactly one signature", () => {
   }
 });
 
-test("Job B: nominations clean — zero noise, full pair precision/recall", () => {
+test("Mark nomination: nominations clean — zero noise, full pair precision/recall", () => {
   const reports = loadReports();
   const gt = loadGroundTruth();
   const marks = extractNormalized(reports);
   const result = buildMarkNominations(reports);
   const s = scoreJobB(result, marks, gt);
 
-  // The §6.1 hard assertion (analogue of Job A's zero false merges).
+  // The hard assertion (analogue of plate re-identification's zero false merges).
   assert.equal(s.noiseInNominations, 0, s.noiseNominationDetails.join(" | "));
   assert.equal(s.nominationPairPrecision, 1, "a nominated pair did not share the GT tell");
   assert.equal(s.nominationPairRecall, 1, "some same-tell report pair was not nominated together");
@@ -75,19 +75,19 @@ test("Job B: nominations clean — zero noise, full pair precision/recall", () =
   assert.deepEqual(cats, ["fordon-dekal", "huvudbonad", "ryggsack"]);
 });
 
-test("Job B: nomination is deterministic/idempotent", () => {
+test("Mark nomination: nomination is deterministic/idempotent", () => {
   const reports = loadReports();
   assert.deepEqual(buildMarkNominations(reports), buildMarkNominations(reports));
 });
 
-test("Job B: confirmed mark note is idempotent and provenance-marked", () => {
+test("Mark nomination: confirmed mark note is idempotent and provenance-marked", () => {
   const reports = loadReports();
   const result = buildMarkNominations(reports);
   const cap = result.nominations.find((n) => n.object === "huvudbonad")!;
   const a = renderMarkNote(cap);
   const b = renderMarkNote(cap);
   assert.equal(a.markdown, b.markdown, "same nomination → byte-identical note");
-  // Two provenance axes, both present (§6.4).
+  // Two provenance axes, both present.
   assert.match(a.markdown, /källa: 7s-plugin/);
   assert.match(a.markdown, /föreslagen-av: deterministisk/);
   assert.match(a.markdown, /bekräftad-av: operatör/);

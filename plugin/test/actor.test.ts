@@ -1,5 +1,5 @@
 /*
- * §6.4 transitive actor derivation — vs the real corpus + ground_truth.json.
+ * Transitive actor derivation — vs the real corpus + ground_truth.json.
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
@@ -43,7 +43,7 @@ test("derives a transitive actor spanning vehicle + all three mark types", () =>
   );
 });
 
-test("the actor hypothesis contains NO noise reports (§6.1 phantom guard)", () => {
+test("the actor hypothesis contains NO noise reports (phantom guard)", () => {
   const r = buildActorHypotheses(loadReports(), { threshold: 1 });
   const truth = truthByFile();
   for (const h of r.hypotheses) {
@@ -65,7 +65,7 @@ test("evidence chain is transitive — no single message holds all facets", () =
   }
 });
 
-test("raising the evidence threshold splits/shrinks the component (§9.3-A)", () => {
+test("raising the evidence threshold splits/shrinks the component", () => {
   const reports = loadReports();
   const lo = buildActorHypotheses(reports, { threshold: 1 });
   const hi = buildActorHypotheses(reports, { threshold: 3 });

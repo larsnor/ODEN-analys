@@ -1,7 +1,7 @@
 /*
  * Craft (farkost) extraction + scoring — pure, OUTSIDE Obsidian.
  *
- * Covers the domain model's new dimension: the type taxonomy, the plated/unplated
+ * Covers the domain model's farkost dimension: the type taxonomy, the plated/unplated
  * re-identifiability boundary, the "Se bild." homonym guard, the vision-typ
  * mapping, and the drone > boat > tractor scoring gradation near the objektet.
  */

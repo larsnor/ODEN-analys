@@ -1,8 +1,8 @@
 /*
- * Job A scoring against ground_truth.json (PLUGIN_DESIGN §10).
+ * Plate re-identification scoring against ground_truth.json.
  *
  * Pure TS, Obsidian-free. The PLUGIN never ships ground truth — this is a
- * test/measurement aid. It answers the §10 questions for the ID layer:
+ * test/measurement aid. It answers the measurement questions for the ID layer:
  *   - "slås rätt partialer ihop?"  → partial-resolution recall
  *   - "hittas cellen?"             → each true plate recovered as one cluster
  *   - false merges (the dangerous failure) → precision
@@ -16,7 +16,7 @@ export interface GroundTruthRow {
   truth: string; // "noise" | "POI" | "commuter"
   plate?: string; // TRUE full plate (annotation)
   plate_shown?: string; // what the report actually displayed (full or masked)
-  tells?: string[]; // Job B scoring key: tell_bag | tell_cap | tell_logo
+  tells?: string[]; // mark-nomination scoring key: tell_bag | tell_cap | tell_logo
 }
 
 export interface JobAScore {
@@ -45,7 +45,7 @@ function fileToEntity(result: JobAResult): Map<string, PlateEntity> {
   const map = new Map<string, PlateEntity>();
   for (const e of result.entities) {
     for (const o of e.observations) {
-      // A report could in principle appear under multiple plates; for Job A
+      // A report could in principle appear under multiple plates; for re-id
       // scoring each GT plate report has a single plate, so last-write is fine,
       // but prefer the entity whose canonical matches if several exist.
       const existing = map.get(o.file);
@@ -128,7 +128,7 @@ export function scoreJobA(result: JobAResult, groundTruth: GroundTruthRow[]): Jo
 }
 
 // ---------------------------------------------------------------------------
-// Job B (mark extraction + nomination) scoring vs ground_truth.json `tells`.
+// Mark extraction + nomination scoring vs ground_truth.json `tells`.
 // ---------------------------------------------------------------------------
 import { JobBResult } from "../src/jobb";
 import { NormalizedMark } from "../src/marks";

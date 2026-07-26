@@ -1,16 +1,17 @@
 /*
- * Entity-note rendering — Job A output (PLUGIN_DESIGN §5 write contract).
+ * Entity-note rendering — plate re-identification output.
  *
  * Pure TS, Obsidian-free: turns a PlateEntity into (filename, markdown). The
  * Obsidian side (main.ts) does the actual writing and ownership checks.
  *
- * Provenance (§2, §6.4 — two axes, do not conflate):
+ * Provenance (two axes, do not conflate):
  *   källa: 7s-plugin       → the plugin WROTE this file.
- *   föreslagen-av: deterministisk → Job A (deterministic) produced the finding.
- * Job A merges are CERTAIN ID matches (§6.1), so they are asserted by the
+ *   föreslagen-av: deterministisk → the deterministic plate re-id produced the
+ *   finding.
+ * Plate re-id merges are CERTAIN ID matches, so they are asserted by the
  * deterministic engine — no operator confirmation needed for the merge itself.
  *
- * Idempotency (§5.4): identical entities → byte-identical files. All ordering is
+ * Idempotency: identical entities → byte-identical files. All ordering is
  * fixed upstream in reid.ts; we only format here.
  */
 import { PlateEntity } from "./reid";
@@ -49,7 +50,7 @@ function frontmatter(e: PlateEntity, corroborated: number): string {
 
 /**
  * @param confirmed  observation files whose attached photo's plate matches this
- *   entity's plate (image-corroboration, §6.7). Absent → no image handling, so
+ *   entity's plate (image-corroboration). Absent → no image handling, so
  *   the note is byte-identical to the pre-vision output (fixtures stay stable).
  */
 export function renderEntityNote(e: PlateEntity, confirmed?: Set<string>): RenderedNote {
@@ -116,7 +117,7 @@ export function renderAll(entities: PlateEntity[], confirmedByPlate?: Map<string
   return entities.map((e) => renderEntityNote(e, confirmedByPlate?.get(e.canonical)));
 }
 
-/** Does an existing file's text mark it as plugin-owned (§5.2)? */
+/** Does an existing file's text mark it as plugin-owned? */
 export function isPluginOwned(fileText: string): boolean {
   // Cheap frontmatter check: a `generator: 7s-plugin` line in the YAML head.
   const head = fileText.slice(0, 600);

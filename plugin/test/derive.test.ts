@@ -1,8 +1,7 @@
 /*
- * Derivation layer (src/derive.ts) — the reasoning that used to hide as private
- * methods on the Obsidian plugin shell (reading `this.settings`, untestable). Now
- * pure free functions taking an explicit PluginState, so the node suite exercises
- * the recurrence counting, actor dedup/fold, location linking, and feed mapping.
+ * Derivation layer (src/derive.ts) — pure free functions over an explicit
+ * PluginState; the node suite exercises recurrence counting, actor dedup/fold,
+ * location linking, and feed mapping.
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
