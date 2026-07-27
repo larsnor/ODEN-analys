@@ -10,6 +10,7 @@
 import { noteStem } from "./notes_common";
 
 export type FeedKind =
+  | "mottaget"
   | "fordon"
   | "kännetecken"
   | "aktör"
@@ -63,6 +64,8 @@ export interface FeedRow {
 
 function label(item: FeedItem): string {
   switch (item.kind) {
+    case "mottaget":
+      return `Meddelande TNR${item.tnr} mottaget${item.plats ? " — " + item.plats : ""}`;
     case "fordon":
       return `Fordon ${item.label} identifierat${item.count ? ` (${item.count} observationer)` : ""}${item.photo ? " 📷" : ""}`;
     case "kännetecken":

@@ -2627,6 +2627,7 @@ class SevenSTextView extends ItemView {
                 ? "color:var(--color-orange, #d80);font-weight:600;"
                 : "");
       row.style.cssText = base;
+      if (r.kind === "mottaget") row.style.opacity = ".6"; // quiet arrivals; alarms stay dominant
       row.setText(r.text);
       row.onclick = () => {
         if (r.review === "actors") void this.plugin.runDeriveActors();

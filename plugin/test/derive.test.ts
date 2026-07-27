@@ -287,3 +287,16 @@ test("buildFeedItems: a watched entity with fresh activity yields an amber 🔭 
   const watchSeen = watchFresh.map((w): typeof w => ({ ...w, fresh: 0 }));
   assert.equal(buildFeedItems(bundle, state(), new Map(), new Set(), 0, new Set(), 0, watchSeen).filter((i) => i.kind === "bevakad").length, 0);
 });
+
+test("buildFeedItems: every report shows as a mottaget row — except elevated ones (their larm row is the arrival)", () => {
+  const reports = [
+    report({ tnr: "121200", tidpunkt: "2026-06-15T12:00:00", lat: 59.4, lon: 17.9, handelse: "Personbil passerade." }),
+    report({ tnr: "150300", tidpunkt: "2026-06-15T03:00:00", handelse: "Stod stilla länge och betraktade grinden med kikare." }),
+  ];
+  const bundle = bundleFrom(reports);
+  assert.ok(bundle.suspicion.elevated.some((r) => r.tnr === "150300"), "fixture: the night observer elevates");
+  const items = buildFeedItems(bundle, state(), new Map());
+  const mottagna = items.filter((i) => i.kind === "mottaget");
+  assert.deepEqual(mottagna.map((m) => m.tnr), ["121200"], "benign report → mottaget row");
+  assert.ok(items.some((i) => i.kind === "larm" && i.path.includes("150300")), "elevated report → larm row instead");
+});

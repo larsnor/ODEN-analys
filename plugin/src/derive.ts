@@ -350,7 +350,9 @@ export function buildFeedItems(
     });
   }
   // Alarms (link to the observation itself).
+  const elevated = new Set<string>();
   for (const row of bundle.suspicion.elevated) {
+    elevated.add(row.file);
     items.push({
       path: row.file,
       kind: "larm",
@@ -359,6 +361,14 @@ export function buildFeedItems(
       level: suspicionLevel(row.score),
       reasons: reasonPhrases(row.reasons),
     });
+  }
+
+  // Every arriving report shows as a quiet "mottaget" row — the feed must feel
+  // alive while reports land even when nothing is derived from them yet.
+  // Elevated reports are skipped (their larm row IS the arrival; same path).
+  for (const r of bundle.reports) {
+    if (elevated.has(r.file)) continue;
+    items.push({ path: r.file, kind: "mottaget", time: ms(r.tidpunkt), tnr: r.tnr, plats: placeLabel(r.plats, s.locationNicknames) });
   }
 
   // Watched entities with NEW activity — amber 🔭 rows at the observation's own
