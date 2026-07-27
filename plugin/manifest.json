@@ -1,7 +1,7 @@
 {
   "id": "7s-analys",
   "name": "ODEN",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "minAppVersion": "1.4.0",
   "description": "ODEN analyserar 7S-lägesrapporter: känner igen återkommande fordon och kännetecken, kopplar ihop dem till aktörer, poängsätter misstänkt aktivitet, visar platser i graf och karta, och larmar vid ny aktivitet. Alla kopplingar bekräftas av operatören.",
   "author": "larsnor",
