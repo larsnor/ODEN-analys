@@ -1637,21 +1637,33 @@ export default class SevenSPlugin extends Plugin {
     let ran = 0;
     let done = 0;
     for (const r of targets) {
+      let allResolved = true;
       for (const att of this.imageAttachments(r)) {
         const hash = await this.attachmentHash(att, r.file);
-        if (!hash) continue;
+        if (!hash) {
+          // Right after a move, Obsidian's metadata index may not know the
+          // attachment yet — leave the report un-swept so the next recompute
+          // retries instead of silently skipping the photo forever.
+          allResolved = false;
+          continue;
+        }
         const cached = this.settings.photoAnalyses[hash];
         if (cached && cached.model === this.settings.visionModel && cached.promptV === PROMPT_VERSION) continue;
         const bytes = await this.readAttachment(att, r.file);
-        if (!bytes) continue;
+        if (!bytes) {
+          allResolved = false;
+          continue;
+        }
         const sighting = await engine.analyzePhoto(bytes);
         if (sighting) {
           this.settings.photoAnalyses[hash] = { model: this.settings.visionModel, promptV: PROMPT_VERSION, sighting };
           await this.saveSettings();
           ran++;
+        } else {
+          allResolved = false; // Ollama hiccup — retry on a later recompute
         }
       }
-      this.photoSeen.add(r.file); // session-swept (auto path won't revisit)
+      if (allResolved) this.photoSeen.add(r.file); // session-swept
       onProgress?.(++done, targets.length);
     }
     return ran;
@@ -1768,14 +1780,23 @@ export default class SevenSPlugin extends Plugin {
       }
       for (const r of cand) this.analyzingPhotos.add(r.file);
       await this.refreshPanel(); // "📷 Bild mottagen, analys startad" rows appear
-      await this.computePhotoSightings(undefined, new Set(cand.map((r) => r.file)));
+      const ran = await this.computePhotoSightings(undefined, new Set(cand.map((r) => r.file)));
+      for (const r of cand) this.analyzingPhotos.delete(r.file);
+      this.photoRunActive = false;
+      await this.refreshPanel(); // rows swap to "📷 N bildfynd att granska →"
+      // The operator must never be left guessing: an analysis that found nothing
+      // to confirm says so, instead of the in-progress row just vanishing.
+      if (ran > 0 && this.lastPhotoPending === 0) {
+        new Notice(`ODEN: bildanalys klar (${ran} foto${ran === 1 ? "" : "n"}) — inga fynd att granska.`);
+      }
+      return;
     } catch (err) {
       console.error("ODEN: auto photo analysis failed", err);
     } finally {
       for (const r of cand) this.analyzingPhotos.delete(r.file);
       this.photoRunActive = false;
     }
-    await this.refreshPanel(); // rows swap to "📷 N bildfynd att granska →"
+    await this.refreshPanel();
   }
 
   /** Operator accepts one photo nomination (per-item). Plate → an identifier for
@@ -1920,15 +1941,18 @@ export default class SevenSPlugin extends Plugin {
     for (const r of targets) {
       const hash = await this.textHash(this.prose(r));
       const cached = this.settings.textExtractions[hash];
+      let ok = true;
       if (!(cached && cached.model === this.settings.visionModel && cached.promptV === TEXT_PROMPT_VERSION)) {
         const extraction = await engine.extract(this.prose(r));
         if (extraction) {
           this.settings.textExtractions[hash] = { model: this.settings.visionModel, promptV: TEXT_PROMPT_VERSION, extraction };
           await this.saveSettings();
           ran++;
+        } else {
+          ok = false; // Ollama hiccup — leave un-swept so a later recompute retries
         }
       }
-      this.textSeen.add(r.file); // session-swept (auto path won't revisit)
+      if (ok) this.textSeen.add(r.file); // session-swept
       onProgress?.(++done, targets.length);
     }
     return ran;
@@ -1961,14 +1985,21 @@ export default class SevenSPlugin extends Plugin {
       }
       for (const r of cand) this.analyzingTexts.add(r.file);
       await this.refreshPanel(); // "📝 Meddelande mottaget, analyseras" rows appear
-      await this.computeTextExtractions(undefined, new Set(cand.map((r) => r.file)));
+      const ran = await this.computeTextExtractions(undefined, new Set(cand.map((r) => r.file)));
+      for (const r of cand) this.analyzingTexts.delete(r.file);
+      this.textRunActive = false;
+      await this.refreshPanel(); // rows swap to "📝 N textfynd att granska →"
+      if (ran > 0 && this.lastTextPending === 0) {
+        new Notice(`ODEN: texttolkning klar (${ran} rapport${ran === 1 ? "" : "er"}) — inga fynd att granska.`);
+      }
+      return;
     } catch (err) {
       console.error("ODEN: auto text analysis failed", err);
     } finally {
       for (const r of cand) this.analyzingTexts.delete(r.file);
       this.textRunActive = false;
     }
-    await this.refreshPanel(); // rows swap to "📝 N textfynd att granska →"
+    await this.refreshPanel();
   }
 
   private async textExtractionFor(r: Report): Promise<TextExtraction | undefined> {
