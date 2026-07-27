@@ -2,27 +2,159 @@
   "title": "Operationsområde & namngivna platser",
   "duration": 40000,
   "shots": [
-    { "src": "01-palette.png", "from": 0, "to": 8000 },
-    { "src": "02-modal.png", "from": 8000, "to": 17000 },
-    { "src": "03-map.png", "from": 17000, "to": 25000 },
-    { "src": "04-places.png", "from": 25000, "to": 34000 },
-    { "src": "05-place-map.png", "from": 34000, "to": 40000 }
+    {
+      "src": "01-palette.png",
+      "from": 0,
+      "to": 8000
+    },
+    {
+      "src": "02-modal.png",
+      "from": 8000,
+      "to": 16000
+    },
+    {
+      "src": "03-map.png",
+      "from": 16000,
+      "to": 24000
+    },
+    {
+      "src": "04-places.png",
+      "from": 24000,
+      "to": 33000
+    },
+    {
+      "src": "05-place-map.png",
+      "from": 33000,
+      "to": 40000
+    }
   ],
   "cursor": [
-    { "t": 0, "x": 720, "y": 200 },
-    { "t": 5500, "x": 720, "y": 260, "click": true },
-    { "t": 10000, "x": 700, "y": 420 },
-    { "t": 15000, "x": 820, "y": 500, "click": true },
-    { "t": 20000, "x": 720, "y": 450 },
-    { "t": 27000, "x": 1050, "y": 520 },
-    { "t": 32000, "x": 1150, "y": 640, "click": true },
-    { "t": 37000, "x": 700, "y": 420 }
+    {
+      "t": 0,
+      "x": 700,
+      "y": 400
+    },
+    {
+      "t": 5000,
+      "x": 716,
+      "y": 179,
+      "click": true
+    },
+    {
+      "t": 8000,
+      "x": 716,
+      "y": 179
+    },
+    {
+      "t": 10500,
+      "x": 720,
+      "y": 473
+    },
+    {
+      "t": 14000,
+      "x": 850,
+      "y": 521,
+      "click": true
+    },
+    {
+      "t": 16000,
+      "x": 850,
+      "y": 521
+    },
+    {
+      "t": 18000,
+      "x": 576,
+      "y": 259
+    },
+    {
+      "t": 22000,
+      "x": 820,
+      "y": 492,
+      "click": true
+    },
+    {
+      "t": 24000,
+      "x": 820,
+      "y": 492
+    },
+    {
+      "t": 26000,
+      "x": 1151,
+      "y": 492
+    },
+    {
+      "t": 28500,
+      "x": 1076,
+      "y": 576,
+      "click": true
+    },
+    {
+      "t": 31000,
+      "x": 954,
+      "y": 624,
+      "click": true
+    },
+    {
+      "t": 33000,
+      "x": 954,
+      "y": 624
+    },
+    {
+      "t": 34500,
+      "x": 390,
+      "y": 233
+    },
+    {
+      "t": 36500,
+      "x": 777,
+      "y": 326
+    },
+    {
+      "t": 39000,
+      "x": 575,
+      "y": 657
+    }
   ],
   "captions": [
-    { "t0": 500, "t1": 7800, "x": 60, "y": 700, "n": "1", "text": "Allt börjar med operationsområdet: <i>Cmd/Ctrl-P</i> → \"Konfigurera operationsområde\"." },
-    { "t0": 9000, "t1": 16800, "x": 60, "y": 700, "n": "2", "text": "Ange koordinaten — <code>lat,lon</code> eller en MGRS-ruta — och spara." },
-    { "t0": 18000, "t1": 24800, "x": 60, "y": 80, "text": "Kartan centreras och 🎯 Objektet skapas. All närhet mäts mot den punkten.", "w": 520 },
-    { "t0": 26000, "t1": 33800, "x": 60, "y": 700, "n": "3", "text": "Namnge kända platser i förväg — <b>skyddsvärda</b> platser larmar vid aktivitet i närheten." },
-    { "t0": 34500, "t1": 39500, "x": 60, "y": 80, "text": "Platserna syns direkt på kartan och i grafen.", "w": 460 }
+    {
+      "t0": 500,
+      "t1": 7800,
+      "x": 60,
+      "y": 770,
+      "n": "1",
+      "text": "Allt börjar med operationsområdet: <i>Cmd/Ctrl-P</i> → <b>Konfigurera operationsområde</b>."
+    },
+    {
+      "t0": 8500,
+      "t1": 15800,
+      "x": 60,
+      "y": 770,
+      "n": "2",
+      "text": "Ange koordinaten — <code>lat,lon</code> eller en MGRS-ruta — och spara."
+    },
+    {
+      "t0": 16500,
+      "t1": 23800,
+      "x": 60,
+      "y": 620,
+      "text": "Kartan centreras och 🎯 Objektet skapas — all närhet mäts mot den punkten. ODEN föreslår direkt nästa steg: namnge kända platser.",
+      "w": 470
+    },
+    {
+      "t0": 24500,
+      "t1": 32800,
+      "x": 60,
+      "y": 770,
+      "n": "3",
+      "text": "Grindar, förråd, infarter — klistra in positionen från kartan. <b>Skyddsvärda</b> platser larmar vid aktivitet i närheten."
+    },
+    {
+      "t0": 33500,
+      "t1": 39500,
+      "x": 60,
+      "y": 620,
+      "text": "🎯 området och 🛡️ den skyddsvärda platsen ligger nu på kartan — och i grafen, redan innan första rapporten.",
+      "w": 470
+    }
   ]
 }

@@ -274,37 +274,37 @@ export default class SevenSPlugin extends Plugin {
 
     this.addCommand({
       id: "setup-operation",
-      name: "ODEN: Konfigurera operationsområde",
+      name: "Konfigurera operationsområde",
       callback: () => this.openOperationSetup(),
     });
 
     this.addCommand({
       id: "new-observation",
-      name: "ODEN: Ny observation (mall)",
+      name: "Ny observation (mall)",
       callback: () => this.openNewObservation(),
     });
 
     this.addCommand({
       id: "manage-places",
-      name: "ODEN: Namngivna platser",
+      name: "Namngivna platser",
       callback: () => void this.openManagePlaces(),
     });
 
     this.addCommand({
       id: "focus-map",
-      name: "ODEN: Visa ODEN-lagren på kartan",
+      name: "Visa ODEN-lagren på kartan",
       callback: () => this.focusMapOnOden(),
     });
 
     this.addCommand({
       id: "analyze-photos",
-      name: "ODEN: Analysera bilder nu",
+      name: "Analysera bilder nu",
       callback: () => void this.analyzePhotosFlow(),
     });
 
     this.addCommand({
       id: "analyze-text",
-      name: "ODEN: Tolka text nu",
+      name: "Tolka text nu",
       callback: () => void this.analyzeTextFlow(),
     });
 
@@ -316,7 +316,7 @@ export default class SevenSPlugin extends Plugin {
     // (slå ihop / ångra / nollställ) live under ⋯ → Avancerat.
     this.addCommand({
       id: "update-situation",
-      name: "ODEN: Uppdatera lägesbild",
+      name: "Uppdatera lägesbild",
       callback: () => void this.runUpdateSituation(),
     });
 
@@ -325,7 +325,7 @@ export default class SevenSPlugin extends Plugin {
     // Toggles pause/resume when a run is active.
     this.addCommand({
       id: "feed-demo",
-      name: "ODEN: Mata demodata",
+      name: "Mata demodata",
       checkCallback: (checking) => {
         if (!(this.app.vault.getAbstractFileByPath("demo") instanceof TFolder)) return false;
         if (!checking) this.toggleDemoFeed();
