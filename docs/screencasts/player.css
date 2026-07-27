@@ -1,0 +1,102 @@
+/* ODEN screencast player — one fixed-size stage, screenshots layered beneath
+ * timed captions and an animated cursor. Colors follow ODEN's dark look. */
+html, body {
+  margin: 0;
+  background: #16181d;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#stage {
+  position: relative;
+  width: 1440px;
+  height: 900px;
+  overflow: hidden;
+  background: #0c0d10;
+  border-radius: 6px;
+}
+#shots img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#shots img.active { opacity: 1; }
+#cursor {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  z-index: 30;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.6));
+}
+#pulse {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border: 3px solid #e8a33d;
+  border-radius: 50%;
+  z-index: 29;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.4);
+}
+#pulse.on {
+  animation: pulse 0.55s ease-out;
+}
+@keyframes pulse {
+  0%   { opacity: .95; transform: translate(-50%,-50%) scale(0.35); }
+  100% { opacity: 0;   transform: translate(-50%,-50%) scale(1.15); }
+}
+.caption {
+  position: absolute;
+  max-width: 460px;
+  background: rgba(24, 26, 32, 0.94);
+  border: 1px solid #e8a33d;
+  border-radius: 8px;
+  color: #eceff4;
+  padding: 12px 16px;
+  font-size: 21px;
+  line-height: 1.45;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  box-shadow: 0 4px 18px rgba(0,0,0,.5);
+}
+.caption.on { opacity: 1; }
+.caption .n {
+  display: inline-block;
+  background: #e8a33d;
+  color: #16181d;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  text-align: center;
+  line-height: 26px;
+  margin-right: 8px;
+}
+#controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 1440px;
+  padding: 8px 0;
+  color: #9aa0ab;
+}
+#controls button {
+  background: #23262e;
+  color: #eceff4;
+  border: 1px solid #3a3f4b;
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 15px;
+  cursor: pointer;
+}
+#scrub { flex: 1; }
+body.capture #controls { display: none; }
+body.capture { background: #0c0d10; }

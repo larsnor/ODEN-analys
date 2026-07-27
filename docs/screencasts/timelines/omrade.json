@@ -1,0 +1,28 @@
+{
+  "title": "Operationsområde & namngivna platser",
+  "duration": 40000,
+  "shots": [
+    { "src": "01-palette.png", "from": 0, "to": 8000 },
+    { "src": "02-modal.png", "from": 8000, "to": 17000 },
+    { "src": "03-map.png", "from": 17000, "to": 25000 },
+    { "src": "04-places.png", "from": 25000, "to": 34000 },
+    { "src": "05-place-map.png", "from": 34000, "to": 40000 }
+  ],
+  "cursor": [
+    { "t": 0, "x": 720, "y": 200 },
+    { "t": 5500, "x": 720, "y": 260, "click": true },
+    { "t": 10000, "x": 700, "y": 420 },
+    { "t": 15000, "x": 820, "y": 500, "click": true },
+    { "t": 20000, "x": 720, "y": 450 },
+    { "t": 27000, "x": 1050, "y": 520 },
+    { "t": 32000, "x": 1150, "y": 640, "click": true },
+    { "t": 37000, "x": 700, "y": 420 }
+  ],
+  "captions": [
+    { "t0": 500, "t1": 7800, "x": 60, "y": 700, "n": "1", "text": "Allt börjar med operationsområdet: <i>Cmd/Ctrl-P</i> → \"Konfigurera operationsområde\"." },
+    { "t0": 9000, "t1": 16800, "x": 60, "y": 700, "n": "2", "text": "Ange koordinaten — <code>lat,lon</code> eller en MGRS-ruta — och spara." },
+    { "t0": 18000, "t1": 24800, "x": 60, "y": 80, "text": "Kartan centreras och 🎯 Objektet skapas. All närhet mäts mot den punkten.", "w": 520 },
+    { "t0": 26000, "t1": 33800, "x": 60, "y": 700, "n": "3", "text": "Namnge kända platser i förväg — <b>skyddsvärda</b> platser larmar vid aktivitet i närheten." },
+    { "t0": 34500, "t1": 39500, "x": 60, "y": 80, "text": "Platserna syns direkt på kartan och i grafen.", "w": 460 }
+  ]
+}

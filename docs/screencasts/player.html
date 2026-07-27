@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>ODEN skärmfilm</title>
+<link rel="stylesheet" href="player.css">
+</head>
+<body>
+<div id="stage">
+  <div id="shots"></div>
+  <div id="captions"></div>
+  <img id="cursor" src="cursor.svg" alt="">
+  <div id="pulse"></div>
+</div>
+<div id="controls">
+  <button id="playpause">⏸</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0">
+  <span id="time"></span>
+</div>
+<script src="player.js"></script>
+</body>
+</html>

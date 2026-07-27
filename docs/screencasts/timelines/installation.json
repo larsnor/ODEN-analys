@@ -1,0 +1,29 @@
+{
+  "title": "Installation & första start",
+  "duration": 40000,
+  "shots": [
+    { "src": "01-release.png", "from": 0, "to": 8000 },
+    { "src": "02-unzip.png", "from": 8000, "to": 15000 },
+    { "src": "03-open-vault.png", "from": 15000, "to": 23000 },
+    { "src": "04-trust.png", "from": 23000, "to": 30000 },
+    { "src": "05-first-start.png", "from": 30000, "to": 40000 }
+  ],
+  "cursor": [
+    { "t": 0, "x": 700, "y": 300 },
+    { "t": 5000, "x": 640, "y": 560, "click": true },
+    { "t": 9000, "x": 700, "y": 450 },
+    { "t": 13000, "x": 520, "y": 470 },
+    { "t": 17000, "x": 720, "y": 520 },
+    { "t": 21000, "x": 720, "y": 560, "click": true },
+    { "t": 26000, "x": 800, "y": 540, "click": true },
+    { "t": 33000, "x": 1050, "y": 320 },
+    { "t": 39000, "x": 1080, "y": 640 }
+  ],
+  "captions": [
+    { "t0": 500, "t1": 7800, "x": 60, "y": 60, "text": "ODEN installeras i tre steg — inga förkunskaper behövs.", "w": 520 },
+    { "t0": 3000, "t1": 7800, "x": 60, "y": 700, "n": "1", "text": "Ladda ner <b>ODEN-valv</b>-zippen från senaste releasen." },
+    { "t0": 8500, "t1": 14800, "x": 60, "y": 700, "n": "2", "text": "Packa upp den där du vill ha valvet — till exempel i Dokument." },
+    { "t0": 15500, "t1": 29800, "x": 60, "y": 700, "n": "3", "text": "Öppna Obsidian → <i>Open folder as vault</i> → välj mappen och svara <i>Trust author and enable plugins</i>." },
+    { "t0": 31000, "t1": 39500, "x": 60, "y": 80, "text": "Klart. Kartan, grafen och ODEN-panelen är på plats — och Välkommen-noten guidar vidare.", "w": 540 }
+  ]
+}

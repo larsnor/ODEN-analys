@@ -1,0 +1,31 @@
+{
+  "title": "Operatörens verktyg",
+  "duration": 45000,
+  "shots": [
+    { "src": "01-rightclick.png", "from": 0, "to": 9000 },
+    { "src": "02-flagga.png", "from": 9000, "to": 17000 },
+    { "src": "03-bevaka.png", "from": 17000, "to": 26000 },
+    { "src": "04-aktor.png", "from": 26000, "to": 35000 },
+    { "src": "05-namnge.png", "from": 35000, "to": 40000 },
+    { "src": "06-chat.png", "from": 40000, "to": 45000 }
+  ],
+  "cursor": [
+    { "t": 0, "x": 260, "y": 340 },
+    { "t": 4000, "x": 350, "y": 400, "click": true },
+    { "t": 11000, "x": 1080, "y": 520 },
+    { "t": 19000, "x": 1080, "y": 380 },
+    { "t": 23000, "x": 1090, "y": 400, "click": true },
+    { "t": 28000, "x": 1050, "y": 520 },
+    { "t": 32000, "x": 1000, "y": 640, "click": true },
+    { "t": 37000, "x": 780, "y": 520, "click": true },
+    { "t": 42000, "x": 1080, "y": 780 }
+  ],
+  "captions": [
+    { "t0": 500, "t1": 8800, "x": 60, "y": 80, "text": "Ser du något analysen missat? Högerklicka rapporten — <b>Flagga som larm</b> eller <b>Bevaka</b>.", "w": 520 },
+    { "t0": 10000, "t1": 16800, "x": 60, "y": 80, "text": "En flaggad rapport larmas med skälet <i>flaggad av operatör</i> — beslutet är ditt, och det syns.", "w": 520 },
+    { "t0": 18000, "t1": 25800, "x": 60, "y": 80, "text": "🔭 Bevakningslistan håller extra koll — <b>+N nya</b> när något händer. Misstankepoängen påverkas aldrig.", "w": 540 },
+    { "t0": 27000, "t1": 34800, "x": 60, "y": 80, "text": "Aktörsförslag granskas mot hela <b>evidenskedjan</b> — meddelande för meddelande.", "w": 500 },
+    { "t0": 35500, "t1": 39800, "x": 60, "y": 80, "text": "Namnge aktören — först då skapas noden i grafen.", "w": 460 },
+    { "t0": 40500, "t1": 44500, "x": 60, "y": 80, "text": "Och frågelådan svarar med källhänvisningar du kan klicka.", "w": 460 }
+  ]
+}

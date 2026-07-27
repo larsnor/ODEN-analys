@@ -1,0 +1,31 @@
+{
+  "title": "Flödet: larm, granskning och AI",
+  "duration": 45000,
+  "shots": [
+    { "src": "01-mata.png", "from": 0, "to": 7000 },
+    { "src": "02-feed.png", "from": 7000, "to": 15000 },
+    { "src": "03-larm.png", "from": 15000, "to": 22000 },
+    { "src": "04-chips.png", "from": 22000, "to": 29000 },
+    { "src": "05-bildanalys.png", "from": 29000, "to": 36000 },
+    { "src": "06-bildfynd.png", "from": 36000, "to": 45000 }
+  ],
+  "cursor": [
+    { "t": 0, "x": 700, "y": 420 },
+    { "t": 4500, "x": 790, "y": 500, "click": true },
+    { "t": 9000, "x": 1080, "y": 500 },
+    { "t": 16000, "x": 1080, "y": 560, "click": true },
+    { "t": 24000, "x": 1000, "y": 620 },
+    { "t": 26000, "x": 1030, "y": 620, "click": true },
+    { "t": 31000, "x": 1080, "y": 540 },
+    { "t": 38000, "x": 1120, "y": 600 },
+    { "t": 42000, "x": 1180, "y": 640, "click": true }
+  ],
+  "captions": [
+    { "t0": 500, "t1": 6800, "x": 60, "y": 700, "text": "Övningsläge: <b>\"Mata demodata\"</b> spelar upp korpusen i verklig rytm — lugna nätter är lugna.", "w": 520 },
+    { "t0": 8000, "t1": 14800, "x": 60, "y": 80, "text": "Varje rapport analyseras när den landar — deterministiskt, utan nätverk.", "w": 500 },
+    { "t0": 16000, "t1": 21800, "x": 60, "y": 80, "text": "⚠ Misstänkt aktivitet larmas <b>med skälen synliga</b> — och pekar mot kartan.", "w": 500 },
+    { "t0": 23000, "t1": 28800, "x": 60, "y": 700, "text": "AI är valfria chips — 📷 bild, 📝 text, 💬 chat — och körs lokalt på egna datorn.", "w": 520 },
+    { "t0": 30000, "t1": 35800, "x": 60, "y": 80, "text": "📷 Bild mottagen, analys startad — foton läses medan flödet rullar.", "w": 500 },
+    { "t0": 37000, "t1": 44500, "x": 60, "y": 80, "text": "Varje fynd är ett <b>förslag</b> — du bekräftar eller avvisar, mot bilden.", "w": 480 }
+  ]
+}
