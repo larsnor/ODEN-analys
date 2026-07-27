@@ -410,7 +410,9 @@ export default class SevenSPlugin extends Plugin {
   /** Read-only: collect message files under the configured folder. */
   private messageFiles(): TFile[] {
     const folder = this.settings.reportsFolder.replace(/\/+$/, "");
-    const files = this.app.vault.getMarkdownFiles();
+    // demo/ is the UNFED playback queue — its reports enter the analysis only
+    // when "Mata demodata" (or the operator) moves them into the vault proper.
+    const files = this.app.vault.getMarkdownFiles().filter((f) => !f.path.startsWith("demo/"));
     if (folder === "") return files;
     const prefix = folder + "/";
     return files.filter((f) => f.path === folder || f.path.startsWith(prefix));
@@ -1440,7 +1442,9 @@ export default class SevenSPlugin extends Plugin {
   private registerVaultWatcher(): void {
     const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
     const relevant = (path: string) =>
-      path.endsWith(".md") && !(folder !== "" && (path === folder || path.startsWith(folder + "/")));
+      path.endsWith(".md") &&
+      !path.startsWith("demo/") && // the unfed playback queue is invisible to analysis
+      !(folder !== "" && (path === folder || path.startsWith(folder + "/")));
     const onChange = (file: { path: string }) => {
       if (!this.settings.watcherEnabled || !relevant(file.path)) return;
       if (this.debounceTimer) window.clearTimeout(this.debounceTimer);
@@ -1449,6 +1453,10 @@ export default class SevenSPlugin extends Plugin {
     this.registerEvent(this.app.vault.on("create", onChange));
     this.registerEvent(this.app.vault.on("modify", onChange));
     this.registerEvent(this.app.vault.on("delete", onChange));
+    // Moves fire "rename", not "create" — without this, the demo feeder's (and
+    // any in-app) moves into inkorg/ would never trigger a recompute. The handler
+    // sees the NEW path, so demo→inkorg reacts and anything→demo stays ignored.
+    this.registerEvent(this.app.vault.on("rename", onChange));
 
     // Map-seed intake: a note Map View's "New note here" just dropped (a bare
     // `location:` frontmatter) gets an offer to become a predefined place or a
