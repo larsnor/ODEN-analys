@@ -90,6 +90,7 @@ för macOS, Windows och Linux), kör `ollama pull qwen3-vl:4b` i en terminal
 ## Mer
 
 Fler installationsvägar och felsökning finns i `INSTALL.md` (i releasen och på
-[GitHub](https://github.com/larsnor/ODEN-analys)). Korta skärmfilmer är på
-gång och länkas här när de är klara. Den här noten kan du radera när den har
-gjort sitt.
+[GitHub](https://github.com/larsnor/ODEN-analys)). Fyra korta skärmfilmer
+(30–45 s, utan ljud) som visar installation, uppsättning, flödet och
+operatörens verktyg finns på GitHub-sidan och på senaste releasen. Den här
+noten kan du radera när den har gjort sitt.

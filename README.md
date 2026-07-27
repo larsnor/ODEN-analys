@@ -41,7 +41,17 @@ lokalt på den egna datorn. Modellen föreslår bara – du bekräftar. Detektio
 är aldrig beroende av AI.
 
 Fler installationsvägar och felsökning finns i **[`INSTALL.md`](INSTALL.md)**.
-Korta skärmfilmer är på gång och länkas här när de är klara.
+
+### Skärmfilmer (30–45 s, utan ljud)
+
+| Film | Visar |
+|---|---|
+| [Installation & första start](docs/screencasts/out/installation.mp4) | De tre stegen från nedladdning till fungerande valv. |
+| [Operationsområde & namngivna platser](docs/screencasts/out/omrade.mp4) | Sätt området, namnge platser, se karta och graf fyllas. |
+| [Flödet: larm, granskning och AI](docs/screencasts/out/flodet.mp4) | Demodata i verklig rytm, larm med synliga skäl, bildfynd att bekräfta. |
+| [Operatörens verktyg](docs/screencasts/out/verktyg.mp4) | Flagga som larm, 🔭 bevakningslistan, aktörsgranskning, chatten. |
+
+Filmerna finns även som bilagor på [senaste releasen](https://github.com/larsnor/ODEN-analys/releases/latest).
 
 ## Struktur
 
