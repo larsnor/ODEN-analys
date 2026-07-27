@@ -2273,13 +2273,20 @@ export default class SevenSPlugin extends Plugin {
         await this.app.vault.createFolder("inkorg");
       }
       const tnr = report.name.slice(3, -3);
+      // A same-named file already in inkorg/ (a dirty test vault) must not abort
+      // the playback — skip the move and let the schedule continue.
+      const taken = (p: string) => this.app.vault.getAbstractFileByPath(normalizePath(p)) !== null;
       const parent = report.parent;
       if (parent instanceof TFolder) {
         for (const child of [...parent.children]) {
-          if (child instanceof TFolder && child.name.includes(`_${tnr}-`)) {
+          if (child instanceof TFolder && child.name.includes(`_${tnr}-`) && !taken(`inkorg/${child.name}`)) {
             await this.app.fileManager.renameFile(child, normalizePath(`inkorg/${child.name}`));
           }
         }
+      }
+      if (taken(`inkorg/${report.name}`)) {
+        console.warn("ODEN: demo-rapport hoppas över (finns redan i inkorg):", report.name);
+        return;
       }
       await this.app.fileManager.renameFile(report, normalizePath(`inkorg/${report.name}`));
     } catch (err) {
