@@ -57,7 +57,7 @@ test("entity lookup returns the vehicle with cited observations", () => {
   assert.ok(a.rowCount >= 5, `RJK241 should have its sightings, got ${a.rowCount}`);
   assert.match(a.markdown, /# Fordon RJK241/);
   assert.match(a.markdown, /\[\[TNR/); // citations present
-  assert.match(a.markdown, /Tolkad fråga/); // query-echo present
+  assert.ok(a.query.echo.length > 0); // echo kept on the query (not rendered in the answer)
 });
 
 test("recurring lists multi-sighting entities only", () => {

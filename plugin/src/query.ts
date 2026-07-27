@@ -281,8 +281,12 @@ function cite(r: { file: string; tnr: string }): string {
   return `[[${noteStem(r.file)}|TNR${mdText(r.tnr)}]]`;
 }
 
-function echoBlock(q: StructuredQuery): string {
-  return ["> **Tolkad fråga:** `" + q.echo + "`", "> _(rätta genom att omformulera frågan; fynden nedan är deterministiska)_", ""].join("\n");
+function echoBlock(_q: StructuredQuery): string {
+  // The parsed-query banner is no longer shown in answers (operator feedback:
+  // noise). The echo itself stays on StructuredQuery — the LLM narration and
+  // tests still use it, and it can return here if misinterpretations become
+  // a problem in practice.
+  return "";
 }
 
 const answer = (q: StructuredQuery, lines: string[], rowCount: number): QueryAnswer => ({ query: q, markdown: lines.join("\n"), rowCount });

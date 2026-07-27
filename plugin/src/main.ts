@@ -1378,6 +1378,13 @@ export default class SevenSPlugin extends Plugin {
    *  hide too, so the trimmed menu has no stray dividers. */
   simplifyMenu(menu: Menu, keep: string[]): void {
     if (!this.settings.simplifiedMenus) return;
+    // Desktop Obsidian may render context menus NATIVELY (OS menus) — those are
+    // beyond DOM reach, so force the DOM menu first (public API).
+    try {
+      menu.setUseNativeMenu(false);
+    } catch {
+      /* older API — DOM menus are then the default anyway */
+    }
     const pass = () => {
       const items = (menu as unknown as { items?: unknown[] }).items;
       if (!Array.isArray(items)) return;
