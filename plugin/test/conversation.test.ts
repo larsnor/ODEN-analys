@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import { parseReport, Report } from "../src/parse.ts";
 import { buildPlateEntities } from "../src/reid.ts";
 import { KB } from "../src/query.ts";
-import { converse, DeterministicConversation, OllamaConversation, stripThink } from "../src/conversation.ts";
+import { ensureCitations, converse, DeterministicConversation, OllamaConversation, stripThink } from "../src/conversation.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "fixtures");
@@ -51,4 +51,19 @@ test("narrate skips the LLM for large results (deterministic markdown IS the ans
 test("stripThink removes a qwen3 reasoning preamble", () => {
   assert.equal(stripThink("<think>hm…</think>\nSvar."), "Svar.");
   assert.equal(stripThink("Svar utan tänk."), "Svar utan tänk.");
+});
+
+test("ensureCitations: citations dropped by narration are appended as a Källor line", () => {
+  const det = "- [[TNR151201|TNR151201]] — 12:01 — Närköpet\n- [[TNR151345]] — 13:45";
+  // Narration kept one citation, dropped the other.
+  const kept = ensureCitations("Två rapporter, senast [[TNR151345]].", det);
+  assert.match(kept, /Källor: \[\[TNR151201\]\]/);
+  assert.doesNotMatch(kept, /TNR151345\]\], \[\[/, "kept citation not re-appended");
+  // Narration dropped all citations.
+  const none = ensureCitations("Två rapporter från Närköpet.", det);
+  assert.match(none, /Källor: \[\[TNR151201\]\], \[\[TNR151345\]\]/);
+  // Narration kept everything → untouched.
+  assert.equal(ensureCitations("Se [[TNR151201]] och [[TNR151345]].", det), "Se [[TNR151201]] och [[TNR151345]].");
+  // No citations in the deterministic answer → untouched.
+  assert.equal(ensureCitations("Inget hittat.", "Inga träffar."), "Inget hittat.");
 });

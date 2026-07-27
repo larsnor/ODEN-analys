@@ -55,7 +55,21 @@ const QUERY_PROMPT =
 const NARRATE_SYS =
   "Du är ODEN:s assistent. Du omformulerar FÄRDIGA sökresultat till kort, saklig " +
   "svenska. Du hittar ALDRIG på fakta — använd bara det som står i resultatet. " +
-  "Är resultatet tomt, säg det kort.";
+  "Är resultatet tomt, säg det kort. Källhänvisningar i formatet [[TNR123456]] är " +
+  "klickbara länkar och MÅSTE behållas exakt som de står — skriv aldrig om, " +
+  "förkorta eller ta bort dem.";
+
+/** Every citation in the deterministic answer must survive narration — grounding
+ *  never depends on the model following instructions. Citations the narration
+ *  dropped are appended as a "Källor:" line (clickable wikilinks). */
+export function ensureCitations(prose: string, deterministic: string): string {
+  const cite = /\[\[TNR\d+(?:\|[^\]]*)?\]\]/g;
+  const stems = new Set((deterministic.match(cite) ?? []).map((c) => c.replace(/\|[^\]]*\]\]$/, "]]").slice(2, -2)));
+  if (stems.size === 0) return prose;
+  const missing = [...stems].filter((s) => !prose.includes(s));
+  if (missing.length === 0) return prose;
+  return `${prose}\n\nKällor: ${missing.map((s) => `[[${s}]]`).join(", ")}`;
+}
 
 /** LLM chat engine (local Ollama). The LLM only REFINES the deterministic
  *  parse (intent/kind/term/place) and NARRATES the deterministic answer — findings
@@ -100,7 +114,8 @@ export class OllamaConversation implements Conversation {
       false,
     );
     const clean = raw ? stripThink(raw).trim() : "";
-    return clean || answer.markdown; // fall back to the deterministic answer
+    if (!clean) return answer.markdown; // fall back to the deterministic answer
+    return ensureCitations(clean, answer.markdown);
   }
 }
 
