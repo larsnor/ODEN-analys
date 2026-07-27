@@ -2,30 +2,159 @@
   "title": "Flödet: larm, granskning och AI",
   "duration": 45000,
   "shots": [
-    { "src": "01-mata.png", "from": 0, "to": 7000 },
-    { "src": "02-feed.png", "from": 7000, "to": 15000 },
-    { "src": "03-larm.png", "from": 15000, "to": 22000 },
-    { "src": "04-chips.png", "from": 22000, "to": 29000 },
-    { "src": "05-bildanalys.png", "from": 29000, "to": 36000 },
-    { "src": "06-bildfynd.png", "from": 36000, "to": 45000 }
+    {
+      "src": "01-mata.png",
+      "from": 0,
+      "to": 7000
+    },
+    {
+      "src": "02-feed.png",
+      "from": 7000,
+      "to": 14000
+    },
+    {
+      "src": "03-larm.png",
+      "from": 14000,
+      "to": 22000
+    },
+    {
+      "src": "04-chips.png",
+      "from": 22000,
+      "to": 29000
+    },
+    {
+      "src": "05-bildanalys.png",
+      "from": 29000,
+      "to": 36000
+    },
+    {
+      "src": "06-bildfynd.png",
+      "from": 36000,
+      "to": 45000
+    }
   ],
   "cursor": [
-    { "t": 0, "x": 700, "y": 420 },
-    { "t": 4500, "x": 790, "y": 500, "click": true },
-    { "t": 9000, "x": 1080, "y": 500 },
-    { "t": 16000, "x": 1080, "y": 560, "click": true },
-    { "t": 24000, "x": 1000, "y": 620 },
-    { "t": 26000, "x": 1030, "y": 620, "click": true },
-    { "t": 31000, "x": 1080, "y": 540 },
-    { "t": 38000, "x": 1120, "y": 600 },
-    { "t": 42000, "x": 1180, "y": 640, "click": true }
+    {
+      "t": 0,
+      "x": 642,
+      "y": 467
+    },
+    {
+      "t": 4800,
+      "x": 850,
+      "y": 498,
+      "click": true
+    },
+    {
+      "t": 7000,
+      "x": 850,
+      "y": 498
+    },
+    {
+      "t": 9500,
+      "x": 1077,
+      "y": 595
+    },
+    {
+      "t": 13000,
+      "x": 1077,
+      "y": 555
+    },
+    {
+      "t": 16000,
+      "x": 1134,
+      "y": 548
+    },
+    {
+      "t": 20500,
+      "x": 558,
+      "y": 647
+    },
+    {
+      "t": 24000,
+      "x": 949,
+      "y": 460
+    },
+    {
+      "t": 27000,
+      "x": 1327,
+      "y": 460
+    },
+    {
+      "t": 31000,
+      "x": 1077,
+      "y": 549
+    },
+    {
+      "t": 34500,
+      "x": 1017,
+      "y": 505
+    },
+    {
+      "t": 38000,
+      "x": 1013,
+      "y": 553
+    },
+    {
+      "t": 41000,
+      "x": 1085,
+      "y": 653
+    },
+    {
+      "t": 43500,
+      "x": 1286,
+      "y": 653,
+      "click": true
+    }
   ],
   "captions": [
-    { "t0": 500, "t1": 6800, "x": 60, "y": 700, "text": "Övningsläge: <b>\"Mata demodata\"</b> spelar upp korpusen i verklig rytm — lugna nätter är lugna.", "w": 520 },
-    { "t0": 8000, "t1": 14800, "x": 60, "y": 80, "text": "Varje rapport analyseras när den landar — deterministiskt, utan nätverk.", "w": 500 },
-    { "t0": 16000, "t1": 21800, "x": 60, "y": 80, "text": "⚠ Misstänkt aktivitet larmas <b>med skälen synliga</b> — och pekar mot kartan.", "w": 500 },
-    { "t0": 23000, "t1": 28800, "x": 60, "y": 700, "text": "AI är valfria chips — 📷 bild, 📝 text, 💬 chat — och körs lokalt på egna datorn.", "w": 520 },
-    { "t0": 30000, "t1": 35800, "x": 60, "y": 80, "text": "📷 Bild mottagen, analys startad — foton läses medan flödet rullar.", "w": 500 },
-    { "t0": 37000, "t1": 44500, "x": 60, "y": 80, "text": "Varje fynd är ett <b>förslag</b> — du bekräftar eller avvisar, mot bilden.", "w": 480 }
+    {
+      "t0": 500,
+      "t1": 6800,
+      "x": 60,
+      "y": 700,
+      "text": "Övningsläge: <b>Mata demodata</b> spelar upp korpusen i verklig rytm — lugna nätter är lugna.",
+      "w": 500
+    },
+    {
+      "t0": 7500,
+      "t1": 13800,
+      "x": 60,
+      "y": 620,
+      "text": "Varje rapport landar som en dämpad rad i flödet — och analyseras direkt, deterministiskt, utan nätverk.",
+      "w": 480
+    },
+    {
+      "t0": 14500,
+      "t1": 21800,
+      "x": 60,
+      "y": 620,
+      "text": "⚠ Misstänkt aktivitet larmas <b>med skälen synliga</b> — och syns samtidigt som röd nod i grafen.",
+      "w": 480
+    },
+    {
+      "t0": 22500,
+      "t1": 28800,
+      "x": 60,
+      "y": 620,
+      "text": "AI-förmågorna är valfria chips — 📷 bild, 📝 text, 💬 chat — och körs lokalt (● qwen3-vl:4b).",
+      "w": 480
+    },
+    {
+      "t0": 29500,
+      "t1": 35800,
+      "x": 60,
+      "y": 620,
+      "text": "📷 <i>Bild mottagen, analys startad</i> — foton läses medan flödet rullar, och förslag börjar dyka upp.",
+      "w": 480
+    },
+    {
+      "t0": 36500,
+      "t1": 44500,
+      "x": 60,
+      "y": 620,
+      "text": "Varje fynd är ett <b>förslag</b> — du bekräftar eller avvisar, mot bilden. ODEN föreslår, du avgör.",
+      "w": 470
+    }
   ]
 }
