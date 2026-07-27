@@ -259,7 +259,9 @@ function nomKey(n: PhotoNomination): string {
 
 /** "Förenklade menyer": context-menu whitelist (lowercased title prefixes, en+sv).
  *  ODEN's own items ("ODEN: …") are always kept. */
-const MENU_KEEP_FILE = ["byt namn", "rename", "radera", "delete", "ta bort"];
+// "stäng"/"close" keeps the tab-close entries — oden-lock.css hides the tab ×,
+// so without them Cmd-W would be the only way to close an open report tab.
+const MENU_KEEP_FILE = ["byt namn", "rename", "radera", "delete", "ta bort", "stäng", "close"];
 const MENU_KEEP_EDITOR = ["kopiera", "copy", "klistra in", "paste"];
 
 export default class SevenSPlugin extends Plugin {
@@ -1385,6 +1387,7 @@ export default class SevenSPlugin extends Plugin {
     } catch {
       /* older API — DOM menus are then the default anyway */
     }
+    const keepIt = (title: string) => title.startsWith("oden") || keep.some((k) => title.startsWith(k));
     const pass = () => {
       const items = (menu as unknown as { items?: unknown[] }).items;
       if (!Array.isArray(items)) return;
@@ -1393,13 +1396,27 @@ export default class SevenSPlugin extends Plugin {
         const dom = it.dom instanceof HTMLElement ? it.dom : null;
         if (!dom) continue;
         const titleEl = it.titleEl instanceof HTMLElement ? it.titleEl : dom;
-        const title = (titleEl.textContent ?? "").trim().toLowerCase();
-        const keepIt = title.startsWith("oden") || keep.some((k) => title.startsWith(k));
-        if (!keepIt) dom.style.display = "none";
+        if (!keepIt((titleEl.textContent ?? "").trim().toLowerCase())) dom.style.display = "none";
       }
     };
+    // Belt and suspenders: also filter the RENDERED menu in the document — works
+    // whatever the Menu object's internals look like. (Native OS menus have no
+    // DOM at all; the vault config sets nativeMenus:false for that reason.)
+    const domPass = () => {
+      const menus = document.body.querySelectorAll(".menu");
+      const el = menus[menus.length - 1];
+      if (!el) return;
+      el.querySelectorAll(".menu-item").forEach((mi) => {
+        const title = (mi.querySelector(".menu-item-title")?.textContent ?? "").trim().toLowerCase();
+        if (!keepIt(title)) (mi as HTMLElement).style.display = "none";
+      });
+      el.querySelectorAll(".menu-separator").forEach((sep) => ((sep as HTMLElement).style.display = "none"));
+    };
     pass();
-    window.setTimeout(pass, 0);
+    window.setTimeout(() => {
+      pass();
+      domPass();
+    }, 0);
   }
 
   /** The ⋯ menu — the operator's occasional actions. Rare maintenance flows are
