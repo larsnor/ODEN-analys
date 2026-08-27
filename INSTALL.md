@@ -120,8 +120,11 @@ installationsskript**, hoppar över allt som redan finns och skriver aldrig öve
 ett befintligt valv. Manuellt är det samma tre delar, **i denna ordning**:
 
 1. **Valvet först** (Väg A ovan) — packa upp `ODEN-valv-<v>.zip`.
-2. **Oden**: `curl -fsSL https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh | bash`
-   (Windows/Docker: se Odens README).
+2. **Oden** — installera **senaste snapshot** (stabila v3.1.2 tappar foton i
+   7S-rapporter och kan skriva fel koordinater; fixarna är ännu inte släppta i
+   en release):
+   `ODEN_SNAPSHOT_SELECT=latest curl -fsSL https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_snapshot_mac.sh | bash`
+   (Windows/Docker: se Odens README.)
 3. **Setup-wizarden** (öppnas på `http://127.0.0.1:8080`):
    - **Länka Signal-kontot** med QR-koden. Använd ett **dedikerat nummer** —
      inte ditt privata (Odens egen starka rekommendation).

@@ -15,7 +15,14 @@
 set -euo pipefail
 
 REPO="larsnor/ODEN-analys"
-ODEN_INSTALLER="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh"
+# Oden (Bin 1) installeras som SENASTE SNAPSHOT som standard: stabila releasen
+# (v3.1.2) tappar foton i 7S-rapporter och skriver fel koordinater för MGRS-
+# rutor med mellanslag — båda fixade uppströms men ännu inte släppta
+# (E2E-verifierat 2026-08-27, docs/E2E_BIN1.md). ODEN_SNAPSHOT_SELECT=latest
+# gör valet tyst även i terminal. Vill man ha stabila releasen ändå:
+#   ODEN_APP_CHANNEL=release  …  | bash
+ODEN_INSTALLER_SNAPSHOT="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_snapshot_mac.sh"
+ODEN_INSTALLER_RELEASE="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh"
 TARGET_PARENT="${ODEN_VALV_DIR:-$HOME/Documents}"
 VALV_DIR="$TARGET_PARENT/ODEN-valv"
 
@@ -51,12 +58,22 @@ for a in rel.get("assets", []):
   ok "Valv på plats: $VALV_DIR"
 fi
 
-# --- 2. Oden.app (Bin 1) — via dess eget officiella installationsskript ------
+# --- 2. Oden.app (Bin 1) — via dess egna officiella installationsskript ------
 if [ -d "/Applications/Oden.app" ]; then
-  ok "Oden.app finns redan i /Applications (hoppar över)"
+  ODEN_VER=$(defaults read /Applications/Oden.app/Contents/Info.plist CFBundleShortVersionString 2>/dev/null || echo "okänd")
+  ok "Oden.app finns redan i /Applications (version $ODEN_VER — hoppar över)"
+  case "$ODEN_VER" in
+    snapshot-*) : ;;
+    *) info "OBS: release-versioner t.o.m. 3.1.2 tappar foton i 7S-rapporter och kan skriva fel koordinater."
+       info "Uppgradera vid behov (avsluta Oden först):"
+       info "  ODEN_SNAPSHOT_SELECT=latest curl -fsSL $ODEN_INSTALLER_SNAPSHOT | bash" ;;
+  esac
+elif [ "${ODEN_APP_CHANNEL:-snapshot}" = "release" ]; then
+  info "Installerar Oden (stabil release) via dess officiella skript…"
+  curl -fsSL "$ODEN_INSTALLER_RELEASE" | bash
 else
-  info "Installerar Oden (Signal-intaget) via dess officiella skript…"
-  curl -fsSL "$ODEN_INSTALLER" | bash
+  info "Installerar Oden (senaste snapshot — har 7S-bildstöd + koordinatfixen)…"
+  curl -fsSL "$ODEN_INSTALLER_SNAPSHOT" | ODEN_SNAPSHOT_SELECT=latest bash
 fi
 
 # --- 3. Manuella steg -------------------------------------------------------
