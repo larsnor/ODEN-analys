@@ -183,7 +183,13 @@ function parseTarget(lower: string): { target: Target; craftType?: string } {
   return { target: "alla" };
 }
 
-const SUMMARY_WORDS = ["sammanfatta", "sammanfattning", "läget", "lägesbild", "översikt", "överblick", "summering", "summera"];
+// NB whole-word matched (hasWord) — compounds must be listed explicitly:
+// "lägesrapport" contains neither the word "läget" nor "lägesbild", so it fell
+// through to free-text search ("Inga träffar") until listed. Found in live E2E.
+const SUMMARY_WORDS = [
+  "sammanfatta", "sammanfattning", "läget", "lägesbild", "översikt", "överblick",
+  "summering", "summera", "lägesrapport", "lägesrapporten", "nuläge", "nuläget", "status",
+];
 const TIMELINE_WORDS = ["tidslinje", "tidslinjen", "kronologi", "kronologisk", "tidsordning", "förlopp"];
 const LIST_WORDS = ["vilka", "lista", "alla", "heta", "hetast", "hetaste", "antal", "flest"];
 const DETAIL_WORDS = ["visa", "detalj", "detaljer", "beskriv", "berätta"];

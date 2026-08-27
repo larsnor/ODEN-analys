@@ -148,6 +148,15 @@ lämnade. Utfall:
   (nu 4 st — den gemensamma bristen är alltså familjens, inte storlekens);
   gissade ålder «ung» på intrångsklättraren (sssss). Inga NYA felklasser.
 
+## Promptrevision v2 (2026-08-27)
+
+Live-E2E med qwen3-vl:8b gav blandspråkiga attributvärden ("Medelåldersman,
+blue jeans"). Prompt v2 lägger till en explicit alla-värden-på-svenska-instruktion
+(en mening; schema och regler i övrigt oförändrade) och bumpar PROMPT_VERSION så
+cachade v1-svar analyseras om. **Mätvärdena i detta dokument är uppmätta på
+prompt v1** — instruktionen bedöms inte påverka skyltläsningen, men en
+stickprovskontroll vid nästa harness-körning är på sin plats.
+
 ## Beslut (2026-07-14)
 
 **Kuraterad `VISION_MODELS` (frozen; dropdown i inställningar):**

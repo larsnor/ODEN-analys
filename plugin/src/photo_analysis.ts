@@ -21,8 +21,12 @@ import { Signal } from "./suspicion";
 import { normalizePlate } from "./vision";
 
 /** Bump when the prompt/schema changes — part of the cache key, so stale cached
- *  sightings are re-analysed rather than silently reused. */
-export const PROMPT_VERSION = "1";
+ *  sightings are re-analysed rather than silently reused.
+ *  v2 (2026-08-27): explicit all-values-in-Swedish instruction — live E2E showed
+ *  qwen3-vl drifting to English on attribute values ("Medelåldersman, blue
+ *  jeans"), which reads badly for the operator AND misses the Swedish keyword
+ *  tables downstream (craft typ mapping, mark vocabulary). */
+export const PROMPT_VERSION = "2";
 
 /** The sighting prompt (Swedish). Rules proven in the bake-off: every attribute
  *  optional with an explicit "okänd" escape (forced guessing is where the model
@@ -31,6 +35,7 @@ export const PROMPT_VERSION = "1";
  *  `num_ctx >= 8192` (the 4096 default truncates the JSON mid-object). */
 export const SIGHTING_PROMPT =
   "Du analyserar ett foto från en säkerhetsobservation. Svara ENDAST med JSON. " +
+  "ALLA textvärden ska vara på SVENSKA (t.ex. \"blå jeans\", inte \"blue jeans\"). " +
   "Beskriv bara det som TYDLIGT syns; använd \"okänd\" hellre än att gissa. " +
   "Identifiera ALDRIG vem en person är — beskriv endast synliga attribut. " +
   "Ålder endast som ung/medelålders/äldre/okänd.\n" +

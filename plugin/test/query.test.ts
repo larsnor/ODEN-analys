@@ -144,6 +144,17 @@ test("summary shape returns a situation overview", () => {
   assert.match(a.markdown, /Rapporter: \d+/);
 });
 
+test('operator summary words: "Lägesrapport" & friends never fall through to free-text search', () => {
+  // Live E2E regression: "Lägesrapport" fell to searchReports → "Inga träffar".
+  const k = kb();
+  for (const q of ["Lägesrapport", "lägesrapporten?", "nuläget", "status"]) {
+    const a = runQuery(q, k);
+    assert.equal(a.query.shape, "summary", `"${q}" must parse as a summary ask`);
+    assert.match(a.markdown, /# Lägesbild/, q);
+    assert.doesNotMatch(a.markdown, /Inga träffar/, q);
+  }
+});
+
 test("observer filter narrows to a call-sign's reports", () => {
   const k = kb();
   const callsign = k.reports.map((r) => r.sagesman).find((s) => /^[A-ZÅÄÖ]{2}$/.test(s ?? ""));

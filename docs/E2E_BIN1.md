@@ -173,6 +173,22 @@ alla hälsokontroller på server-nere och modell-saknas: pricken visar
 `○ <modell> saknas`, och varje flöde/chip-påslag ger en Notice med exakta
 kommandot (`ollama pull <modell>`).
 
+### Fynd under LLM-drift (2026-08-27, forts — qwen3-vl:8b)
+
+- **Blandspråkiga bildsvar** ("Medelåldersman, blue jeans"): sighting-prompten
+  saknade språkinstruktion och qwen3-vl driver mot engelska på attributvärden —
+  vilket dessutom missar de svenska nyckelordstabellerna nedströms (farkost-typ,
+  märkesvokabulär). Åtgärdat: prompt v2 med explicit svenska-instruktion +
+  PROMPT_VERSION-bump (cachade v1-svar analyseras om vid nästa körning).
+- **Chatten svarade "Inga träffar" på "Lägesrapport"**: ordet fanns inte i den
+  deterministiska parserns SUMMARY_WORDS (helordsmatch — "läget"/"lägesbild"
+  träffar inte inuti "lägesrapport"), så frågan föll igenom till
+  fritextsökning. LLM-förfiningen borde ha räddat den men föll tillbaka —
+  trolig orsak: kall modell-laddning på 8b överskred translate-timeouten
+  (30 s). Åtgärdat i det deterministiska golvet: lägesrapport/nuläge/status
+  m.fl. är nu sammanfattningsord — chatten är förbättringen, aldrig
+  förutsättningen.
+
 ### Fas 4 — efterarbete
 
 - [ ] Komplettera `plugin/test/fixtures/bin1_v3/` med ~4–6 av fas 2-filerna (maska
