@@ -58,6 +58,37 @@ made, so work can resume without re-deriving context.
 
 ## Detection vocabulary (deterministic layer)
 
+### GitHub issues #1–#4 — agreed roadmap (2026-08-27, work in this order)
+
+- [ ] **#3 — infiltration recall 0.22 (vs 0.80–1.00 for other threat modes).** Add
+  elicitation stems ("frågor om rutiner", "frågade om passertider", …) and
+  false-authority phrases to `THREAT_INDICATORS.infiltration`. Two verified caveats:
+  (a) NOT a bare `passerkort` stem — `recon_indicators.test.ts` asserts "Personal
+  visade passerkort vid grinden." fires nothing; key on the fuller phrase ("kändes
+  inte igen"). (b) Promoting infiltration weight 2→3 pulls its whole stem list under
+  `behaviour_ood.test.ts`'s WEIGHT3 = {sabotage, attentat} safety assertion — requires
+  re-running BOTH OOD corpora and updating that set, never just the constant. Update
+  `docs/BEHAVIOUR_VALIDATION.md` numbers either way. Repro: the reporter's seed-21
+  corpus recipe in the issue (7s-generator now installed locally).
+- [ ] **#4 — craft threat weight lacks area context** (civil helicopter traffic near an
+  airfield AOI → false-alarm swarm; measured precision 0.90 → 0.50–0.63). Preferred
+  fix: require ≥1 behaviour hit before a craft weight ≥2 may carry a report over the
+  elevation threshold — surgical, and drones keep self-elevating via the frozen
+  `drönar` stem (beteende:optik); only helicopter/boat/aircraft stop elevating on
+  type+proximity alone. Alternative (more work, closer to ODEN's grain): operator
+  setting "förväntade farkosttyper vid objektet" zeroing the type weight per AOI,
+  shown in the reason line. Do BEFORE #2's remainder (which raises recall on exactly
+  these threat-bearing types).
+- [ ] **#2 — morphological rework of the craft matcher** (the stopgap keywords shipped
+  2026-08-27; this is the general fix). Head-suffix matching for compound-final heads
+  (`-bil`, `-båt`, `-cykel`) with most-specific-head-wins (else lastbil→bil,
+  motorcykel→cykel) + small stoplist (`mobil`); agent-noun suffixes (`-ist`, `-are`,
+  `-ör`); bounded edit-distance 1 for tokens ≥6 chars (real typos — NOT slang like
+  `kajja`, which stays the 📝 layer's job). Validate on a blind-authored, held-out
+  corpus with a precision gate per the BEHAVIOUR_VALIDATION protocol;
+  `test/fixtures/craft_phrases.ts` CRAFT_BENIGN is the guard rail.
+- [ ] **#1 — close as duplicate of #2** once #2 closes (no code).
+
 - [x] **`vocab.ts` mark categories for recon gear** — DONE (bounded, frozen): added
   `optik` (distinctive only on a specific sub-type — teleobjektiv/nattkikare/… — so
   plain binoculars are birdwatcher-safe), `verktyg` (breaching tools), `teknik`
@@ -92,6 +123,31 @@ The corpus generator now lives in its own repo,
 - Some earlier items now belong to that repo: **enriching the generator's recon
   templates** and **corpus plate-image generation** are 7S-generator work (its own
   `TODO.md` tracks them).
+
+## Cross-repo (oden — the real Bin 1)
+
+The real intake app exists and is mature: [NicklasAndersson/oden](https://github.com/NicklasAndersson/oden)
+(Signal → 7S Markdown via a dedicated `seven_s` pipeline). Verified against its code
+(commit 68b94d5) and against real received reports, 2026-08-27. Decision: **we change
+nothing in that repo** — ODEN-analys engineers around its current behaviour. Observations
+recorded so they are not re-derived:
+
+- **Composition is safe by construction**: its installer only installs Oden.app; its
+  wizard skips `.obsidian` entirely when one exists → "ODEN-valv first, then wizard"
+  needs no code on either side. Its bundled Map View template (6.1.2) never installs
+  over ours (pinned 6.1.4).
+- **It wraps plates in `[[ ]]` itself** — in Symbol only (full + partial); Händelse
+  stays prose. `ids.ts` handles both, so the old open question in HANDOFF is closed.
+- **`källa: bin1-intag` never landed** in its spec or output (agreed long ago,
+  PLUGIN_DESIGN §2). Our parser treats it as optional — tolerated, not forgotten.
+- **Coordinate bug in ≤3.1.2**: spaced MGRS grids in Ställe mis-convert, so emitted
+  frontmatter lat/lon can be grossly wrong while the grid in the body is right. Fixed
+  upstream (their PR #257, merged 2026-08-26) but in no release yet. Our defence is the
+  parse.ts coordinate cross-check (see E2E work); prefer their ≥ first release
+  containing #257 in production guidance.
+- Reports land under `vault/<Signal-gruppnamn>/` (group-split default) or the vault
+  root — `inkorg/` is OUR demo/manual convention, not their contract. Analysis scans
+  the whole vault by `typ:`, so layout is cosmetic.
 
 ## Minor
 
