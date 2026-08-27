@@ -228,6 +228,18 @@ i ett live-valv först när Obsidian är stängt (som all Bin 2-konfig).
   hängande referenser blir text, aldrig spöknoder; allt rensas med
   operationsområdet som varje bedömning).
 
+### Fynd: aktivitet saknades i bildschemat (2026-08-27, post-release)
+
+Klätterfotona gav "man, medelålders, blå jeans, hjälm" — men inget om att
+personen KLÄTTRADE ÖVER STÄNGSLET, så ett fotograferat intrång gav inget larm.
+Uppmätt på den riktiga bilden: inte ett modelltak utan ett schemagap — med ett
+`aktivitet`-fält och mätt formulering svarar 4b "hoppar över stängsel" (21 s)
+och 8b "hoppa över stängsel"; medhjälparen blir "står och observerar". Prompt
+v3 + deterministisk mappning till beteendesignaler (perimeter/observation …) →
+personraden i granskningen bär aktiviteten, bekräftelse matar misstankepoängen
+→ larmkedjan fungerar för foto-intrång. Detaljer och mättabell:
+`docs/VISION_VALIDATION.md` (v3). Act-not-photograph-antagandet reviderat.
+
 ### Fas 4 — efterarbete
 
 - [ ] Komplettera `plugin/test/fixtures/bin1_v3/` med ~4–6 av fas 2-filerna (maska

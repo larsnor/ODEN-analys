@@ -89,6 +89,15 @@ test("sabotage/infiltration/terrorism phrasings raise a threat signal", () => {
   assert.deepEqual(missed, [], `these threat phrasings were missed: ${missed.join(" | ")}`);
 });
 
+test("the photo-only activity stems are NOT in the text vocabulary (idiom guard)", () => {
+  // "hoppar över" is the Swedish idiom for SKIPPING something — it lives only in
+  // the photo path's activity mapping, where the visual context disambiguates.
+  // Adding it to THREAT_INDICATORS would fire on everyday prose like these:
+  for (const s of ["Vakten hoppar över lunchen idag.", "Vi hoppade över mötet."]) {
+    assert.equal(behaviourHit(s), false, `text idiom must stay silent: ${s}`);
+  }
+});
+
 test("benign prose does not fire the new threat stems (precision guard)", () => {
   const fp = THREAT_BENIGN.filter((s) => behaviourHit(s));
   assert.deepEqual(fp, [], `these benign phrasings falsely fired: ${fp.join(" | ")}`);

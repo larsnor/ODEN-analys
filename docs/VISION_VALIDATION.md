@@ -157,6 +157,34 @@ cachade v1-svar analyseras om. **Mätvärdena i detta dokument är uppmätta på
 prompt v1** — instruktionen bedöms inte påverka skyltläsningen, men en
 stickprovskontroll vid nästa harness-körning är på sin plats.
 
+## Promptrevision v3 (2026-08-27) — aktivitet, mätt före frysning
+
+Live-fynd: stängselklättringsfotot gav korrekta attribut men INGET om vad
+personerna gjorde — schemat saknade fältet. Kandidat-promptar mättes på den
+riktiga bilden (man i hjälm mitt i klättring, medhjälpare bakom) mot båda
+lokala modellstorlekarna:
+
+| Prompt | qwen3-vl:4b (default) | qwen3-vl:8b |
+|---|---|---|
+| v2 (skeppad) | fältet finns inte | endast attribut |
+| v3 enkel (`aktivitet`-fält) | "hoppar över staket" ✓ 24 s | bokstavlig pose, ingen klättring ✗ |
+| v3 + lång interaktionsklausul | `{}` — personerna försvinner ✗ | "tar sig över stängsel" ✓ 72 s |
+| **v3 mellanlång (VALD)** | **"hoppar över stängsel" + "står och observerar"** ✓ 21 s | **"hoppa över stängsel" + "stå bakom stängsel"** ✓ 167 s |
+
+Slutsatser: (1) förmågan finns i BÅDA storlekarna — det var ett schemagap, inte
+ett modelltak; (2) promptkänsligheten är omvänd mellan storlekarna (4b dränks av
+den långa klausulen — samma `{}`-familj som i bake-offen — medan 8b behöver
+knuffen), så den mellanlånga formuleringen är den enda som landar på båda;
+(3) på just denna bild var **4b både skarpare och 6–8× snabbare** än 8b —
+default-valet står sig. Aktivitetsfraserna mappas deterministiskt mot
+THREAT_INDICATORS + ett foto-EGET tillägg ("hoppar över", "tar sig över" i
+presens m.fl.) som medvetet INTE läggs i den frysta textvokabulären — "hoppar
+över" är svensk idiomatik för att utelämna något och skulle knäcka
+textprecisionen; i ett fotos aktivitetsfält disambiguerar bildkontexten.
+Act-not-photograph-antagandet (endast recon ur foto) är samtidigt reviderat:
+E2E visade att observatörer visst fotograferar intrång — hela hotbegrepps-
+rymden nomineras nu ur foto, per-fynd-grindad som förut.
+
 ## Beslut (2026-07-14)
 
 **Kuraterad `VISION_MODELS` (frozen; dropdown i inställningar):**

@@ -14,10 +14,14 @@
  * plate re-identification after confirm); a photo-described VEHICLE/PERSON is a
  * report-local ANNOTATION
  * (never auto-merged across reports — generic descriptions can't be re-identified).
- * Behaviour from a still is the RECON subset only (optik/observation/registrering)
- * — the severe behaviours are act-not-photograph moments.
+ *
+ * REVISED 2026-08-27 (live E2E): behaviour from a still was originally the RECON
+ * subset only, on the "act-not-photograph" theory (a soldier who SEES sabotage
+ * intervenes). Real use disproved it — observers DO photograph fence-climbing —
+ * so photo behaviours now classify into the FULL threat-concept space, exactly
+ * like the 📝 text path, still per-item operator-gated (safe because gated).
  */
-import { Signal } from "./suspicion";
+import { Signal, THREAT_INDICATORS } from "./suspicion";
 import { normalizePlate } from "./vision";
 
 /** Bump when the prompt/schema changes — part of the cache key, so stale cached
@@ -25,8 +29,11 @@ import { normalizePlate } from "./vision";
  *  v2 (2026-08-27): explicit all-values-in-Swedish instruction — live E2E showed
  *  qwen3-vl drifting to English on attribute values ("Medelåldersman, blue
  *  jeans"), which reads badly for the operator AND misses the Swedish keyword
- *  tables downstream (craft typ mapping, mark vocabulary). */
-export const PROMPT_VERSION = "2";
+ *  tables downstream (craft typ mapping, mark vocabulary).
+ *  v3 (2026-08-27): per-person `aktivitet` — the schema had NO field for what a
+ *  person is doing, so a photographed fence-climb yielded attributes only.
+ *  Wording measured on the real image against 4b AND 8b (VISION_VALIDATION). */
+export const PROMPT_VERSION = "3";
 
 /** The sighting prompt (Swedish). Rules proven in the bake-off: every attribute
  *  optional with an explicit "okänd" escape (forced guessing is where the model
@@ -38,9 +45,14 @@ export const SIGHTING_PROMPT =
   "ALLA textvärden ska vara på SVENSKA (t.ex. \"blå jeans\", inte \"blue jeans\"). " +
   "Beskriv bara det som TYDLIGT syns; använd \"okänd\" hellre än att gissa. " +
   "Identifiera ALDRIG vem en person är — beskriv endast synliga attribut. " +
-  "Ålder endast som ung/medelålders/äldre/okänd.\n" +
+  "Ålder endast som ung/medelålders/äldre/okänd. " +
+  // v3, MEASURED wording (docs/VISION_VALIDATION.md): the simple variant made 8b
+  // answer with literal pose; the long interaction clause made 4b return {} —
+  // this middle length lands the activity on BOTH sizes.
+  "Beskriv för varje person VAD den GÖR (aktivitet) — kort fras, bara det som " +
+  "syns, särskilt fysisk interaktion med stängsel, grind eller dörr.\n" +
   "Schema: {\"fordon\":[{\"typ\":\"\",\"marke\":\"\",\"farg\":\"\",\"skylt\":\"\"}]," +
-  "\"personer\":[{\"kon\":\"man|kvinna|okänd\",\"alder\":\"\",\"klader\":[\"\"],\"utrustning\":[\"\"]}]," +
+  "\"personer\":[{\"kon\":\"man|kvinna|okänd\",\"alder\":\"\",\"klader\":[\"\"],\"utrustning\":[\"\"],\"aktivitet\":\"\"}]," +
   "\"ovrigt\":[\"\"]}";
 
 export interface PhotoVehicle {
@@ -54,6 +66,9 @@ export interface PhotoPerson {
   alder?: string;
   klader: string[];
   utrustning: string[];
+  /** What the person is DOING ("hoppar över stängsel") — the field whose absence
+   *  made a photographed perimeter intrusion invisible (live E2E finding). */
+  aktivitet?: string;
 }
 export interface PhotoSighting {
   vehicles: PhotoVehicle[];
@@ -103,6 +118,7 @@ export function parseSighting(raw: string): PhotoSighting | null {
         alder: clean(p.alder),
         klader: strList(p.klader),
         utrustning: strList(p.utrustning),
+        aktivitet: clean(p.aktivitet),
       }))
     : [];
   return { vehicles, persons, ovrigt: strList(o.ovrigt) };
@@ -146,13 +162,11 @@ export function samePlate(a: string, b: string): boolean {
   return fold(normalizePlateRead(a)) === fold(normalizePlateRead(b));
 }
 
-// --- recon-behaviour mapping (RECON subset of THREAT_INDICATORS only) --------
+// --- photo behaviour mapping (full threat-concept space, operator-gated) -----
 
-/** Equipment/activity substring → recon behaviour concept + weight. Deliberately
- *  narrow: only what a photo realistically captures (a soldier who SEES sabotage
- *  intervenes, doesn't photograph it). optik=2, registrering=2, observation=1
- *  mirror the text-keyword weights in suspicion.ts. */
-const RECON_MAP: { stems: string[]; key: string; label: string; weight: number }[] = [
+/** English/short surface forms the VLM may still use despite the Swedish
+ *  instruction — extra coverage on top of the Swedish THREAT_INDICATORS stems. */
+const SURFACE_MAP: { stems: string[]; key: string; label: string; weight: number }[] = [
   { stems: ["kikare", "binokl", "binocular", "tub", "sikte"], key: "optik", label: "kikare/optik", weight: 2 },
   { stems: ["kamera", "camera", "teleobjektiv", "objektiv", "telephoto", "telelins"], key: "optik", label: "kamera/teleobjektiv", weight: 2 },
   { stems: ["mät", "measur", "tumstock", "avstånds", "gps-", "kartl"], key: "registrering", label: "mätande/registrering", weight: 2 },
@@ -160,25 +174,46 @@ const RECON_MAP: { stems: string[]; key: string; label: string; weight: number }
   { stems: ["observ", "spanar", "betraktar", "övervakar", "watching"], key: "observation", label: "observerande", weight: 1 },
 ];
 
-/** Recon behaviour signals a sighting supports — from person equipment AND the
- *  free `ovrigt` text. Deduped by concept key (strongest weight wins). These feed
- *  the suspicion score ONLY through a confirmed sighting (nomination gate). */
-export function reconBehaviours(s: PhotoSighting): Signal[] {
+/** Photo-ONLY activity stems. Deliberately NOT added to the frozen, OOD-validated
+ *  THREAT_INDICATORS: "hoppar över" is a Swedish idiom for skipping something
+ *  ("hoppar över lunchen") and would wreck text precision — but in a photo's
+ *  aktivitet field the visual context disambiguates (measured phrasings from
+ *  the live fence-climb image: 4b "hoppar över stängsel", 8b "hoppa över
+ *  stängsel"). */
+const PHOTO_ACTIVITY_STEMS: { stems: string[]; key: string; label: string; weight: number }[] = [
+  // NB "tar sig över" (present) is also here: the frozen text list carries only
+  // the past tense "tog sig över" (measured 8b phrasing was present tense).
+  { stems: ["hoppar över", "hoppa över", "klättrar på", "tar sig över"], key: "perimeter", label: "närmande/rekognosering av objekt", weight: 2 },
+];
+
+/** Behaviour signals a sighting supports — from person equipment, clothing,
+ *  ACTIVITY and the free `ovrigt` text. Matched against the full
+ *  THREAT_INDICATORS concept space (same weights as the text path — a photo
+ *  hit and a text hit are the same signal, deduped by key downstream) plus the
+ *  photo-only supplements above. Deduped by concept key, strongest weight wins.
+ *  These feed the suspicion score ONLY through a confirmed nomination. */
+export function photoBehaviours(s: PhotoSighting): Signal[] {
   const hay = [
-    ...s.persons.flatMap((p) => [...p.utrustning, ...p.klader]),
+    ...s.persons.flatMap((p) => [...p.utrustning, ...p.klader, ...(p.aktivitet ? [p.aktivitet] : [])]),
     ...s.ovrigt,
   ]
     .join(" ")
     .toLowerCase();
   const byKey = new Map<string, Signal>();
-  for (const m of RECON_MAP) {
-    if (!m.stems.some((st) => hay.includes(st))) continue;
-    const prev = byKey.get(m.key);
-    if (!prev || m.weight > prev.weight) {
-      byKey.set(m.key, { key: `beteende:${m.key}`, label: `hotindikator (foto): ${m.label}`, weight: m.weight });
+  const add = (key: string, label: string, weight: number) => {
+    const prev = byKey.get(key);
+    if (!prev || weight > prev.weight) {
+      byKey.set(key, { key: `beteende:${key}`, label: `hotindikator (foto): ${label}`, weight });
     }
+  };
+  for (const ind of THREAT_INDICATORS) {
+    const hit = ind.stems.find((st) => hay.includes(st));
+    if (hit) add(ind.key, `${ind.label} ("${hit}")`, ind.weight ?? 2);
   }
-  return [...byKey.values()];
+  for (const m of [...SURFACE_MAP, ...PHOTO_ACTIVITY_STEMS]) {
+    if (m.stems.some((st) => hay.includes(st))) add(m.key, m.label, m.weight);
+  }
+  return [...byKey.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 
 // --- sighting → per-item operator nominations -------------------------------
@@ -221,9 +256,11 @@ export function sightingToNominations(s: PhotoSighting, textPlates: string[]): P
       ...p.klader,
       ...p.utrustning,
     ].filter(Boolean);
-    // A person with no legible attribute at all isn't worth a review row.
-    if (bits.length === 0) continue;
-    out.push({ kind: "person", label: bits.join(", "), recon: reconBehaviours({ vehicles: [], persons: [p], ovrigt: [] }) });
+    // A person with no legible attribute AND no activity isn't worth a row.
+    if (bits.length === 0 && !p.aktivitet) continue;
+    const attrs = bits.join(", ");
+    const label = p.aktivitet ? (attrs ? `${attrs} — ${p.aktivitet}` : p.aktivitet) : attrs;
+    out.push({ kind: "person", label, recon: photoBehaviours({ vehicles: [], persons: [p], ovrigt: [] }) });
   }
 
   // Scene content stands on its own ONLY when no vehicle/person carried the
@@ -232,7 +269,7 @@ export function sightingToNominations(s: PhotoSighting, textPlates: string[]): P
     out.push({
       kind: "scene",
       label: s.ovrigt.join(", "),
-      recon: reconBehaviours({ vehicles: [], persons: [], ovrigt: s.ovrigt }),
+      recon: photoBehaviours({ vehicles: [], persons: [], ovrigt: s.ovrigt }),
     });
   }
   return out;

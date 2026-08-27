@@ -9,7 +9,7 @@ import {
   parseSighting,
   normalizePlateRead,
   samePlate,
-  reconBehaviours,
+  photoBehaviours,
   sightingToNominations,
   sightingHasFindings,
   PhotoSighting,
@@ -61,24 +61,49 @@ test("samePlate folds vanity-plate diacritics for comparison", () => {
 
 // --- recon-behaviour mapping (RECON subset only) ----------------------------
 
-test("reconBehaviours maps optics/measuring to the recon concepts, ignores the rest", () => {
+test("photoBehaviours maps optics/measuring, ignores benign attributes", () => {
   const withOptics: PhotoSighting = { vehicles: [], persons: [{ klader: [], utrustning: ["kikare", "ryggsäck"] }], ovrigt: [] };
-  const sig = reconBehaviours(withOptics);
+  const sig = photoBehaviours(withOptics);
   assert.equal(sig.length, 1);
   assert.equal(sig[0].key, "beteende:optik");
   assert.equal(sig[0].weight, 2);
   // A camera with a telephoto also reads as optik.
-  assert.equal(reconBehaviours({ vehicles: [], persons: [], ovrigt: ["man med teleobjektiv"] })[0].key, "beteende:optik");
-  // Nothing recon-relevant → no signal (a person just standing raises nothing).
-  assert.deepEqual(reconBehaviours({ vehicles: [], persons: [{ klader: ["röd jacka"], utrustning: [] }], ovrigt: [] }), []);
+  assert.equal(photoBehaviours({ vehicles: [], persons: [], ovrigt: ["man med teleobjektiv"] })[0].key, "beteende:optik");
+  // Nothing threat-relevant → no signal (a person just standing raises nothing).
+  assert.deepEqual(photoBehaviours({ vehicles: [], persons: [{ klader: ["röd jacka"], utrustning: [] }], ovrigt: [] }), []);
 });
 
-test("reconBehaviours NEVER infers the severe (act-not-photograph) behaviours", () => {
-  // Even if the model volunteers sabotage-ish prose, we map ONLY the recon subset.
-  const s: PhotoSighting = { vehicles: [], persons: [{ klader: [], utrustning: ["avbitartång", "bultsax"] }], ovrigt: ["klipper stängsel"] };
-  const keys = reconBehaviours(s).map((x) => x.key);
-  assert.ok(!keys.includes("beteende:sabotage"));
-  assert.ok(!keys.includes("beteende:verktyg"));
+test("aktivitet maps through the FULL threat-concept space (act-not-photograph revised)", () => {
+  const act = (aktivitet: string): string[] =>
+    photoBehaviours({ vehicles: [], persons: [{ klader: [], utrustning: [], aktivitet }], ovrigt: [] }).map((x) => x.key);
+  // The REAL measured phrasings from the live fence-climb image:
+  assert.deepEqual(act("hoppar över stängsel"), ["beteende:perimeter"], "4b phrasing (photo-only stem)");
+  assert.deepEqual(act("hoppa över stängsel"), ["beteende:perimeter"], "8b phrasing");
+  assert.deepEqual(act("tar sig över staketet"), ["beteende:perimeter"], "photo-only stem (text list has only past tense)");
+  assert.deepEqual(act("står och observerar"), ["beteende:observation"], "spotter");
+  // Benign activity → silence.
+  assert.deepEqual(act("går längs vägen"), []);
+  assert.deepEqual(act("står stilla"), []);
+  // Severe concepts are now allowed from photos — still operator-gated.
+  const severe = photoBehaviours({ vehicles: [], persons: [{ klader: [], utrustning: [], aktivitet: "klipper upp stängslet" }], ovrigt: [] });
+  assert.equal(severe[0]?.key, "beteende:sabotage");
+  assert.equal(severe[0]?.weight, 3, "weight-3 concept carries its text weight");
+});
+
+test("person nomination label carries the activity; activity alone earns a row", () => {
+  const s: PhotoSighting = {
+    vehicles: [],
+    persons: [
+      { kon: "man", alder: "medelålders", klader: ["blå jeans"], utrustning: ["hjälm"], aktivitet: "hoppar över stängsel" },
+      { klader: [], utrustning: [], aktivitet: "står och observerar" }, // attributes unreadable, activity visible
+    ],
+    ovrigt: [],
+  };
+  const noms = sightingToNominations(s, []).filter((n) => n.kind === "person");
+  assert.equal(noms.length, 2);
+  assert.equal(noms[0].kind === "person" && noms[0].label, "man, medelålders, blå jeans, hjälm — hoppar över stängsel");
+  assert.equal(noms[0].kind === "person" && noms[0].recon[0]?.key, "beteende:perimeter");
+  assert.equal(noms[1].kind === "person" && noms[1].label, "står och observerar");
 });
 
 // --- sighting → per-item nominations ----------------------------------------
