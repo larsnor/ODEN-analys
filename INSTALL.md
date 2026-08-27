@@ -138,9 +138,12 @@ Bra att veta i drift:
   handmatningsvägen, inget krav.
 - Plåtar i Symbol-fältet länkas `[[SÅ HÄR]]` av Oden själv; ODEN läser dem både
   som länkar och som ren prosa.
-- **Koordinatnot:** Oden t.o.m. v3.1.2 kan skriva fel `lat`/`lon` när Ställe
-  innehåller en MGRS-ruta med mellanslag (fixat uppströms, ännu inte släppt).
-  ODEN-analys korsar därför alltid frontmatter-koordinaten mot rutan i Ställe
+- **Versionsnot (Oden t.o.m. v3.1.2):** två kända luckor, båda fixade uppströms
+  efter den releasen (E2E-verifierade 2026-08-27, se `docs/E2E_BIN1.md`): fel
+  `lat`/`lon` när Ställe har en MGRS-ruta med mellanslag, och **foton i
+  7S-meddelanden släpps tyst** (bildstödet mergades fem dagar efter releasen).
+  Välj första release nyare än v3.1.2 — eller en snapshot — om ni skickar bilder.
+  ODEN-analys korsar dessutom alltid frontmatter-koordinaten mot rutan i Ställe
   och låter **rutan vinna** vid grov avvikelse — positionen på kartan och
   närhetslarmen förblir rätt även mot äldre Oden-versioner.
 - Nätverksbilden: ODEN-analys gör fortfarande inga egna nätverksanrop; Oden
