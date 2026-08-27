@@ -22,6 +22,7 @@ export const METOD = {
   plats: "plats", // location hubs
   objektet: "objektet", // the AOI marker
   aterkomst: "aterkomst", // recurrence nodes
+  bildfynd: "bildfynd", // confirmed photo findings (per report, llm-vision + operatör)
   textmarke: "text-marke", // LLM open-vocab kännetecken (confirmed, föreslagen-av: llm)
 } as const;
 

@@ -16,6 +16,7 @@ and hides the cloud of unconnected message dots:
 | Platser (relevant locations) | `tag:#plats` | amber |
 | Återkomst (same entity 2+× at a place) | `tag:#återkomst` | magenta |
 | Kännetecken (mark entities) | `file:marke-` | violet |
+| Bildfynd (confirmed photo findings) | `tag:#bildfynd` | cyan |
 | Fordon (vehicle entities) | `path:entities -tag:#objektet -tag:#aktör -tag:#plats -tag:#återkomst -file:marke- -tag:#larm` | green |
 | Meddelanden (raw 7S reports) | `file:TNR` | grey (hidden by default — see below) |
 

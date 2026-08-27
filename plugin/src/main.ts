@@ -49,6 +49,7 @@ import { buildSuspects, suspectHypId } from "./suspects";
 import { renderSuspectNotes } from "./suspect_notes";
 import { buildLocations, renderLocationNotes, LocationCluster, PredefinedLocation } from "./location_notes";
 import { renderRecurrenceNote, RecurrencePair } from "./recurrence_notes";
+import { buildPhotoFindings, renderPhotoFindingNotes } from "./photo_notes";
 import { isMgrsGrid, placeLabel } from "./places";
 import { LatLon, mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
@@ -1278,6 +1279,14 @@ export default class SevenSPlugin extends Plugin {
     await this.writeOwnedNotes(
       recs.pairs.map((p) => { const n = renderRecurrenceNote(p); return { name: n.filename, body: n.markdown }; }),
       METOD.aterkomst,
+    );
+    // Confirmed photo findings materialise as 📷-notes (embedding the image) —
+    // a confirmed judgement is a vault artifact, never write-only settings
+    // memory. Prune removes a note when its findings are withdrawn (↺ / wipe).
+    const findings = buildPhotoFindings(reports, this.settings, (r) => this.imageAttachments(r));
+    await this.writeOwnedNotes(
+      renderPhotoFindingNotes(findings, this.settings.locationNicknames).map((n) => ({ name: n.filename, body: n.markdown })),
+      METOD.bildfynd,
     );
   }
 

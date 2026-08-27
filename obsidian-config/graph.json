@@ -50,7 +50,14 @@
       }
     },
     {
-      "query": "path:entities -tag:#objektet -tag:#aktör -tag:#plats -tag:#återkomst -file:marke- -tag:#larm",
+      "query": "tag:#bildfynd",
+      "color": {
+        "a": 1,
+        "rgb": 47316
+      }
+    },
+    {
+      "query": "path:entities -tag:#objektet -tag:#aktör -tag:#plats -tag:#återkomst -file:marke- -tag:#bildfynd -tag:#larm",
       "color": {
         "a": 1,
         "rgb": 3066993

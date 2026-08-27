@@ -204,6 +204,18 @@ grind; recon-nyckelord i scenen ("kikare på bänken") mappas som för personer.
 När fordon/person finns förblir ovrigt kontext, ingen extra rad. Modellen såg
 något — operatören avgör relevansen; ingenting släpps tyst.
 
+### Uppföljning på scen-/bildfynden: bekräftade fynd blir noter (2026-08-27)
+
+Operatörens fråga "var lagras blå jeans-datat?" avslöjade att bekräftade
+foto-iakttagelser (fordon/person/scen) bara levde i settings — write-only-minne,
+oåtkomligt utanför granskningsskärmen. Nu materialiseras ett **📷 bildfynd-not**
+per rapport med bekräftade fotofynd, i entities/ (beslut: den befintliga
+skrivkontrakts-maskinerian förvaltar bara den mappen): fotot inbäddat, bekräftade
+regplåtar länkade till sina fordonsnoder, iakttagelser och foto-beteendesignaler
+listade, proveniens llm-vision + operatör. Ångra/nollställ rensar noten via
+per-metod-prunen. Ny graf-färgklass `#bildfynd` (cyan) i Bin 2-mallen — appliceras
+i ett live-valv först när Obsidian är stängt (som all Bin 2-konfig).
+
 ### Fas 4 — efterarbete
 
 - [ ] Komplettera `plugin/test/fixtures/bin1_v3/` med ~4–6 av fas 2-filerna (maska
