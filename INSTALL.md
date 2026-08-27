@@ -11,7 +11,11 @@ man väljer beror på var man börjar:
 | `ODEN-plugin-<v>.zip` | Den som redan har ett eget Obsidian-valv och vill lägga in ODEN där. |
 
 ODEN gör inga nätverksanrop. Det enda som någonsin rör nätet är Map Views
-karttiles, och den valfria AI:n pratar bara med din egen dator.
+karttiles, och den valfria AI:n pratar bara med din egen dator. Var medveten om
+att karttiles hämtas med din egen API-nyckel (se *Kartnyckel* nedan) – de
+anropen är alltså knutna till din installation och visar vilka områden som
+tittas på. Kartkällan **OpenStreetMap (ingen nyckel)** går utan nyckel, men går
+fortfarande ut på nätet.
 
 ---
 
@@ -39,6 +43,33 @@ platser, och testa gärna demodatan innan skarp drift.
 Kartpluginet [Map View](https://github.com/esm7/obsidian-map-view) följer med
 förinstallerat (MIT-licens, licensfilen ligger bredvid pluginet) – inget behöver
 hämtas från Obsidians katalog.
+
+### Kartnyckel – en minut, gratis
+
+Kartbakgrunden ritas med kartrutor från CartoDB, som sedan en tid kräver en egen
+API-nyckel. Utan nyckel fungerar kartan – markörer, klick och lager är opåverkade
+– men varje kartruta får en påstämplad text, *"API key required"*.
+
+1. Hämta en nyckel på [carto.com/basemaps/apikey](https://carto.com/basemaps/apikey).
+   Det går på en minut, kräver inget CARTO-konto, och nyckeln mejlas direkt.
+   Fri användning upp till 5 miljoner kartrutor per månad.
+2. Öppna **Settings → Map View** och leta upp kartkällan **CartoDB** i listan
+   över kartkällor.
+3. Lägg till `?key=DIN_NYCKEL` sist i adressen, så att den lyder:
+
+   ```
+   https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=DIN_NYCKEL
+   ```
+
+4. Stäng inställningarna. Kartan ritas om utan stämpel.
+
+Nyckeln är personlig – CARTO:s villkor tillåter inte att samma nyckel delas
+mellan orelaterade installationer, så den kan inte följa med i valv-zippen. Vill
+du hoppa över steget helt byter du kartkälla till **OpenStreetMap (ingen
+nyckel)**, som ligger färdig i valvet. Notera dock att OpenStreetMaps
+kartservrar drivs på donerad kapacitet och att deras villkor förbjuder att man
+laddar ned kartrutor i förväg – kör du air-gapped (se *Felsökning*) är CartoDB
+med egen nyckel det rätta valet.
 
 ## Väg B – Manuell installation i eget valv
 
@@ -68,6 +99,9 @@ Har man redan ett valv man vill använda tar man `ODEN-plugin-<v>.zip` i ställe
    Appearance → CSS snippets**. Vad varje fil gör beskrivs i
    `obsidian-config/README.md`. Graffärgerna syns för övrigt först när det
    finns entitetsnoter att färglägga.
+4. **Lägg in din kartnyckel** enligt *Kartnyckel* under Väg A ovan – kartkällorna
+   följer med i `map-view-data.json`, men nyckeln är personlig och måste läggas
+   till i efterhand.
 
 ## Efter installationen: sätt operationsområdet
 
@@ -125,6 +159,10 @@ du bekräftar eller avvisar (`föreslagen-av: llm`).
   Turn off Restricted mode, eller svara *"Trust author…"* när valvet öppnas.
 - **macOS vägrar öppna Obsidian** – högerklicka på appen och välj Öppna
   (Gatekeeper, bara första gången).
+- **Kartan har texten "API key required" på varje ruta** – CartoDB kräver en
+  egen API-nyckel. Hämta en gratis och klistra in den enligt *Kartnyckel* ovan,
+  eller byt kartkälla till **OpenStreetMap (ingen nyckel)** i Map Views
+  inställningar. Kartan i sig fungerar hela tiden; stämpeln är bara en påminnelse.
 - **Kartan visar inte ODEN-lagren** – en öppen kartpanel behåller sin egen
   filtrering; kör `⋯ → "Visa ODEN-lagren på kartan"` så återställs den.
 - **Grafen är tom** – noderna syns först när entitetsnoter skapats; mata in

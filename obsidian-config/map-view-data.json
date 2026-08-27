@@ -190,6 +190,10 @@
       "name": "CartoDB",
       "urlLight": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
       "preset": true
+    },
+    {
+      "name": "OpenStreetMap (ingen nyckel)",
+      "urlLight": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
     }
   ],
   "frontMatterKey": "location",

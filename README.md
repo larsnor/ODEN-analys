@@ -28,6 +28,21 @@ färdigkonfigurerat och det är tre steg från nedladdning till fungerande syste
 Sedan är det klart. Noten **Välkommen.md** ligger öppen och leder vidare – sätt
 operationsområdet, namnge platser och börja.
 
+**Kartnyckel (en minut).** Kartbakgrunden kommer från CartoDB, som numera kräver
+en egen nyckel. Hämta en gratis på
+[carto.com/basemaps/apikey](https://carto.com/basemaps/apikey) – det tar en
+minut, du behöver inget konto, och den räcker till 5 miljoner kartrutor i
+månaden. Klistra sedan in den i **Settings → Map View**, sist i kartkällans
+adress:
+
+```
+https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=DIN_NYCKEL
+```
+
+Utan nyckel fungerar kartan ändå, men rutorna får texten *"API key required"*.
+Vill du slippa den under tiden byter du kartkälla till **OpenStreetMap (ingen
+nyckel)**, som följer med i valvet.
+
 Vill man öva först finns mappen `demo/` i valvet: en syntetisk övningskorpus
 över fjorton dygn med knappt 350 rapporter, foton, en dold spaningscell och en
 demonstration. Kör kommandot *"ODEN: Mata demodata"* så spelas den upp i

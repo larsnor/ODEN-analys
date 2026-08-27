@@ -64,6 +64,34 @@ on-map control stack to a single button, and `saveHistory: false` drops the map
 search-history dropdown. The map **centre is set per-operation** by ODEN's
 "Konfigurera operationsområde", so the committed centre is only a starting point.
 
+### Basemap sources — CartoDB needs a key
+
+`mapSources` ships **two** entries and `chosenMapSource: 0` selects the first:
+
+| # | Source | Key |
+|---|--------|-----|
+| 0 | **CartoDB** (Voyager) — the default cartography | **required** |
+| 1 | **OpenStreetMap (ingen nyckel)** — keyless fallback | none |
+
+CARTO now requires an API key on `basemaps.cartocdn.com`; requests without one are
+served with an *"API key required"* watermark (the map still works). The key is
+**deliberately not committed** — CARTO's free tier forbids sharing a key across
+unrelated projects, so it cannot ride along in the vault zip. Each operator gets
+their own free key at [carto.com/basemaps/apikey](https://carto.com/basemaps/apikey)
+and appends it to the tile URL:
+
+```
+https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=<KEY>
+```
+
+The URL is left keyless in the template on purpose: a keyless CartoDB request
+degrades to a watermark, whereas a placeholder key would be rejected outright.
+
+CartoDB stays the default rather than OSM because this config sets
+`cacheAllTiles: true` (2 GB) and `INSTALL.md` tells air-gapped operators to pan the
+area through in advance — a prefetch pattern the OSM tile usage policy explicitly
+forbids. OSM is the right *manual fallback*, not the right default.
+
 **Map View's own map tools feed ODEN** (they cannot be hidden, so they work
 instead): right-click the map → **"New note here (front matter)"** drops a bare
 geolocation note, which ODEN detects and offers to turn into a *plats i förväg*

@@ -1,7 +1,8 @@
 # Välkommen till ODEN
 
 Det här valvet är färdigt att använda: ODEN-panelen nere till höger, kartan och
-grafen överst, och allt fungerar utan internet. ODEN läser de 7S-rapporter som
+grafen överst. Analysen körs helt på din egen dator – det enda som behöver nätet
+är kartbakgrunden. ODEN läser de 7S-rapporter som
 landar i mappen `inkorg/`, känner igen fordon och kännetecken som återkommer,
 poängsätter misstänkt aktivitet och larmar när något händer. Grundregeln genom
 hela systemet är enkel: **ODEN föreslår – du avgör.** Ingen koppling skapas utan
@@ -20,6 +21,15 @@ du en plats som **skyddsvärd** larmar ODEN vid aktivitet i närheten – prakti
 för det där förrådet som ligger lite avsides. Ett tips: högerklicka i kartan och
 välj *"Copy geolocation as front matter"*, så kan positionen klistras rakt in i
 formuläret.
+
+En sak till innan du sätter igång: **kartnyckeln**. Kartrutorna kommer från
+CartoDB, som kräver en egen nyckel. Hämta en gratis på
+[carto.com/basemaps/apikey](https://carto.com/basemaps/apikey) – en minut, inget
+konto behövs – och klistra in den i **Settings → Map View**, sist i CartoDB-
+källans adress så att den slutar med `?key=DIN_NYCKEL`. Utan nyckel fungerar
+kartan ändå, men rutorna får texten *"API key required"*; vill du slippa den
+byter du kartkälla till **OpenStreetMap (ingen nyckel)**, som redan ligger i
+valvet.
 
 Panelen är enkel att hitta i. Överst sitter temaknappen (🌙/☀︎), `＋ Obs` för att
 skriva en egen observation, och `⋯`-menyn. Raden med **📷 Bild · 📝 Text ·

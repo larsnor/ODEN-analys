@@ -44,6 +44,10 @@ made, so work can resume without re-deriving context.
   for *pre-provisioning* an area before going dark. Network is used only at prep
   time — nothing at operation time. (Map tiles are ODEN's only external dependency;
   the plugin itself makes zero network calls.)
+  NB (2026-08): CARTO now requires an API key for its basemaps, so the one external
+  dependency is also an *attributable* one — tile requests are tied to the operator's
+  key and reveal which areas are being viewed. That strengthens the case for this
+  item: a local tile source removes the key, the watermark and the disclosure at once.
 
 - [ ] **Offline geocoding (name → coordinate) — separate from tiles.** Downloading
   tiles only makes the map *visible*; name search still hits OSM Nominatim (a live
