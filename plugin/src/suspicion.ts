@@ -18,6 +18,11 @@
  */
 import { Report } from "./parse";
 import { extractCraft } from "./craft";
+import { haversineM } from "./mgrs";
+
+// Moved to mgrs.ts (parse.ts needs it upstream of this module); re-exported so
+// existing importers (location_notes, derive, tests) are untouched.
+export { haversineM };
 
 export interface Signal {
   key: string;
@@ -148,17 +153,6 @@ export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: num
  *  signal and dedupe cleanly. */
 export function threatConcepts(): { key: string; label: string; weight: number }[] {
   return THREAT_INDICATORS.map((i) => ({ key: i.key, label: i.label, weight: i.weight ?? 2 }));
-}
-
-const R = 6371000; // earth radius (m)
-export function haversineM(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const toRad = (d: number) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
 }
 
 function hourOf(tidpunkt: string): number | null {

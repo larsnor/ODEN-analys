@@ -31,7 +31,13 @@ test("parses new-format msg1 (boat, frontmatter coords, no Symbol/links)", () =>
   assert.match(r.handelse ?? "", /mörkt klädda/);
   // Ställe carries the MGRS grid even though frontmatter plats does not
   assert.match(r.stalle ?? "", /33VXF 66651 79308/);
-  assert.equal(r.lat, 58.62877);
+  // The fixture's frontmatter says 58.62877,16.72219 — ~104 km from its own
+  // Ställe grid. That is the intake app's (≤3.1.2) spaced-MGRS conversion bug,
+  // present in this real example message all along; the coordinate cross-check
+  // now corrects it from the grid (33VXF 66651 79308 → 59.31963,17.92848).
+  assert.equal(r.coordsFromMgrs, true, "gross frontmatter/grid mismatch → grid wins");
+  assert.ok(Math.abs((r.lat ?? 0) - 59.31963) < 1e-3, `lat ${r.lat}`);
+  assert.ok(Math.abs((r.lon ?? 0) - 17.92848) < 1e-3, `lon ${r.lon}`);
   assert.equal(r.sedan, "-");
   assert.equal(r.symbol, undefined); // Symbol optional, absent here
   assert.equal(r.links.length, 0); // NO wikilinks in this format

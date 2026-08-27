@@ -10,7 +10,7 @@
  * Note: real `bin1-intag` reports also carry `källa` and `bilagor` — agreed but
  * not yet written into FORMAT_SPEC v1.0 — so we read them DEFENSIVELY (optional).
  */
-import { findMgrsLatLon, LatLon } from "./mgrs";
+import { findMgrsLatLon, haversineM, LatLon } from "./mgrs";
 
 /** Link reference as it literally appears in a message — a raw ref, NOT an
  *  Entity. The intake app (källappen) emits refs; deriving Entities is this
@@ -258,6 +258,26 @@ export function parseReport(text: string, file: string, issues?: ParseIssue[]): 
   if (lat === undefined || lon === undefined) {
     const ll = findMgrsLatLon(fields.stalle ?? "") ?? findMgrsLatLon(plats);
     if (ll) {
+      lat = Math.round(ll.lat * 1e5) / 1e5;
+      lon = Math.round(ll.lon * 1e5) / 1e5;
+      coordsFromMgrs = true;
+    }
+  } else {
+    // Cross-check: when the body ALSO carries an MGRS grid, the two must agree.
+    // The intake app (källappen) ≤3.1.2 mis-converts spaced grids and emits a
+    // stale frontmatter coordinate while the grid in Ställe is correct — and a
+    // silently wrong position poisons the map AND the proximity signal. The
+    // observer wrote the grid; the coordinate is derived — so on gross mismatch
+    // the grid wins, and the disagreement is surfaced as a parse issue. 10 km is
+    // far above any legitimate grid-precision disagreement (a 1 km cell centres
+    // ≤ ~700 m off) and far below the observed bug (~75–100 km).
+    const ll = findMgrsLatLon(fields.stalle ?? "") ?? findMgrsLatLon(plats);
+    if (ll && haversineM(lat, lon, ll.lat, ll.lon) > 10_000) {
+      const km = Math.round(haversineM(lat, lon, ll.lat, ll.lon) / 1000);
+      note(
+        `coordinate mismatch: frontmatter (${lat},${lon}) is ~${km} km from the ` +
+          `Ställe MGRS grid (${ll.lat.toFixed(5)},${ll.lon.toFixed(5)}) — using the grid`,
+      );
       lat = Math.round(ll.lat * 1e5) / 1e5;
       lon = Math.round(ll.lon * 1e5) / 1e5;
       coordsFromMgrs = true;

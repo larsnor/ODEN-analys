@@ -125,6 +125,50 @@ test("coordinate-less report omits lat/lon/location cleanly", () => {
   assert.equal(r.links.length, 0);
 });
 
+// --- coordinate cross-check (Bin 1 ≤3.1.2 emits wrong frontmatter coords for
+// --- spaced MGRS grids while the grid in Ställe is correct) ------------------
+
+/** Report text with frontmatter coords + an MGRS grid in Ställe. */
+function coordReport(lat: number, lon: number, stalle: string): string {
+  return [
+    "---", "id: C1", "typ: 7S-rapport", 'tnr: "271039"', 'tidpunkt: "2026-08-27T10:38:00"',
+    'plats: "Vällingevägen"', `lat: ${lat}`, `lon: ${lon}`, "sagesman: AQ", "---",
+    "", "**TNR:** 271039", "", `**Ställe:** ${stalle}`, "",
+    "**Händelse:** En man observerade grinden.", "",
+  ].join("\n");
+}
+
+test("coordinate cross-check: gross frontmatter/grid mismatch → grid wins + issue", () => {
+  // The REAL TNR271039 shape: grid 33VXF 54366 72296 (≈59.261,17.708 — Vällinge)
+  // but frontmatter says 58.62877,16.72219 (~75 km off, the intake-app bug).
+  const issues: import("../src/parse.ts").ParseIssue[] = [];
+  const r = parseReport(coordReport(58.62877, 16.72219, "33VXF 54366 72296, Vällingevägen"), "c1.md", issues);
+  assert.equal(r.coordsFromMgrs, true, "grid-derived coords take over");
+  assert.ok(Math.abs((r.lat ?? 0) - 59.2614) < 1e-3, `lat ${r.lat}`);
+  assert.ok(Math.abs((r.lon ?? 0) - 17.70788) < 1e-3, `lon ${r.lon}`);
+  assert.equal(issues.length, 1, "the disagreement is surfaced");
+  assert.match(issues[0].message, /coordinate mismatch/);
+  assert.match(issues[0].message, /km/);
+});
+
+test("coordinate cross-check: agreeing coords are kept verbatim, no issue", () => {
+  // Frontmatter ~200 m from the grid centre (legitimate precision difference).
+  const issues: import("../src/parse.ts").ParseIssue[] = [];
+  const r = parseReport(coordReport(59.263, 17.709, "33VXF 54366 72296, Vällingevägen"), "c2.md", issues);
+  assert.equal(r.coordsFromMgrs, false);
+  assert.equal(r.lat, 59.263, "frontmatter kept exactly");
+  assert.equal(r.lon, 17.709);
+  assert.deepEqual(issues, []);
+});
+
+test("coordinate cross-check: no grid in Ställe → frontmatter kept, unchanged behaviour", () => {
+  const issues: import("../src/parse.ts").ParseIssue[] = [];
+  const r = parseReport(coordReport(58.62877, 16.72219, "Vägren vid grinden"), "c3.md", issues);
+  assert.equal(r.coordsFromMgrs, false);
+  assert.equal(r.lat, 58.62877);
+  assert.deepEqual(issues, []);
+});
+
 test("parseMapSeed: a Map View 'New note here' note is a seed; reports/owned notes are not", () => {
   // Exactly what Map View "New note here (front matter)" writes.
   const seed = parseMapSeed('---\nlocation: "59.2622,17.712"\n---\n\n');
