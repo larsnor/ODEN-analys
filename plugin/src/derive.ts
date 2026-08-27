@@ -349,25 +349,27 @@ export function buildFeedItems(
       label: opName ?? `${h.vehicleCount} fordon + ${h.markCount} kännetecken`,
     });
   }
-  // Alarms (link to the observation itself).
-  const elevated = new Set<string>();
+  // Alarms — CHILDREN of the arrival row, never replacements for it. The
+  // synthetic path keeps the report's own "mottaget" row alive through the
+  // by-path dedup; `parentPath` hangs the alarm indented under that arrival, so
+  // the log always shows BOTH "the message arrived" and "…and it alarmed".
   for (const row of bundle.suspicion.elevated) {
-    elevated.add(row.file);
     items.push({
-      path: row.file,
+      path: `larm:${row.file}`,
       kind: "larm",
       time: ms(row.tidpunkt),
       plats: placeLabel(row.plats, s.locationNicknames),
       level: suspicionLevel(row.score),
       reasons: reasonPhrases(row.reasons),
+      file: row.file,
+      parentPath: row.file,
     });
   }
 
-  // Every arriving report shows as a quiet "mottaget" row — the feed must feel
-  // alive while reports land even when nothing is derived from them yet.
-  // Elevated reports are skipped (their larm row IS the arrival; same path).
+  // EVERY arriving report shows as a quiet "mottaget" row — the feed must feel
+  // alive while reports land, and a flagged message must still visibly have
+  // ARRIVED (its larm row hangs under this one; it no longer replaces it).
   for (const r of bundle.reports) {
-    if (elevated.has(r.file)) continue;
     items.push({ path: r.file, kind: "mottaget", time: ms(r.tidpunkt), tnr: r.tnr, plats: placeLabel(r.plats, s.locationNicknames) });
   }
 

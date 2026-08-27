@@ -2652,6 +2652,14 @@ class SevenSTextView extends ItemView {
                 : "");
       row.style.cssText = base;
       if (r.kind === "mottaget") row.style.opacity = ".6"; // quiet arrivals; alarms stay dominant
+      // A derived event hangs indented under its message's arrival row — the
+      // subtle guide line makes the "belongs to the row above" relation visible.
+      if (r.child) {
+        row.style.marginLeft = "14px";
+        row.style.paddingLeft = "8px";
+        row.style.borderLeft = "2px solid var(--background-modifier-border)";
+        row.style.borderRadius = "0 4px 4px 0";
+      }
       row.setText(r.text);
       row.onclick = () => {
         if (r.review === "actors") void this.plugin.runDeriveActors();

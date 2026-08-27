@@ -26,6 +26,7 @@ import { buildActorHypotheses } from "../src/actor.ts";
 import { buildMarkNominations } from "../src/jobb.ts";
 import { buildPlateEntities } from "../src/reid.ts";
 import { AnalysisBundle } from "../src/alerts.ts";
+import { buildFeed } from "../src/feed.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const PROT = { protectedLat: 59.0, protectedLon: 17.0, threshold: 5 };
@@ -288,7 +289,7 @@ test("buildFeedItems: a watched entity with fresh activity yields an amber 🔭 
   assert.equal(buildFeedItems(bundle, state(), new Map(), new Set(), 0, new Set(), 0, watchSeen).filter((i) => i.kind === "bevakad").length, 0);
 });
 
-test("buildFeedItems: every report shows as a mottaget row — except elevated ones (their larm row is the arrival)", () => {
+test("buildFeedItems: EVERY report shows as a mottaget row; an alarm hangs under its arrival, never replaces it", () => {
   const reports = [
     report({ tnr: "121200", tidpunkt: "2026-06-15T12:00:00", lat: 59.4, lon: 17.9, handelse: "Personbil passerade." }),
     report({ tnr: "150300", tidpunkt: "2026-06-15T03:00:00", handelse: "Stod stilla länge och betraktade grinden med kikare." }),
@@ -296,7 +297,21 @@ test("buildFeedItems: every report shows as a mottaget row — except elevated o
   const bundle = bundleFrom(reports);
   assert.ok(bundle.suspicion.elevated.some((r) => r.tnr === "150300"), "fixture: the night observer elevates");
   const items = buildFeedItems(bundle, state(), new Map());
+  // Both reports arrive — the flagged one too (this was the operator's E2E ask:
+  // the log must show BOTH "message arrived" and the warning, for completeness).
   const mottagna = items.filter((i) => i.kind === "mottaget");
-  assert.deepEqual(mottagna.map((m) => m.tnr), ["121200"], "benign report → mottaget row");
-  assert.ok(items.some((i) => i.kind === "larm" && i.path.includes("150300")), "elevated report → larm row instead");
+  assert.deepEqual(mottagna.map((m) => m.tnr).sort(), ["121200", "150300"]);
+  // The larm is a CHILD of the arrival: synthetic path (so it never dedups the
+  // mottaget row away), parentPath = the report, file = the real click target.
+  const larm = items.find((i) => i.kind === "larm")!;
+  assert.equal(larm.path, "larm:reports/TNR150300.md");
+  assert.equal(larm.parentPath, "reports/TNR150300.md");
+  assert.equal(larm.file, "reports/TNR150300.md");
+  // Through buildFeed: arrival first, alarm indented directly under it.
+  const rows = buildFeed(items);
+  const iArr = rows.findIndex((r) => r.kind === "mottaget" && r.stem === "TNR150300");
+  assert.ok(iArr >= 0, "flagged report's arrival row present");
+  assert.equal(rows[iArr + 1].kind, "larm", "alarm directly under its arrival");
+  assert.equal(rows[iArr + 1].child, true, "…and marked as a child (indented)");
+  assert.equal(rows[iArr + 1].stem, "TNR150300", "child clicks through to the report");
 });

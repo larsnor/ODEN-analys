@@ -43,6 +43,32 @@ test("pending-suggestion rows pin to top with a review action", () => {
   assert.equal(rows[2].kind, "fordon"); // real events below the suggestions
 });
 
+test("a child row hangs directly under its parent, marked for indentation", () => {
+  const items: FeedItem[] = [
+    // Deliberately interleaved times: another arrival lands between the flagged
+    // report and its alarm — the child must still stick to ITS parent.
+    { path: "reports/TNR160300.md", kind: "mottaget", time: ms("2026-06-16T03:00:00"), tnr: "160300", plats: "Grindarna" },
+    { path: "larm:reports/TNR160300.md", kind: "larm", time: ms("2026-06-16T03:00:00"), plats: "Grindarna", level: "Hög", reasons: ["nära objektet"], file: "reports/TNR160300.md", parentPath: "reports/TNR160300.md" },
+    { path: "reports/TNR160305.md", kind: "mottaget", time: ms("2026-06-16T03:05:00"), tnr: "160305", plats: "Bryggan" },
+  ];
+  const rows = buildFeed(items);
+  assert.deepEqual(rows.map((r) => r.kind), ["mottaget", "mottaget", "larm"], "newest arrival first; alarm under its own arrival");
+  assert.equal(rows[1].stem, "TNR160300");
+  assert.equal(rows[2].child, true, "alarm indents under the arrival");
+  assert.equal(rows[2].stem, "TNR160300", "child clicks through to the report");
+  assert.equal(rows[0].child, undefined, "unrelated arrival stays top-level");
+});
+
+test("an orphan child (parent deduped/capped away) degrades to a normal top-level row", () => {
+  const items: FeedItem[] = [
+    { path: "larm:reports/TNR160300.md", kind: "larm", time: ms("2026-06-16T03:00:00"), plats: "Grindarna", level: "Hög", file: "reports/TNR160300.md", parentPath: "reports/TNR160300.md" },
+  ];
+  const rows = buildFeed(items);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].kind, "larm");
+  assert.equal(rows[0].child, undefined, "no parent present → not indented");
+});
+
 test("respects the limit", () => {
   const items: FeedItem[] = Array.from({ length: 100 }, (_, i) => ({
     path: `reports/TNR${i}.md`,

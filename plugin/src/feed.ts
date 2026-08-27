@@ -50,6 +50,10 @@ export interface FeedItem {
   /** For a "bevakad" row: the watchlist key — clicking marks the activity seen
    *  (baseline reset) in addition to opening the entity note. */
   watchKey?: string;
+  /** Path of the item this row hangs UNDER (e.g. a larm under its report's
+   *  "mottaget" row). The child renders indented directly below its parent; an
+   *  orphan (parent deduped/capped away) falls back to a normal top-level row. */
+  parentPath?: string;
 }
 
 export interface FeedRow {
@@ -60,6 +64,9 @@ export interface FeedRow {
   review?: "actors" | "marks" | "place" | "photos" | "texts";
   place?: string;
   watchKey?: string;
+  /** Render indented under the row above (a derived event hanging under its
+   *  message's arrival row). */
+  child?: boolean;
 }
 
 function label(item: FeedItem): string {
@@ -93,23 +100,44 @@ function label(item: FeedItem): string {
   }
 }
 
-/** Dedup by path (keep newest), sort newest-first, label, cap. */
+/** Dedup by path (keep newest), sort newest-first, hang children under their
+ *  parents (an alarm indents under its message's arrival row), label, cap. */
 export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
   const byPath = new Map<string, FeedItem>();
   for (const it of items) {
     const prev = byPath.get(it.path);
     if (!prev || it.time > prev.time) byPath.set(it.path, it);
   }
-  return [...byPath.values()]
-    .sort((a, b) => b.time - a.time)
-    .slice(0, limit)
-    .map((it): FeedRow => ({
-      kind: it.kind,
-      text: label(it),
-      stem: noteStem(it.file ?? it.path),
-      severity: it.review ? "review" : it.kind === "larm" ? "larm" : it.kind === "bevakad" ? "bevakad" : "info",
-      review: it.review,
-      place: it.place,
-      watchKey: it.watchKey,
-    }));
+  const sorted = [...byPath.values()].sort((a, b) => b.time - a.time);
+
+  // Children attach directly under their parent regardless of sort ties; an
+  // orphan (parent missing) degrades to a normal top-level row. Grouping runs
+  // BEFORE the cap so a child is never separated from its parent by the limit.
+  const childrenOf = new Map<string, FeedItem[]>();
+  const top: FeedItem[] = [];
+  const present = new Set(sorted.filter((i) => !i.parentPath).map((i) => i.path));
+  for (const it of sorted) {
+    if (it.parentPath && present.has(it.parentPath)) {
+      if (!childrenOf.has(it.parentPath)) childrenOf.set(it.parentPath, []);
+      childrenOf.get(it.parentPath)!.push(it);
+    } else {
+      top.push(it);
+    }
+  }
+  const flat: Array<{ it: FeedItem; child: boolean }> = [];
+  for (const it of top) {
+    flat.push({ it, child: false });
+    for (const c of childrenOf.get(it.path) ?? []) flat.push({ it: c, child: true });
+  }
+
+  return flat.slice(0, limit).map(({ it, child }): FeedRow => ({
+    kind: it.kind,
+    text: label(it),
+    stem: noteStem(it.file ?? it.path),
+    severity: it.review ? "review" : it.kind === "larm" ? "larm" : it.kind === "bevakad" ? "bevakad" : "info",
+    review: it.review,
+    place: it.place,
+    watchKey: it.watchKey,
+    ...(child ? { child: true } : {}),
+  }));
 }
