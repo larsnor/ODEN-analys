@@ -109,6 +109,32 @@ test("sightingToNominations flags a photo plate that CONFLICTS with a typed one"
   assert.equal(ok.kind === "plate" && ok.conflict, false);
 });
 
+test("scene-only sighting nominates (the 'eld' photo case) — never silently dropped", () => {
+  // Live E2E: a fire photo returned pure ovrigt and vanished, because findings
+  // only meant plates/vehicles/persons. Scene content must reach the operator.
+  const s: PhotoSighting = { vehicles: [], persons: [], ovrigt: ["svart grill", "två behållare på grillen"] };
+  assert.equal(sightingHasFindings(s), true, "ovrigt alone IS a finding");
+  const noms = sightingToNominations(s, []);
+  assert.equal(noms.length, 1);
+  assert.equal(noms[0].kind, "scene");
+  assert.match(noms[0].kind === "scene" ? noms[0].label : "", /svart grill, två behållare/);
+  // Recon keywords in the scene still map (same gate as person equipment).
+  const withOptics: PhotoSighting = { vehicles: [], persons: [], ovrigt: ["kikare på bänken"] };
+  const [n] = sightingToNominations(withOptics, []);
+  assert.equal(n.kind === "scene" && n.recon[0]?.key, "beteende:optik");
+});
+
+test("scene stays contextual when a vehicle/person already carries the photo", () => {
+  const s: PhotoSighting = {
+    vehicles: [{ typ: "bil", farg: "röd" }],
+    persons: [],
+    ovrigt: ["parkering", "träd"],
+  };
+  const noms = sightingToNominations(s, []);
+  assert.ok(noms.some((n) => n.kind === "vehicle"));
+  assert.ok(!noms.some((n) => n.kind === "scene"), "ovrigt is context, not a separate row");
+});
+
 test("sightingToNominations: an attribute-less person yields no row; a non-plate skylt is dropped", () => {
   const s: PhotoSighting = {
     vehicles: [{ farg: "svart", skylt: "okänd" }],

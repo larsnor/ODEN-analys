@@ -189,6 +189,21 @@ kommandot (`ollama pull <modell>`).
   m.fl. är nu sammanfattningsord — chatten är förbättringen, aldrig
   förutsättningen.
 
+### Fynd: scenfoto "försvann" ur bildanalysen (2026-08-27, kollegetest)
+
+En kollega skickade en 7S-rapport ("eld") med foto från annan ort — rapporten
+landade perfekt, bilden analyserades (cachen visar ett fullgott svar på svenska,
+prompt v2: "svart grill, två behållare på grillen, …") men **inget nådde
+operatören**: granskningsskiktet räknade bara skyltar/fordon/personer som fynd,
+och ett rent scenfoto är bara `ovrigt` → tyst släppt. ("Fjärrort" var alltså
+oskyldigt — analysen läser bara valvet.)
+
+Åtgärdat: en **scen-nominering** — när varken fordon eller person bär fotot blir
+scenbeskrivningen en egen granskningsrad (📷 Scen) med samma bekräfta/avvisa-
+grind; recon-nyckelord i scenen ("kikare på bänken") mappas som för personer.
+När fordon/person finns förblir ovrigt kontext, ingen extra rad. Modellen såg
+något — operatören avgör relevansen; ingenting släpps tyst.
+
 ### Fas 4 — efterarbete
 
 - [ ] Komplettera `plugin/test/fixtures/bin1_v3/` med ~4–6 av fas 2-filerna (maska

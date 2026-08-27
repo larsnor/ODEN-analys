@@ -186,7 +186,13 @@ export function reconBehaviours(s: PhotoSighting): Signal[] {
 export type PhotoNomination =
   | { kind: "plate"; value: string; conflict: boolean }
   | { kind: "vehicle"; label: string }
-  | { kind: "person"; label: string; recon: Signal[] };
+  | { kind: "person"; label: string; recon: Signal[] }
+  /** Scene-level content (`ovrigt`) with no vehicle/person — a fire, smoke, a
+   *  breached fence, a left object. Found in live E2E: an "eld" photo came back
+   *  as pure ovrigt ("svart grill, två behållare …") and was silently dropped,
+   *  because "findings" only meant plates/vehicles/persons. The model DID see
+   *  something; the operator decides its relevance — nominate, never discard. */
+  | { kind: "scene"; label: string; recon: Signal[] };
 
 /** Turn a sighting into the per-item review list (locked decision: each plate/
  *  vehicle/person is accepted or rejected on its own). `textPlates` = plates the
@@ -219,10 +225,20 @@ export function sightingToNominations(s: PhotoSighting, textPlates: string[]): P
     if (bits.length === 0) continue;
     out.push({ kind: "person", label: bits.join(", "), recon: reconBehaviours({ vehicles: [], persons: [p], ovrigt: [] }) });
   }
+
+  // Scene content stands on its own ONLY when no vehicle/person carried the
+  // photo's meaning — otherwise ovrigt is context the other rows already imply.
+  if (out.length === 0 && s.ovrigt.length > 0) {
+    out.push({
+      kind: "scene",
+      label: s.ovrigt.join(", "),
+      recon: reconBehaviours({ vehicles: [], persons: [], ovrigt: s.ovrigt }),
+    });
+  }
   return out;
 }
 
 /** Does a sighting carry anything the operator would review? (skip empty `{}`.) */
 export function sightingHasFindings(s: PhotoSighting): boolean {
-  return s.vehicles.length > 0 || s.persons.length > 0;
+  return s.vehicles.length > 0 || s.persons.length > 0 || s.ovrigt.length > 0;
 }

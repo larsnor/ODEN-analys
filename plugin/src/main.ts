@@ -1768,7 +1768,7 @@ export default class SevenSPlugin extends Plugin {
     } else {
       this.settings.photoAnnotations[file] = (this.settings.photoAnnotations[file] ?? []).filter((l) => l !== nom.label);
       if (!this.settings.photoAnnotations[file].length) delete this.settings.photoAnnotations[file];
-      if (nom.kind === "person" && nom.recon.length) {
+      if ((nom.kind === "person" || nom.kind === "scene") && nom.recon.length) {
         // Best-effort: withdraw the recon signals this confirmation contributed.
         const keys = new Set(nom.recon.map((s) => s.key));
         const left = (this.settings.confirmedBehaviours[file] ?? []).filter((s) => !keys.has(s.key));
@@ -1853,8 +1853,9 @@ export default class SevenSPlugin extends Plugin {
     } else {
       const arr = this.settings.photoAnnotations[file] ?? [];
       this.settings.photoAnnotations[file] = [...arr, nom.label];
-      // A confirmed person's recon behaviours feed that report's suspicion score.
-      if (nom.kind === "person" && nom.recon.length) {
+      // Confirmed recon behaviours (person equipment OR scene content) feed
+      // that report's suspicion score.
+      if ((nom.kind === "person" || nom.kind === "scene") && nom.recon.length) {
         const cur = this.settings.confirmedBehaviours[file] ?? [];
         const merged = [...cur];
         for (const s of nom.recon) if (!merged.some((x) => x.key === s.key)) merged.push(s);
@@ -2786,7 +2787,7 @@ class SevenSTextView extends ItemView {
       content.createEl("p", { text: "Inga bildfynd att granska. Kör bildanalys (📷) först." }).style.opacity = ".7";
       return;
     }
-    const order = { plate: 0, vehicle: 1, person: 2 } as const;
+    const order = { plate: 0, vehicle: 1, person: 2, scene: 3 } as const;
     // Reports with pending findings first; fully-decided cards after.
     const ordered = [
       ...rows.filter((r) => r.noms.some((n) => !n.status)),
@@ -2809,7 +2810,11 @@ class SevenSTextView extends ItemView {
       for (const { nom, status } of sorted) {
         const row = card.createDiv();
         row.style.cssText = "display:flex;align-items:center;gap:6px;padding:2px 0;font-size:.9em;";
-        const tag = nom.kind === "plate" ? "📷 Skylt" : nom.kind === "vehicle" ? "📷 Fordon" : "📷 Person";
+        const tag =
+          nom.kind === "plate" ? "📷 Skylt"
+          : nom.kind === "vehicle" ? "📷 Fordon"
+          : nom.kind === "person" ? "📷 Person"
+          : "📷 Scen";
         const val =
           nom.kind === "plate"
             ? `${nom.value}${nom.conflict ? " ⚠ avviker från regplåten i texten" : ""}`
