@@ -82,6 +82,48 @@ test("decoupling preserves old-corpus plate extraction (regression)", () => {
   }
 });
 
+// --- partial plate masks in PROSE (the real Bin 1 fails to [[link]] dot-edged
+// --- masks — its \b regex has no boundary between a dot and a space) ---------
+
+test("prose partials: dot-edged masks are extracted (trailing, leading, spec examples)", () => {
+  const cases: Array<[string, string]> = [
+    ["Samma skåpbil, reg RJK2..", "RJK2.."], // the live E2E M3 case
+    ["Delvis avläst ..G41. på plåten", "..G41."], // FORMAT_SPEC §6.4 example
+    ["reg .JK..1 skymtad", ".JK..1"],
+    ["reg RJK24.. i mörkret", "RJK24."], // mask is exactly 6; 7th dot = sentence stop
+  ];
+  for (const [text, expected] of cases) {
+    const p = plateIdentifiers(mkNew(text)).find((i) => i.partial);
+    assert.equal(p?.value, expected, text);
+    assert.equal(p?.source, "prose-handelse", text);
+  }
+});
+
+test("prose partials: precision guards — punctuation, initials and fulls never spawn masks", () => {
+  for (const text of [
+    "Såg RJK241. Sedan körde den vidare.", // full + sentence stop → full only
+    "Rapportör N.N... inget mer känt", // initials + ellipsis: <3 read positions
+    "Vänta... nu kommer den",
+    "Mötet kl 14.30.. oklart",
+  ]) {
+    const ids = plateIdentifiers(mkNew(text));
+    assert.equal(ids.filter((i) => i.partial).length, 0, `bogus partial in: ${text}`);
+  }
+  // The full in the first case is still read.
+  assert.equal(plateIdentifiers(mkNew("Såg RJK241. Sedan körde den vidare."))[0]?.value, "RJK241");
+});
+
+test("prose partial resolves through plate re-id like a linked one (the M2+M3 chain)", () => {
+  const reports = [
+    mkNew("Skåpbil reg RJK241 vid grinden", "Grindarna", "140000"),
+    mkNew("Samma skåpbil passerar igen, reg RJK2..", "Grindarna", "150000"),
+  ];
+  const r = buildPlateEntities(reports);
+  const rjk = r.entities.find((e) => e.canonical === "RJK241");
+  assert.equal(rjk?.count, 2, "masked sighting merged (unique full observed)");
+  assert.deepEqual(rjk?.resolvedPartials, ["RJK2.."]);
+});
+
 test("a linked plate is not double-counted with its prose occurrence", () => {
   // Old-style report: plate inside [[ ]] within Symbol prose.
   const text = [

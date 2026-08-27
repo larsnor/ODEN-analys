@@ -16,7 +16,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { ParseIssue, parseReport, Report } from "../src/parse.ts";
-import { extractIdentifiers } from "../src/ids.ts";
+import { extractIdentifiers, plateIdentifiers } from "../src/ids.ts";
+import { buildPlateEntities } from "../src/reid.ts";
 import { analyzeSuspicion, DEFAULT_SUSPICION } from "../src/suspicion.ts";
 import { extractMarks } from "../src/marks.ts";
 
@@ -41,28 +42,61 @@ test("real Bin 1 v3 output parses with every contract field populated", () => {
     assert.ok(r.id.startsWith("7S-"), `${r.file}: uuid id`);
     assert.ok(r.signalAvsandareId, `${r.file}: signal sender id`);
     assert.ok(r.sagesman, `${r.file}: sagesman`);
-    assert.ok(r.handelse, `${r.file}: Händelse prose`);
+    // Either format: free-prose Händelse, or the legacy telegraphic trio
+    // (the live E2E deliberately exercised both — M2/TNR271415 is legacy).
+    assert.ok(
+      r.handelse || (r.styrka && r.slag && r.sysselsattning),
+      `${r.file}: Händelse or Styrka/Slag/Sysselsättning`,
+    );
     assert.match(r.stalle ?? "", /\d{1,2}[C-X][A-Z]{2} \d+ \d+/, `${r.file}: MGRS in Ställe`);
-    assert.equal(r.sedan, "-", `${r.file}: Sedan placeholder`);
+    // Sedan is "-" when sent, absent when the sender omitted the line.
+    assert.ok(r.sedan === "-" || r.sedan === undefined, `${r.file}: Sedan`);
   }
 });
 
 test("v3.1.2 coordinate bug is corrected by the cross-check (grid wins, issue raised)", () => {
   const { reports, issues } = load();
-  // Both captured files carry the SAME stale frontmatter coordinate
-  // (58.62877,16.72219) regardless of their actual — differing — grids.
+  // Every captured file with frontmatter coords carries the SAME stale
+  // coordinate (58.62877,16.72219) regardless of its actual — differing — grid;
+  // the bare-grid file (TNR271420, no comma in Ställe → oden writes no coords)
+  // is instead plain grid-derived. Either way the position ends up correct.
   for (const r of reports) {
     assert.equal(r.coordsFromMgrs, true, `${r.file}: grid-derived coords take over`);
   }
-  const t27 = reports.find((r) => r.tnr === "271039")!;
-  assert.ok(Math.abs((t27.lat ?? 0) - 59.2614) < 1e-3, `Vällingevägen lat ${t27.lat}`);
-  const t26 = reports.find((r) => r.tnr === "261132")!;
-  assert.ok(Math.abs((t26.lat ?? 0) - 59.3496) < 1e-3, `Teknikringen lat ${t26.lat}`);
+  for (const [tnr, lat] of [
+    ["271039", 59.2614], // Vällingevägen (2026-08-26 capture)
+    ["261132", 59.3496], // Teknikringen
+    ["271436", 59.2614], // E2E M1 — live re-confirmation of the same stale coord
+    ["271420", 59.2614], // E2E M3 — bare grid, no frontmatter coords at all
+  ] as const) {
+    const r = reports.find((x) => x.tnr === tnr)!;
+    assert.ok(Math.abs((r.lat ?? 0) - lat) < 1e-3, `${tnr}: lat ${r.lat}`);
+  }
+  const withFrontmatterCoords = 4; // all except the bare-grid TNR271420
   assert.equal(
     issues.filter((i) => /coordinate mismatch/.test(i.message)).length,
-    reports.length,
-    "one surfaced mismatch per affected file",
+    withFrontmatterCoords,
+    "one surfaced mismatch per file that HAD (wrong) frontmatter coords",
   );
+});
+
+test("E2E M2+M3: Bin 1 links the full plate but NOT the dot-edged partial — prose rescue re-identifies it", () => {
+  const { reports } = load();
+  // M2 (TNR271415): oden wrapped the full plate → a [[RJK241]] link.
+  const m2 = reports.find((r) => r.tnr === "271415")!;
+  assert.ok(m2.links.some((l) => l.raw === "RJK241" && l.kind === "plate-full"), "full plate linked by Bin 1");
+  // M3 (TNR271420): "reg RJK2.." stayed plain prose (their \b regex cannot match
+  // a dot-edged mask) — the prose scanner must pick it up as a partial.
+  const m3 = reports.find((r) => r.tnr === "271420")!;
+  assert.equal(m3.links.length, 0, "Bin 1 did not link the partial");
+  const partial = plateIdentifiers(m3).find((p) => p.partial);
+  assert.equal(partial?.value, "RJK2..", "prose partial extracted");
+  // End to end: the partial resolves uniquely against the observed full → the
+  // sighting merges into RJK241 (this is the live E2E case that failed).
+  const jobA = buildPlateEntities(reports);
+  const rjk = jobA.entities.find((e) => e.canonical === "RJK241")!;
+  assert.equal(rjk.count, 2, "M3's masked sighting merged into RJK241");
+  assert.deepEqual(rjk.resolvedPartials, ["RJK2.."]);
 });
 
 test("identifiers and marks extract from real prose (sender ids, backpack tell)", () => {

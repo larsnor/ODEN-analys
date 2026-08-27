@@ -40,6 +40,21 @@ export interface Identifier {
 // Swedish plate in prose: 3 letters (excl I O Q V) + optional space + 2 digits +
 // 1 digit/letter. Matches "RJK241" and "RJK 241".
 const PLATE_PROSE = /\b([ABCDEFGHJKLMNPRSTUWXYZ]{3})\s?([0-9]{2}[0-9ABCDEFGHJKLMNPRSTUWXYZ])\b/g;
+// PARTIAL plate mask in prose ("reg RJK2..", "..G41."). The real Bin 1 fails to
+// wrap dot-edged masks in [[links]] (its regex uses \b, and there is no word
+// boundary between a dot and a space) — so the mask reaches us as plain prose
+// and must be read here. NB deliberately NOT \b-delimited for the same reason:
+// explicit lookarounds instead. A mask is EXACTLY 6 chars (FORMAT_SPEC §6.4);
+// a 7th "." after the match is sentence punctuation, not part of the mask.
+const PARTIAL_PROSE = /(?<![A-ZÅÄÖ0-9.])([A-Z.]{3}[0-9.]{2}[0-9A-Z.])(?![A-Z0-9])/g;
+/** A prose token is accepted as a partial mask only when ≥1 position is masked
+ *  AND ≥3 positions were actually read — "N.N..." (initials + ellipsis) or a
+ *  bare "..." must never become re-id evidence. Explicit [[links]] are trusted
+ *  at the spec minimum (1 read position) as before. */
+function isProsePartial(token: string): boolean {
+  const dots = (token.match(/\./g) ?? []).length;
+  return dots >= 1 && token.length - dots >= 3;
+}
 // Personnummer: require a separator to avoid matching arbitrary digit runs.
 const PERSONNUMMER = /\b(\d{6}|\d{8})[-+](\d{4})\b/g;
 // MGRS: zone(1-2) + band letter(C-X) + 2 square letters + easting + northing.
@@ -56,9 +71,21 @@ function scanProse(text: string, source: IdentifierSource): Identifier[] {
   let m: RegExpExecArray | null;
 
   PLATE_PROSE.lastIndex = 0;
+  const fullSpans: Array<[number, number]> = [];
   while ((m = PLATE_PROSE.exec(text)) !== null) {
     const value = normPlate(m[1] + m[2]);
     out.push({ type: "plate", role: "actor", value, raw: m[0], partial: false, source });
+    fullSpans.push([m.index, m.index + m[0].length]);
+  }
+  PARTIAL_PROSE.lastIndex = 0;
+  while ((m = PARTIAL_PROSE.exec(text)) !== null) {
+    const token = m[1];
+    if (!isProsePartial(token)) continue;
+    // Never carve a partial out of a span already read as a full plate
+    // ("RJK241." must not additionally spawn a bogus mask).
+    const s = m.index;
+    if (fullSpans.some(([a, b]) => s < b && s + token.length > a)) continue;
+    out.push({ type: "plate", role: "actor", value: token.toUpperCase(), raw: token, partial: true, source });
   }
   PERSONNUMMER.lastIndex = 0;
   while ((m = PERSONNUMMER.exec(text)) !== null) {

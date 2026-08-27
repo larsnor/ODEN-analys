@@ -145,6 +145,11 @@ recorded so they are not re-derived:
   upstream (their PR #257, merged 2026-08-26) but in no release yet. Our defence is the
   parse.ts coordinate cross-check (see E2E work); prefer their ≥ first release
   containing #257 in production guidance.
+- **Partial-plate linking broken in oden**: its `_PARTIAL_PLATE_RE` is
+  `\b`-delimited, and no word boundary exists between a dot and a space — so
+  dot-edged masks (`RJK2..`, `..G41.`, i.e. the spec's canonical forms) are never
+  wrapped in `[[ ]]`. Confirmed live in E2E (M3). Compensated on our side:
+  `ids.ts` extracts partial masks from prose (2026-08-27).
 - Reports land under `vault/<Signal-gruppnamn>/` (group-split default) or the vault
   root — `inkorg/` is OUR demo/manual convention, not their contract. Analysis scans
   the whole vault by `typ:`, so layout is cosmetic.

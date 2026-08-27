@@ -127,6 +127,26 @@ Sedan: -
 **M8 — återkomst:** skicka M2 igen med `TNR: 271435`, `Stund: 271434`.
 - [ ] "Fordon RJK241 identifierat (3 observationer)" · [ ] ev. 🔁-återkomstnod vid platsen
 
+### Fas 2 — resultat hittills (2026-08-27, live via telefon)
+
+Valven konsoliderades först till ETT: `~/Documents/ODEN-valv`, skapat med
+`install_system.sh` (dess första skarpa körning ✅) + arbetsträdets plugin-bygge +
+kart-nyckeln. Operatören valde egna TNR:er, så mappningen är:
+**M1 = TNR271436 · M2 = TNR271415 · M3 = TNR271420.**
+
+| Fall | Utfall |
+|---|---|
+| M1 (Händelse, "MGRS, adress", spaning) | ✅ eleverad → ⚠️-suspect "mörk keps med ljust emblem", 📍 Vällingevägen. **Koordinatbuggen återbekräftad live** (samma stela 58.62877/16.72219 igen) och räddad av korsningsskyddet — platsnoterna hamnade rätt |
+| M2 (legacy-format, full plåt) | ✅ Oden länkade `[[RJK241]]` → fordonsnod, 📍 Norra Grinden (även här fel frontmatter-koordinat, räddad) |
+| M3 första försöket | ✅ **avsiktligt intressant fel**: operatören glömde kolonet efter `Sagesman` → seven_s avvisade med tydligt fel (`missing required fields: sagesman`) och Oden föll vidare till generic_template, som skrev meddelandet som vanlig chatt-not (`271446-<uuid>-Oden_Svensson.md`, klassiskt filnamn — DET är filen med "annan filnamnsstruktur"). Utan `typ: 7S-rapport` ignoreras den av analysen. Robust beteende: strikt validering, inget meddelande tappas. Filen kan raderas |
+| M3 omsänd (med kolon) | ⚠️→✅ `TNR271420.md` skrevs korrekt, men **partialen `RJK2..` länkades INTE av Oden** — deras partial-regex använder `\b`, och det finns ingen ordgräns mellan punkt och mellanslag, så punkt-kantade masker (`RJK2..`, `..G41.`) kan aldrig matcha. Prosan nådde oss olänkad, och vår `ids.ts` läste då bara FULLA plåtar ur prosa → ingen koppling till RJK241. **Åtgärdat på vår sida samma dag**: `ids.ts` extraherar nu partial-masker ur prosa (explicita lookarounds i stället för `\b`; ≥3 lästa positioner som precisionsspärr så initialer/ellipser aldrig blir re-id-evidens; full-plåt-spann skyddade). Verifierat: M3-filen smälter in i RJK241 (2 obs, `resolvedPartials: ["RJK2.."]`) — `bin1_v3.test.ts` |
+| Fixturer | ✅ alla tre live-filerna incheckade i `fixtures/bin1_v3/` (uuid-avsändare, inga telefonnummer) — korpusen är nu 5 riktiga filer och täcker båda kropps-formaten |
+
+Kvar i fas 2: M4 (foto), M5 (TNR-kollision), M6 (icke-kanonisk sagesman — delvis
+täckt av M3-felförsöket), M7 (icke-7S — de facto täckt: generic-filen ignorerades),
+M8 (återkomst). **Ladda om ODEN-pluginet i Obsidian** (eller starta om Obsidian)
+före fortsättningen så att partial-fixen är aktiv i valvet.
+
 ### Fas 3 — uppgraderingspass (efter fas 2, med godkännande)
 
 Installera Odens senaste **snapshot** (innehåller MGRS-fixen #257; `~/.oden`-data och
