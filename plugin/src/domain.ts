@@ -77,7 +77,8 @@ export const CRAFT_TAXONOMY: CraftType[] = [
     keywords: ["bil", "bilen", "bilar", "bilarna", "personbil", "personbilen", "personbilar"] },
   { key: "lastbil", label: "lastbil", medium: "mark", plated: true, threat: 0, queryCue: true,
     keywords: ["lastbil", "lastbilen", "lastbilar", "skåpbil", "skåpbilen", "husbil", "husbilen",
-      "postbil", "postbilen", "budbil", "budbilen", "transportbil", "flakbil", "tankbil", "pickup"],
+      "postbil", "postbilen", "budbil", "budbilen", "paketbil", "paketbilen",
+      "transportbil", "flakbil", "tankbil", "pickup"],
     stems: ["lastbil", "skåpbil"] },
   { key: "traktor", label: "traktor", medium: "mark", plated: true, threat: 0, queryCue: true,
     keywords: ["traktor", "traktorn", "traktorer", "traktorerna"], stems: ["traktor"] },
@@ -88,8 +89,12 @@ export const CRAFT_TAXONOMY: CraftType[] = [
     keywords: ["buss", "bussen", "bussar", "bussarna", "minibuss", "minibussen"] },
 
   // ── unplated ground (re-id via distinctive MARK only) — threat 0 ──────────
+  // NB the AGENT NOUN (cyklist) is listed explicitly: whole-word matching means
+  // "cyklist" shares no matchable form with "cykel", and the stem "cykl" is unsafe
+  // (it is inside "motorcyklist"). Same reason "cykel" stays keyword-only.
   { key: "cykel", label: "cykel", medium: "mark", plated: false, threat: 0, queryCue: true,
-    keywords: ["cykel", "cykeln", "cyklar", "cyklarna"] },
+    keywords: ["cykel", "cykeln", "cyklar", "cyklarna",
+      "cyklist", "cyklisten", "cyklister", "cyklisterna"] },
   { key: "sparkcykel", label: "sparkcykel", medium: "mark", plated: false, threat: 0, queryCue: true,
     keywords: ["sparkcykel", "sparkcykeln", "elsparkcykel", "elsparkcykeln", "elcykel", "elcykeln", "scooter"] },
   { key: "kärra", label: "kärra", medium: "mark", plated: false, threat: 0, queryCue: true,
@@ -100,7 +105,10 @@ export const CRAFT_TAXONOMY: CraftType[] = [
   { key: "båt", label: "båt", medium: "vatten", plated: false, threat: 1, queryCue: true,
     keywords: ["båt", "båten", "båtar", "båtarna", "motorbåt", "motorbåten", "segelbåt", "segelbåten",
       "fritidsbåt", "fritidsbåten", "roddbåt", "gummibåt", "jolle", "jollen", "kajak", "kajaken",
-      "ribbåt", "snabbåt", "vattenskoter"], stems: ["båt"] },
+      "ribbåt", "snabbåt", "vattenskoter"],
+    // "kajak" is stem-safe (no Swedish word contains it that is not about kayaks),
+    // so compounds and agent nouns resolve: kajakpaddlare, kajaker, kajakist.
+    stems: ["båt", "kajak"] },
   { key: "fartyg", label: "fartyg", medium: "vatten", plated: false, threat: 1, queryCue: true,
     keywords: ["fartyg", "fartyget", "skepp", "skeppet", "tankfartyg", "lastfartyg", "örlogsfartyg"],
     stems: ["fartyg"] },
