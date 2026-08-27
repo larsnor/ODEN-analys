@@ -55,6 +55,26 @@ AI-förmågorna (📷 bild · 📝 text · 💬 chat) är valfria: installera
 lokalt på den egna datorn. Modellen föreslår bara – du bekräftar. Detektionen
 är aldrig beroende av AI.
 
+### Hela systemet: rapporter via Signal
+
+I skarp drift skrivs 7S-rapporterna inte för hand — de kommer via **Signal**
+genom intagsappen **[Oden](https://github.com/NicklasAndersson/oden)**, som
+lyssnar på en Signal-grupp och skriver varje `7S RAPPORT`-meddelande som en
+färdig rapportfil i valvet. ODEN analyserar dem i samma stund de landar. Hela
+kedjan installeras med ett kommando:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh | bash
+```
+
+Skriptet hämtar valvet, installerar Oden via dess officiella installations­skript
+och skriver ut de tre manuella stegen (Obsidian, setup-wizarden, kartnyckeln).
+Viktigast i wizarden: peka **vault-sökvägen på ODEN-valv-mappen** och **hoppa
+över Obsidian-mallsteget** — valvet är redan komplett, och Oden rör aldrig en
+befintlig `.obsidian`-mapp. Rapporterna landar i en mapp med Signal-gruppens
+namn; ODEN analyserar hela valvet, så `inkorg/` behövs bara för demo och
+handmatning.
+
 Fler installationsvägar och felsökning finns i **[`INSTALL.md`](INSTALL.md)**.
 
 ### Skärmfilmer (30–45 s, utan ljud)

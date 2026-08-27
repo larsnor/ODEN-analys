@@ -103,6 +103,50 @@ Har man redan ett valv man vill använda tar man `ODEN-plugin-<v>.zip` i ställe
    följer med i `map-view-data.json`, men nyckeln är personlig och måste läggas
    till i efterhand.
 
+## Hela systemet — rapporter via Signal (Oden)
+
+I skarp drift levereras 7S-rapporterna av intagsappen
+[Oden](https://github.com/NicklasAndersson/oden) (Bin 1): den länkas till ett
+Signal-konto, lyssnar på gruppmeddelanden som börjar med `7S RAPPORT` och
+skriver varje sådant som en färdig rapportfil i valvet — som ODEN analyserar
+direkt. Snabbast är samlingsskriptet:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh | bash
+```
+
+Det hämtar senaste ODEN-valv, installerar Oden.app via **dess eget officiella
+installationsskript**, hoppar över allt som redan finns och skriver aldrig över
+ett befintligt valv. Manuellt är det samma tre delar, **i denna ordning**:
+
+1. **Valvet först** (Väg A ovan) — packa upp `ODEN-valv-<v>.zip`.
+2. **Oden**: `curl -fsSL https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh | bash`
+   (Windows/Docker: se Odens README).
+3. **Setup-wizarden** (öppnas på `http://127.0.0.1:8080`):
+   - **Länka Signal-kontot** med QR-koden. Använd ett **dedikerat nummer** —
+     inte ditt privata (Odens egen starka rekommendation).
+   - **Vault-sökväg** = ODEN-valv-mappen från steg 1.
+   - **Obsidian-mallsteget: hoppa över.** Valvet är redan komplett konfigurerat,
+     och Oden rör aldrig en befintlig `.obsidian`-mapp — ordningen valv-först är
+     det som gör att ODEN:s konfiguration (graf, karta, lås) står orörd kvar.
+
+Bra att veta i drift:
+
+- Rapporterna landar i en **mapp med Signal-gruppens namn** (Odens
+  group-split). ODEN identifierar rapporter på frontmatter (`typ: 7S-rapport`)
+  och analyserar hela valvet — mappen spelar ingen roll. `inkorg/` är demo- och
+  handmatningsvägen, inget krav.
+- Plåtar i Symbol-fältet länkas `[[SÅ HÄR]]` av Oden själv; ODEN läser dem både
+  som länkar och som ren prosa.
+- **Koordinatnot:** Oden t.o.m. v3.1.2 kan skriva fel `lat`/`lon` när Ställe
+  innehåller en MGRS-ruta med mellanslag (fixat uppströms, ännu inte släppt).
+  ODEN-analys korsar därför alltid frontmatter-koordinaten mot rutan i Ställe
+  och låter **rutan vinna** vid grov avvikelse — positionen på kartan och
+  närhetslarmen förblir rätt även mot äldre Oden-versioner.
+- Nätverksbilden: ODEN-analys gör fortfarande inga egna nätverksanrop; Oden
+  pratar med Signals servrar (det är dess uppgift) och kartan hämtar tiles med
+  din nyckel enligt ovan.
+
 ## Efter installationen: sätt operationsområdet
 
 Kör kommandot **"ODEN: Konfigurera operationsområde"** (`Cmd/Ctrl-P`) och ange
@@ -173,6 +217,14 @@ du bekräftar eller avvisar (`föreslagen-av: llm`).
 - **AI-chipsen blir grå** – kontrollera att Ollama kör (`ollama list`) och
   testa anslutningen i inställningarna. ODEN arbetar deterministiskt vidare
   tills anslutningen är tillbaka.
+- **Signal-meddelandet blev ingen rapport** – öppna Odens dashboard
+  (`http://127.0.0.1:8080`) och titta i loggarna/meddelandevyn: meddelandet
+  måste börja med `7S RAPPORT` och ha fälten TNR/Stund/Ställe/Sagesman (plus
+  Händelse, eller Styrka/Slag/Sysselsättning/Symbol). Kontrollera också att
+  gruppen inte är ignorerad i Oden.
+- **Rapporten kom men syns inte i ODEN-flödet** – kontrollera att frontmattern
+  har `typ: 7S-rapport` (bara sådana filer analyseras) och att filen inte
+  ligger i `demo/`.
 - **Air-gapped drift** – Map View sparar visade karttiles lokalt; panorera och
   zooma igenom området i förväg medan nät finns, så finns kartan kvar när nätet
   försvinner. (Automatiserad förprovisionering av tiles är planerad, se

@@ -77,6 +77,15 @@ verktyget [7S-generator](https://github.com/larsnor/7S-generator).
 
 ## Skarp drift
 
+Får förbandet rapporterna via **Signal**? Installera intagsappen
+[Oden](https://github.com/NicklasAndersson/oden) — den lyssnar på er
+Signal-grupp och skriver varje `7S RAPPORT`-meddelande som en färdig rapportfil
+här i valvet, som ODEN analyserar direkt. Viktigt i dess setup-wizard: peka
+vault-sökvägen på den här mappen och **hoppa över Obsidian-mallsteget** (valvet
+är redan komplett). Rapporterna hamnar i en mapp med Signal-gruppens namn — det
+går lika bra som `inkorg/`.
+
+
 Radera mappen `demo/` och eventuellt övningsinnehåll i `inkorg/`. Sätt ditt
 riktiga operationsområde och namnge platserna i förväg. Sedan är det bara att
 låta intaget leverera 7S-rapporter till `inkorg/` – ODEN plockar upp dem

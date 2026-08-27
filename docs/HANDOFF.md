@@ -515,6 +515,22 @@ instructional screencasts (see OPEN / DEFERRED). After that, candidates:
 regenerate/extend corpora for measured runs, the incremental/temporal dynamics
 review, and the text-mark distinctiveness floor.
 
+## REAL BIN 1 VERIFIED (2026-08-27) — E2E started, old open questions closed
+The real intake app exists: [NicklasAndersson/oden](https://github.com/NicklasAndersson/oden)
+(v3.1.2 installed+linked on this machine; `seven_s` pipeline). Verified against its
+code (68b94d5) and real received reports; fixtures committed under
+`plugin/test/fixtures/bin1_v3/` + `bin1_v3.test.ts`. Closes the old "STILL TO
+CONFIRM WITH BIN-1 DEV" items: (1) Bin 1 DOES wrap plates in [[ ]] — in Symbol
+only, Händelse stays prose (ids.ts reads both); (2) id = 7S-<uuid>, stable;
+(3) `källa: bin1-intag` never landed in their spec/output — parser tolerates.
+NEW: Bin 1 ≤3.1.2 emits WRONG frontmatter lat/lon for spaced MGRS grids (their
+fix #257 merged 2026-08-26, unreleased) → parse.ts now cross-checks frontmatter
+coords against the Ställe grid and lets the grid win at >10 km (parse-issue
+surfaced) — proximity alarms survive bad Bin 1 coords. One-stop install:
+scripts/install_system.sh + "Hela systemet" sections in README/INSTALL; the
+composition is valv-first (Oden's wizard skips an existing .obsidian). E2E
+protocol + phase-1 results: docs/E2E_BIN1.md.
+
 ## Environment notes (post-restore, 2026-07-24 →)
 - Apple Silicon Mac (user `larsnordstrom` — the pre-crash machine was `larsno`;
   paths in older sections above reflect that machine).
