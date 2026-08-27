@@ -37,7 +37,9 @@ test("real Bin 1 v3 output parses with every contract field populated", () => {
   assert.ok(reports.length >= 2, "the captured corpus is present");
   for (const r of reports) {
     assert.equal(r.typ, "7S-rapport", r.file);
-    assert.match(r.tnr, /^\d{6}$/, `${r.file}: tnr`);
+    // Collision suffix rides in the frontmatter tnr per spec ("271425_3") —
+    // verified live: two resends on the same TNR → _2/_3 files.
+    assert.match(r.tnr, /^\d{6}(_\d+)?$/, `${r.file}: tnr`);
     assert.match(r.tidpunkt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/, `${r.file}: tidpunkt`);
     assert.ok(r.id.startsWith("7S-"), `${r.file}: uuid id`);
     assert.ok(r.signalAvsandareId, `${r.file}: signal sender id`);
@@ -56,11 +58,14 @@ test("real Bin 1 v3 output parses with every contract field populated", () => {
 
 test("v3.1.2 coordinate bug is corrected by the cross-check (grid wins, issue raised)", () => {
   const { reports, issues } = load();
-  // Every captured file with frontmatter coords carries the SAME stale
-  // coordinate (58.62877,16.72219) regardless of its actual — differing — grid;
-  // the bare-grid file (TNR271420, no comma in Ställe → oden writes no coords)
-  // is instead plain grid-derived. Either way the position ends up correct.
-  for (const r of reports) {
+  // The ≤3.1.2 captures all carry the SAME stale coordinate (58.62877,16.72219)
+  // regardless of their — differing — grids; the bare-grid file (TNR271420, no
+  // comma in Ställe → oden writes no coords) is plain grid-derived instead.
+  // TNR271425_3 was captured AFTER the snapshot upgrade (#257) and is asserted
+  // separately below. Either way every position ends up correct.
+  const MISMATCH_RESCUED = ["271039", "261132", "271436", "271415"];
+  for (const tnr of [...MISMATCH_RESCUED, "271420"]) {
+    const r = reports.find((x) => x.tnr === tnr)!;
     assert.equal(r.coordsFromMgrs, true, `${r.file}: grid-derived coords take over`);
   }
   for (const [tnr, lat] of [
@@ -72,12 +77,26 @@ test("v3.1.2 coordinate bug is corrected by the cross-check (grid wins, issue ra
     const r = reports.find((x) => x.tnr === tnr)!;
     assert.ok(Math.abs((r.lat ?? 0) - lat) < 1e-3, `${tnr}: lat ${r.lat}`);
   }
-  const withFrontmatterCoords = 4; // all except the bare-grid TNR271420
   assert.equal(
     issues.filter((i) => /coordinate mismatch/.test(i.message)).length,
-    withFrontmatterCoords,
+    MISMATCH_RESCUED.length,
     "one surfaced mismatch per file that HAD (wrong) frontmatter coords",
   );
+});
+
+test("post-upgrade capture (snapshot ≥ #245+#257): image embed present, coords correct at source, cross-check silent", () => {
+  const { reports } = load();
+  // E2E M4, captured AFTER the oden snapshot upgrade: the same message that
+  // v3.1.2 wrote WITHOUT its photo and with the stale coordinate.
+  const r = reports.find((x) => x.tnr === "271425_3")!;
+  // #245: the attachment rides as a ## Bilagor embed (the jpg itself is NOT
+  // committed — real photo; the repo takes numbers, never images).
+  assert.equal(r.embeds.length, 1, "one image embed");
+  assert.match(r.embeds[0], /\.jpg$/i);
+  // #257: frontmatter coords now agree with the Ställe grid → the cross-check
+  // keeps them verbatim and stays silent.
+  assert.equal(r.coordsFromMgrs, false, "frontmatter kept — no rescue needed");
+  assert.ok(Math.abs((r.lat ?? 0) - 59.2614) < 1e-3, `lat ${r.lat}`);
 });
 
 test("E2E M2+M3: Bin 1 links the full plate but NOT the dot-edged partial — prose rescue re-identifies it", () => {

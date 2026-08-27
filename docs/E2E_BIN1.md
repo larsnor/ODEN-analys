@@ -142,12 +142,15 @@ kart-nyckeln. Operatören valde egna TNR:er, så mappningen är:
 | M3 omsänd (med kolon) | ⚠️→✅ `TNR271420.md` skrevs korrekt, men **partialen `RJK2..` länkades INTE av Oden** — deras partial-regex använder `\b`, och det finns ingen ordgräns mellan punkt och mellanslag, så punkt-kantade masker (`RJK2..`, `..G41.`) kan aldrig matcha. Prosan nådde oss olänkad, och vår `ids.ts` läste då bara FULLA plåtar ur prosa → ingen koppling till RJK241. **Åtgärdat på vår sida samma dag**: `ids.ts` extraherar nu partial-masker ur prosa (explicita lookarounds i stället för `\b`; ≥3 lästa positioner som precisionsspärr så initialer/ellipser aldrig blir re-id-evidens; full-plåt-spann skyddade). Verifierat: M3-filen smälter in i RJK241 (2 obs, `resolvedPartials: ["RJK2.."]`) — `bin1_v3.test.ts` |
 | Fixturer | ✅ alla tre live-filerna incheckade i `fixtures/bin1_v3/` (uuid-avsändare, inga telefonnummer) — korpusen är nu 5 riktiga filer och täcker båda kropps-formaten |
 
-Kvar i fas 2: M4 (foto), M5 (TNR-kollision), M6 (icke-kanonisk sagesman — delvis
-täckt av M3-felförsöket), M7 (icke-7S — de facto täckt: generic-filen ignorerades),
-M8 (återkomst). **Ladda om ODEN-pluginet i Obsidian** (eller starta om Obsidian)
+| M4 (foto) första försöket, på v3.1.2 | ⚠️ **versionsgap, inte bugg**: rapporten (`TNR271425.md`) skrevs korrekt och signal-cli lagrade fotot lokalt — men bilagan släpptes tyst: bildstöd för 7S-rapporter (`feat: stöd bilder i 7s/fors/pedars`, #245) mergades till oden main 2026-07-01, **fem dagar efter** v3.1.2-releasen. Verifierat i v3.1.2-källan: noll förekomster av save_attachments i 7S-vägen |
+| Fas 3-uppgradering → M4 omsänd | ✅ Oden uppgraderad till **snapshot-68b94d5**; omsändningen gav bilagemapp + `## Bilagor` med `![[…]]`-inbäddning (#245 ✓) **och korrekt frontmatter-koordinat direkt från källan** (59.26140, 17.70788 = exakt vår egen rutkonvertering; #257 ✓) — koordinatskyddet är nu tyst, precis som det ska |
+| M5 (TNR-kollision) | ✅ **de facto verifierad**: två omsändningar på samma TNR → `TNR271425_2.md`/`TNR271425_3.md`, suffixet buret i frontmattern (`tnr: "271425_3"`) enligt spec |
+| Fixtur | ✅ `TNR271425_3.md` incheckad (endast .md — fotot är äkta och checkas aldrig in); testet låser inbäddningen, kollisionssuffixet och att korsningsskyddet är TYST när Bin 1 levererar rätt |
+
+Kvar i fas 2: **endast M8 (återkomst)** — M5–M7 är täckta enligt ovan. **Ladda om ODEN-pluginet i Obsidian** (eller starta om Obsidian)
 före fortsättningen så att partial-fixen är aktiv i valvet.
 
-### Fas 3 — uppgraderingspass (efter fas 2, med godkännande)
+### Fas 3 — uppgraderingspass — ✅ UTFÖRD (snapshot-68b94d5, 2026-08-27)
 
 Installera Odens senaste **snapshot** (innehåller MGRS-fixen #257; `~/.oden`-data och
 Signal-länkningen överlever app-byte):
