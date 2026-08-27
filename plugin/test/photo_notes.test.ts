@@ -51,6 +51,25 @@ test("embedTarget: pathed refs join the report's folder; bare names left to Obsi
   assert.equal(embedTarget("TEST - Oden/TNR271637.md", "bild_140755.jpg"), "bild_140755.jpg");
 });
 
+test("operator links render as edges; dangling refs as text; a link alone keeps the note", () => {
+  const r = report({});
+  // No confirmed findings at all — only the operator's asserted link.
+  const linksFor = () => [
+    { kind: "fordon" as const, label: "RJK241", stem: "RJK241" },
+    { kind: "aktör" as const, label: "Ledaren", stem: "🕸️ Ledaren" },
+    { kind: "aktör" as const, label: "försvunnen-aktör", stem: undefined },
+  ];
+  const out = buildPhotoFindings([r], state(), IMAGES, linksFor);
+  assert.equal(out.length, 1, "the assertion IS a judgement — note stays alive");
+  const md = renderPhotoFindingNote(out[0]).markdown;
+  assert.match(md, /## Kopplingar \(operatörens utsaga\)/);
+  assert.match(md, /\*\*Fordon:\*\* \[\[RJK241\|RJK241\]\]/, "vehicle edge");
+  assert.match(md, /\*\*Aktör:\*\* \[\[🕸️ Ledaren\|Ledaren\]\]/, "actor edge");
+  assert.match(md, /försvunnen-aktör _\(saknas i nuvarande material\)_/, "dangling ref = text, no ghost node");
+  assert.match(md, /föreslagen-av: operatör/, "the assertion provenance is stated");
+  assert.match(md, /rapportfil: "TEST - Oden\/TNR271637.md"/, "identity key for the koppla flows");
+});
+
 test("note: provenance, embedded image, report + Objektet edges, vehicle link, idempotent", () => {
   const r = report({ embeds: ["20260827_joel/1_photo.jpg"] });
   const s = state({

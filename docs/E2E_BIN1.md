@@ -2,7 +2,9 @@
 
 Första riktiga kedjetestet: **Signal-meddelande → Oden (Bin 1) → valv → ODEN-analys**.
 Tidigare har Bin 1 alltid ersatts av demo-korpusar. Detta dokument är både protokoll
-och resultatlogg; ofyllda rutor är ännu inte körda.
+och resultatlogg. **Status 2026-08-27: M1–M8 genomförda — E2E-sviten stängd
+(operatörens verdikt). Sex skarpa fynd hittades och åtgärdades under vägen; se
+fyndrubrikerna nedan.**
 
 ## Miljö (verifierad)
 
@@ -215,6 +217,16 @@ regplåtar länkade till sina fordonsnoder, iakttagelser och foto-beteendesignal
 listade, proveniens llm-vision + operatör. Ångra/nollställ rensar noten via
 per-metod-prunen. Ny graf-färgklass `#bildfynd` (cyan) i Bin 2-mallen — appliceras
 i ett live-valv först när Obsidian är stängt (som all Bin 2-konfig).
+
+### M8 + avslut (2026-08-27, kväll)
+
+- M8 (återkomst) ✅ — operatören körde och godkände; **hela skriptet M1–M8 klart**.
+- Uppföljande operatörsönskemål direkt ur testet: **koppla bildfynd till
+  fordon/aktör** — implementerat som §9.3-B-utsaga (högerklicka 📷-noten →
+  "ODEN: Koppla till fordon/aktör…", väljare över fordon + bekräftade aktörer;
+  kopplingen renderas i noten och blir en grafkant; "Ta bort koppling…" ångrar;
+  hängande referenser blir text, aldrig spöknoder; allt rensas med
+  operationsområdet som varje bedömning).
 
 ### Fas 4 — efterarbete
 

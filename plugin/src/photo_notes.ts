@@ -30,6 +30,16 @@ export interface PhotoFindingState {
   confirmedBehaviours: Record<string, { key: string; label: string; weight: number }[]>;
 }
 
+/** An operator-ASSERTED link from a bildfynd to another entity (§9.3-B — a
+ *  human utsaga the machine never derived). Resolved by the shell: `stem` is
+ *  set only while the target entity currently exists; a dangling ref renders
+ *  as plain text so the graph never gets a ghost node. */
+export interface BildfyndLinkResolved {
+  kind: "fordon" | "aktör";
+  label: string;
+  stem?: string;
+}
+
 export interface PhotoFinding {
   report: Report;
   /** Image embed targets, resolved for a note that lives in entities/ (full
@@ -39,6 +49,8 @@ export interface PhotoFinding {
   annotations: string[];
   /** Photo-sourced behaviour signals only (labels carry "(foto)"). */
   behaviours: Signal[];
+  /** Operator-asserted entity links (may be empty). */
+  links: BildfyndLinkResolved[];
 }
 
 /** Resolve a report-relative attachment ref to something embeddable from
@@ -56,19 +68,23 @@ export function buildPhotoFindings(
   reports: Report[],
   s: PhotoFindingState,
   imageRefs: (r: Report) => string[],
+  linksFor: (file: string) => BildfyndLinkResolved[] = () => [],
 ): PhotoFinding[] {
   const out: PhotoFinding[] = [];
   for (const r of reports) {
     const plates = s.photoPlates[r.file] ?? [];
     const annotations = s.photoAnnotations[r.file] ?? [];
     const behaviours = (s.confirmedBehaviours[r.file] ?? []).filter((b) => b.label.includes("(foto)"));
-    if (plates.length === 0 && annotations.length === 0 && behaviours.length === 0) continue;
+    const links = linksFor(r.file);
+    // An operator link alone keeps the note alive: the assertion IS a judgement.
+    if (plates.length === 0 && annotations.length === 0 && behaviours.length === 0 && links.length === 0) continue;
     out.push({
       report: r,
       images: imageRefs(r).map((a) => embedTarget(r.file, a)),
       plates,
       annotations,
       behaviours,
+      links,
     });
   }
   return out.sort((a, b) => a.report.file.localeCompare(b.report.file));
@@ -84,6 +100,9 @@ export function renderPhotoFindingNote(f: PhotoFinding, nicks?: Nicknames): Rend
     "---",
     "typ: bildfynd",
     `tnr: "${r.tnr}"`,
+    // Machine key for the operator flows (koppla/ta bort koppling): the report
+    // file is the bildfynd's stable identity. Hidden by propertiesInDocument.
+    `rapportfil: "${r.file.replace(/"/g, "'")}"`,
     `källa: ${GENERATOR}`,
     `generator: ${GENERATOR}`,
     "föreslagen-av: llm-vision",
@@ -117,6 +136,22 @@ export function renderPhotoFindingNote(f: PhotoFinding, nicks?: Nicknames): Rend
   if (f.behaviours.length) {
     body.push("## Beteendesignaler (ur foto, bekräftade — ingår i misstankepoängen)");
     for (const b of f.behaviours) body.push(`- ${mdText(b.label)}`);
+    body.push("");
+  }
+  if (f.links.length) {
+    body.push("## Kopplingar (operatörens utsaga)");
+    for (const l of f.links) {
+      const word = l.kind === "fordon" ? "Fordon" : "Aktör";
+      // Link only while the target exists — a dangling ref must not create a
+      // ghost node in the graph.
+      const target = l.stem ? `[[${l.stem}|${mdText(l.label)}]]` : `${mdText(l.label)} _(saknas i nuvarande material)_`;
+      body.push(`- **${word}:** ${target}`);
+    }
+    body.push("");
+    body.push(
+      "_Kopplingarna ovan är operatörens egen bedömning (föreslagen-av: operatör, " +
+        "bekräftad-av: operatör) — maskinen har inte härlett dem._",
+    );
     body.push("");
   }
   body.push(

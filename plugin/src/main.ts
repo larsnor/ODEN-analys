@@ -35,7 +35,8 @@ import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
 import { EmbeddedPlateVision, corroboratePlate, PlateVision } from "./vision";
 import { isOverwritable, isPluginOwned, ownedMetod, renderAll, safeFilename } from "./entity_notes";
-import { GENERATOR, METOD, OBJEKTET_STEM, noteStem } from "./notes_common";
+import { GENERATOR, METOD, OBJEKTET_STEM, noteStem, resolveMerge } from "./notes_common";
+import { actorFilename } from "./actor_notes";
 import { safeAgentFilename } from "./notenames";
 import { mdText } from "./mdsafe";
 import { buildMarkNominations, JobBResult, MarkNomination } from "./jobb";
@@ -49,7 +50,7 @@ import { buildSuspects, suspectHypId } from "./suspects";
 import { renderSuspectNotes } from "./suspect_notes";
 import { buildLocations, renderLocationNotes, LocationCluster, PredefinedLocation } from "./location_notes";
 import { renderRecurrenceNote, RecurrencePair } from "./recurrence_notes";
-import { buildPhotoFindings, renderPhotoFindingNotes } from "./photo_notes";
+import { BildfyndLinkResolved, buildPhotoFindings, renderPhotoFindingNotes } from "./photo_notes";
 import { isMgrsGrid, placeLabel } from "./places";
 import { LatLon, mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
@@ -191,6 +192,10 @@ interface SevenSSettings {
   watchlist: Record<string, WatchEntry>;
   /** Text findings the operator dismissed (`mark|<key>` or `<file>|<behaviourKey>`). */
   textRejected: Record<string, true>;
+  /** Operator-ASSERTED links bildfynd → entity (§9.3-B), keyed by report file.
+   *  fordon ref = canonical plate; aktör ref = hypothesis id (merge-resolved at
+   *  render). A judgement — wiped with the operation area. */
+  bildfyndLinks: Record<string, { kind: "fordon" | "aktör"; ref: string }[]>;
 }
 
 const DEFAULT_SETTINGS: SevenSSettings = {
@@ -231,6 +236,7 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   textMarksConfirmed: {},
   watchlist: {},
   textRejected: {},
+  bildfyndLinks: {},
 };
 
 const VIEW_TYPE_7S = "7s-analys-text";
@@ -357,6 +363,22 @@ export default class SevenSPlugin extends Plugin {
               .setIcon(flagged ? "flag-off" : "alert-triangle")
               .onClick(() => void this.toggleOperatorFlag(file.path, fm?.tnr != null ? String(fm.tnr) : undefined)),
           );
+        }
+        // A bildfynd note gets the operator link flows (koppla → §9.3-B utsaga).
+        if (fm?.generator === GENERATOR && fm?.typ === "bildfynd" && fm?.rapportfil != null) {
+          const reportFile = String(fm.rapportfil);
+          menu.addItem((i) =>
+            i.setTitle("ODEN: Koppla till fordon/aktör…")
+              .setIcon("link")
+              .onClick(() => void this.linkBildfyndFlow(reportFile)),
+          );
+          if ((this.settings.bildfyndLinks[reportFile] ?? []).length > 0) {
+            menu.addItem((i) =>
+              i.setTitle("ODEN: Ta bort koppling…")
+                .setIcon("unlink")
+                .onClick(() => void this.unlinkBildfyndFlow(reportFile)),
+            );
+          }
         }
         const target = this.watchTargetForNote(fm, file);
         if (target && target.ref) {
@@ -651,6 +673,7 @@ export default class SevenSPlugin extends Plugin {
       s.operatorFlagged,
       s.textMarksConfirmed,
       s.watchlist,
+      s.bildfyndLinks,
     ].some((m) => Object.keys(m).length > 0);
   }
 
@@ -679,6 +702,7 @@ export default class SevenSPlugin extends Plugin {
     this.settings.textMarksConfirmed = {};
     this.settings.textRejected = {};
     this.settings.watchlist = {};
+    this.settings.bildfyndLinks = {};
     await this.saveSettings();
 
     let removed = 0;
@@ -1283,7 +1307,21 @@ export default class SevenSPlugin extends Plugin {
     // Confirmed photo findings materialise as 📷-notes (embedding the image) —
     // a confirmed judgement is a vault artifact, never write-only settings
     // memory. Prune removes a note when its findings are withdrawn (↺ / wipe).
-    const findings = buildPhotoFindings(reports, this.settings, (r) => this.imageAttachments(r));
+    // Operator-asserted links resolve against what EXISTS right now: a vehicle
+    // in the current corpus / a still-confirmed actor (merge-followed); a
+    // dangling ref renders as text, never a ghost graph node.
+    const vehiclesNow = new Set(buildPlateEntities(reports).entities.map((e) => e.canonical));
+    const linksFor = (file: string): BildfyndLinkResolved[] =>
+      (this.settings.bildfyndLinks[file] ?? []).map((l) => {
+        if (l.kind === "fordon") {
+          return { kind: l.kind, label: l.ref, stem: vehiclesNow.has(l.ref) ? noteStem(safeFilename(l.ref)) : undefined };
+        }
+        const canon = resolveMerge(l.ref, this.settings.actorMerges);
+        const h = confirmedActors.find((x) => x.id === canon);
+        const label = this.settings.actorNames[canon] ?? h?.facets.map((f) => f.label).join(" + ") ?? l.ref;
+        return { kind: l.kind, label, stem: h ? noteStem(actorFilename(h, this.settings.actorNames[canon])) : undefined };
+      });
+    const findings = buildPhotoFindings(reports, this.settings, (r) => this.imageAttachments(r), linksFor);
     await this.writeOwnedNotes(
       renderPhotoFindingNotes(findings, this.settings.locationNicknames).map((n) => ({ name: n.filename, body: n.markdown })),
       METOD.bildfynd,
@@ -2394,6 +2432,57 @@ export default class SevenSPlugin extends Plugin {
       new Notice(`ODEN: ${label} flaggad som larm.`);
     }
     await this.recomputeAndAlert(true); // rescore + rewrite larm notes + refresh feed
+  }
+
+  // --- Bildfynd → entity links (operator assertion, §9.3-B) ------------------
+
+  /** Pick a vehicle or confirmed actor and assert the link. NEVER auto-derived:
+   *  the operator both proposes and confirms — the strongest provenance class. */
+  async linkBildfyndFlow(reportFile: string): Promise<void> {
+    const { reports } = await this.readReports();
+    const suspicion = analyzeSuspicion(reports, this.suspicionOpts());
+    const already = new Set((this.settings.bildfyndLinks[reportFile] ?? []).map((l) => `${l.kind}:${l.ref}`));
+    const items: { value: string; label: string }[] = [];
+    for (const e of buildPlateEntities(reports).entities) {
+      if (e.slag !== "fordon-reg-full" || already.has(`fordon:${e.canonical}`)) continue;
+      items.push({ value: `fordon:${e.canonical}`, label: `🚗 ${e.canonical} (${e.count} obs)` });
+    }
+    for (const h of foldedConfirmedActors(reports, suspicion, this.settings)) {
+      if (already.has(`aktör:${h.id}`)) continue;
+      const name = this.settings.actorNames[h.id] ?? h.facets.map((f) => f.label).join(" + ");
+      items.push({ value: `aktör:${h.id}`, label: `🕸️ ${name}` });
+    }
+    if (!items.length) {
+      new Notice("ODEN: inga fordon eller bekräftade aktörer att koppla till (eller alla redan kopplade).");
+      return;
+    }
+    new PickStringModal(this.app, items, "Koppla bildfyndet till…", async (value) => {
+      const sep = value.indexOf(":");
+      const kind = value.slice(0, sep) as "fordon" | "aktör";
+      const ref = value.slice(sep + 1);
+      const cur = this.settings.bildfyndLinks[reportFile] ?? [];
+      this.settings.bildfyndLinks[reportFile] = [...cur, { kind, ref }];
+      await this.saveSettings();
+      await this.reconcileActorNodes(); // rewrites the 📷-note with the new edge
+      new Notice(`ODEN: bildfyndet kopplat (${kind}). Kopplingen syns i grafen.`);
+    }).open();
+  }
+
+  /** Remove one asserted link (picked from the current list). */
+  async unlinkBildfyndFlow(reportFile: string): Promise<void> {
+    const cur = this.settings.bildfyndLinks[reportFile] ?? [];
+    if (!cur.length) return;
+    const items = cur.map((l) => ({
+      value: `${l.kind}:${l.ref}`,
+      label: `${l.kind === "fordon" ? "🚗" : "🕸️"} ${l.kind === "aktör" ? (this.settings.actorNames[resolveMerge(l.ref, this.settings.actorMerges)] ?? l.ref) : l.ref}`,
+    }));
+    new PickStringModal(this.app, items, "Ta bort vilken koppling?", async (value) => {
+      this.settings.bildfyndLinks[reportFile] = cur.filter((l) => `${l.kind}:${l.ref}` !== value);
+      if (!this.settings.bildfyndLinks[reportFile].length) delete this.settings.bildfyndLinks[reportFile];
+      await this.saveSettings();
+      await this.reconcileActorNodes();
+      new Notice("ODEN: koppling borttagen.");
+    }).open();
   }
 
   // --- 🔭 Bevakningslista (watchlist) ----------------------------------------
