@@ -144,7 +144,7 @@ kart-nyckeln. Operatören valde egna TNR:er, så mappningen är:
 
 | M4 (foto) första försöket, på v3.1.2 | ⚠️ **versionsgap, inte bugg**: rapporten (`TNR271425.md`) skrevs korrekt och signal-cli lagrade fotot lokalt — men bilagan släpptes tyst: bildstöd för 7S-rapporter (`feat: stöd bilder i 7s/fors/pedars`, #245) mergades till oden main 2026-07-01, **fem dagar efter** v3.1.2-releasen. Verifierat i v3.1.2-källan: noll förekomster av save_attachments i 7S-vägen |
 | Fas 3-uppgradering → M4 omsänd | ✅ Oden uppgraderad till **snapshot-68b94d5**; omsändningen gav bilagemapp + `## Bilagor` med `![[…]]`-inbäddning (#245 ✓) **och korrekt frontmatter-koordinat direkt från källan** (59.26140, 17.70788 = exakt vår egen rutkonvertering; #257 ✓) — koordinatskyddet är nu tyst, precis som det ska |
-| M5 (TNR-kollision) | ✅ **de facto verifierad**: två omsändningar på samma TNR → `TNR271425_2.md`/`TNR271425_3.md`, suffixet buret i frontmattern (`tnr: "271425_3"`) enligt spec |
+| M5 (TNR-kollision) | ✅ **de facto verifierad — med korrigerad attribution**: Odens rå-DB visar att `_2`/`_3` kom från **tre separata Signal-leveranser** av M4 (rå-meddelande 349/350/351, kl 16:14–16:23; dubblettleverans/omtryck på telefonsidan — inte avsiktliga omsändningar). Suffixmekanismen är ändå fullt bevisad: `TNR271425_2/_3.md`, suffixet buret i frontmattern (`tnr: "271425_3"`) enligt spec |
 | Fixtur | ✅ `TNR271425_3.md` incheckad (endast .md — fotot är äkta och checkas aldrig in); testet låser inbäddningen, kollisionssuffixet och att korsningsskyddet är TYST när Bin 1 levererar rätt |
 
 Kvar i fas 2: **endast M8 (återkomst)** — M5–M7 är täckta enligt ovan. **Ladda om ODEN-pluginet i Obsidian** (eller starta om Obsidian)
@@ -157,6 +157,21 @@ Signal-länkningen överlever app-byte):
 `curl -fsSL https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_snapshot_mac.sh | bash`
 Skicka M1-varianten igen med ny TNR — [ ] frontmatter-koordinaten nu korrekt direkt
 (vårt skydd ska då vara tyst: ingen parse-issue).
+
+### Fynd under LLM-aktivering (2026-08-27, kväll)
+
+Operatören slog på 📷 och körde bildanalys → **"0 nya"** trots två foton i
+valvet. Rotorsak, två staplade: (1) **fel modellfamilj hämtad** — `qwen3:4b/8b/32b`
+(text-only) fanns i Ollama men ODEN kräver `qwen3-vl` (vision), och vald modell
+`qwen3-vl:32b` fanns inte alls → varje anrop föll tyst; (2) 📝-chippen var av, så
+"Tolka text nu" avböjde innan Ollama ens tillfrågades. Åtgärd hos operatören:
+`ollama pull qwen3-vl:4b` + välj modellen i inställningarna + slå på 📝.
+
+**UX-fynd åtgärdat på vår sida**: hälsoprickens "online" kollade bara att
+SERVERN svarade — en saknad modell degraderade till ett tyst "0 nya". Nu skiljer
+alla hälsokontroller på server-nere och modell-saknas: pricken visar
+`○ <modell> saknas`, och varje flöde/chip-påslag ger en Notice med exakta
+kommandot (`ollama pull <modell>`).
 
 ### Fas 4 — efterarbete
 

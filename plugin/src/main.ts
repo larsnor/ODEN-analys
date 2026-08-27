@@ -1588,6 +1588,26 @@ export default class SevenSPlugin extends Plugin {
   // --- Vision (local Ollama VLM) — the ADDITIVE capability ------------------
   /** Live Ollama reachability, refreshed on toggle/analyse; drives the panel dot. */
   visionOnline = false;
+  /** Server answers but the chosen model is NOT pulled — the failure mode that
+   *  otherwise degrades to a silent "0 nya" (found in live E2E: text-only
+   *  qwen3:* pulled, qwen3-vl selected → every call failed quietly while the
+   *  dot showed online). Surfaced in the mode strip + a Notice with the fix. */
+  visionModelMissing = false;
+
+  /** Record a health probe: online only when the server responds AND the chosen
+   *  model is actually pulled. Returns true when analysis can proceed. */
+  private noteHealth(health: { ok: boolean; models?: string[] }): boolean {
+    this.visionModelMissing = health.ok && !(health.models ?? []).includes(this.settings.visionModel);
+    this.visionOnline = health.ok && !this.visionModelMissing;
+    return this.visionOnline;
+  }
+
+  /** The operator-facing explanation + fix for a failed probe. */
+  private healthProblem(health: { ok: boolean; error?: string }): string {
+    return this.visionModelMissing
+      ? `Ollama svarar, men modellen ${this.settings.visionModel} är inte hämtad. Kör: ollama pull ${this.settings.visionModel}`
+      : `Ollama nås ej (${health.error ?? "okänd"})`;
+  }
   /** Report files whose images are being analysed RIGHT NOW — transient
    *  "Bild mottagen, analys startad" feed rows (in-memory, never persisted). */
   private readonly analyzingPhotos = new Set<string>();
@@ -1796,9 +1816,9 @@ export default class SevenSPlugin extends Plugin {
     this.photoRunActive = true;
     try {
       const health = await this.photoVision().health();
-      this.visionOnline = health.ok;
+      const usable = this.noteHealth(health);
       this.getView()?.renderModeStrip();
-      if (!health.ok) {
+      if (!usable) {
         this.photoHealthFailedAt = Date.now();
         return;
       }
@@ -1862,10 +1882,10 @@ export default class SevenSPlugin extends Plugin {
       return;
     }
     const health = await this.photoVision().health();
-    this.visionOnline = health.ok;
+    const usable = this.noteHealth(health);
     this.getView()?.renderModeStrip();
-    if (!health.ok) {
-      new Notice(`ODEN: Ollama nås ej (${health.error ?? "okänd"}) — deterministiskt läge.`);
+    if (!usable) {
+      new Notice(`ODEN: ${this.healthProblem(health)} — deterministiskt läge.`);
       return;
     }
     const notice = new Notice("ODEN: analyserar bilder…", 0);
@@ -1923,9 +1943,9 @@ export default class SevenSPlugin extends Plugin {
         this.settings.visionEnabled = true;
         await this.saveSettings();
         const health = await this.photoVision().health();
-        this.visionOnline = health.ok;
+        const usable = this.noteHealth(health);
         this.getView()?.renderModeStrip();
-        if (!health.ok) new Notice(`ODEN: Ollama nås ej (${health.error ?? "okänd"}).`);
+        if (!usable) new Notice(`ODEN: ${this.healthProblem(health)}.`);
         else void this.analyzePhotosFlow();
       },
     ).open();
@@ -2001,9 +2021,9 @@ export default class SevenSPlugin extends Plugin {
     this.textRunActive = true;
     try {
       const health = await new OllamaText(this.ollamaOpts()).health();
-      this.visionOnline = health.ok;
+      const usable = this.noteHealth(health);
       this.getView()?.renderModeStrip();
-      if (!health.ok) {
+      if (!usable) {
         this.textHealthFailedAt = Date.now();
         return;
       }
@@ -2118,10 +2138,10 @@ export default class SevenSPlugin extends Plugin {
       return;
     }
     const health = await new OllamaText(this.ollamaOpts()).health();
-    this.visionOnline = health.ok;
+    const usable = this.noteHealth(health);
     this.getView()?.renderModeStrip();
-    if (!health.ok) {
-      new Notice(`ODEN: Ollama nås ej (${health.error ?? "okänd"}) — deterministiskt läge.`);
+    if (!usable) {
+      new Notice(`ODEN: ${this.healthProblem(health)} — deterministiskt läge.`);
       return;
     }
     const notice = new Notice("ODEN: tolkar text…", 0);
@@ -2176,9 +2196,9 @@ export default class SevenSPlugin extends Plugin {
         this.settings.textReasoningEnabled = true;
         await this.saveSettings();
         const health = await new OllamaText(this.ollamaOpts()).health();
-        this.visionOnline = health.ok;
+        const usable = this.noteHealth(health);
         this.getView()?.renderModeStrip();
-        if (!health.ok) new Notice(`ODEN: Ollama nås ej (${health.error ?? "okänd"}).`);
+        if (!usable) new Notice(`ODEN: ${this.healthProblem(health)}.`);
         else void this.analyzeTextFlow();
       },
     ).open();
@@ -2190,8 +2210,7 @@ export default class SevenSPlugin extends Plugin {
     await this.saveSettings();
     if (this.settings.conversationEnabled) {
       const health = await new OllamaText(this.ollamaOpts()).health();
-      this.visionOnline = health.ok;
-      if (!health.ok) new Notice(`ODEN: Ollama nås ej (${health.error ?? "okänd"}).`);
+      if (!this.noteHealth(health)) new Notice(`ODEN: ${this.healthProblem(health)}.`);
     }
     this.getView()?.renderModeStrip();
   }
@@ -2749,8 +2768,9 @@ class SevenSTextView extends ItemView {
     const dot = el.createEl("span");
     if (anyOn) {
       const ok = this.plugin.visionOnline;
-      dot.setText(ok ? `● ${s.visionModel}` : "○ offline");
+      dot.setText(ok ? `● ${s.visionModel}` : this.plugin.visionModelMissing ? `○ ${s.visionModel} saknas` : "○ offline");
       dot.style.cssText = `color:${ok ? "var(--text-success)" : "var(--text-error)"};`;
+      if (this.plugin.visionModelMissing) dot.setAttribute("aria-label", `Kör: ollama pull ${s.visionModel}`);
     } else {
       dot.setText("deterministiskt läge");
       dot.style.opacity = ".5";
