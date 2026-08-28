@@ -207,6 +207,11 @@ du bekräftar eller avvisar (`föreslagen-av: llm`).
   Turn off Restricted mode, eller svara *"Trust author…"* när valvet öppnas.
 - **macOS vägrar öppna Obsidian** – högerklicka på appen och välj Öppna
   (Gatekeeper, bara första gången).
+- **Obsidian öppnade direkt ett gammalt valv — ingen valv-väljare, ingen
+  Trust-fråga** – Obsidians profil (`~/Library/Application Support/obsidian`)
+  minns tidigare valv och deras förtroende, även efter att appen och valvet
+  raderats. För ett rent installationstest: avsluta Obsidian och radera den
+  mappen, så visas valv-väljaren och *"Trust author…"* igen.
 - **Kartan har texten "API key required" på varje ruta** – CartoDB kräver en
   egen API-nyckel. Hämta en gratis och klistra in den enligt *Kartnyckel* ovan,
   eller byt kartkälla till **OpenStreetMap (ingen nyckel)** i Map Views

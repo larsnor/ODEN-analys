@@ -86,6 +86,12 @@ if [ ! -d "/Applications/Obsidian.app" ]; then
 else
   printf '1. Obsidian är redan installerat ✓\n'
 fi
+if [ -d "$HOME/Library/Application Support/obsidian" ]; then
+  printf '   OBS: Obsidian har använts på den här datorn tidigare — den kan öppna ett\n'
+  printf '   tidigare valv direkt och HOPPA ÖVER valv-väljaren och Trust-frågan.\n'
+  printf '   För en helt färsk upplevelse (t.ex. installationstest), avsluta Obsidian\n'
+  printf '   och radera först:  ~/Library/Application Support/obsidian\n'
+fi
 cat <<EOF
 2. Öppna valvet: Obsidian → "Open folder as vault" → $VALV_DIR
    → svara "Trust author and enable plugins". Noten Välkommen.md leder vidare
