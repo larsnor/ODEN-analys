@@ -18,6 +18,7 @@
  * identity question ("är dessa samma?") is REFUSED, routed to the evidence flow,
  * never answered yes/no.
  */
+import { hasWord, hasAnyWord } from "./sv_match";
 import { Report } from "./parse";
 import { PlateEntity } from "./reid";
 import { MarkNomination } from "./jobb";
@@ -89,14 +90,6 @@ export interface QueryAnswer {
 
 const PLATE_RE = /\b([ABCDEFGHJKLMNPRSTUWXYZ]{3}[0-9]{2}[0-9ABCDEFGHJKLMNPRSTUWXYZ])\b/;
 
-/** Word match that respects Swedish letters — JS `\b` treats å/ä/ö as
- *  boundaries, so `\bkväll\b` / `\båterkommande\b` would wrongly fail. */
-function hasWord(text: string, word: string): boolean {
-  return new RegExp(`(?<![a-zåäö0-9])${word}(?![a-zåäö0-9])`, "i").test(text);
-}
-function hasAnyWord(text: string, words: string[]): boolean {
-  return words.some((w) => hasWord(text, w));
-}
 
 const TIME_PRESETS: Record<string, TimeWindow> = {
   natt: { startMin: 22 * 60, endMin: 5 * 60, label: "natt (22:00–05:00)" },
