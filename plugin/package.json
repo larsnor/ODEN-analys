@@ -1,6 +1,6 @@
 {
   "name": "7s-analys-plugin",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Bin 3 analysis plugin for 7S field reports (Obsidian).",
   "private": true,
   "type": "module",
