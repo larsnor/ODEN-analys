@@ -4,7 +4,7 @@
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { demoBatchPlan, demoOriginKeys, FacitEntry } from "../src/reset.ts";
+import { demoBatchPlan, demoOriginKeys, FacitEntry, isShippedFixture, keptRootEntries } from "../src/reset.ts";
 
 function entry(file: string, tidpunkt: string, id?: string): FacitEntry {
   return { file, tidpunkt, id };
@@ -41,6 +41,35 @@ test("batch plan: ties on tidpunkt break by filename", () => {
   const plan = demoBatchPlan([b, a], 1);
   assert.equal(plan.get("TNR010200.md"), "demo/batch-01");
   assert.equal(plan.get("TNR010201.md"), "demo/batch-02");
+});
+
+test("kept root entries: the shipped four, entities folder included", () => {
+  const keep = keptRootEntries("entities");
+  assert.deepEqual([...keep].sort(), ["Välkommen.md", "demo", "entities", "inkorg"].sort());
+  // A nested entities folder protects its top segment (emptied, not removed).
+  assert.ok(keptRootEntries("ODEN/entities").has("ODEN"));
+  // Entities at the vault root: nothing extra to protect.
+  assert.deepEqual([...keptRootEntries("")].sort(), ["Välkommen.md", "demo", "inkorg"].sort());
+});
+
+test("kept root entries: intake-app leftovers are not protected", () => {
+  // Real leftovers from a vault the intake app wrote into: a Signal group folder
+  // and a per-message attachment folder. Neither is a 7S report, so only the
+  // allowlist removes them.
+  const keep = keptRootEntries("entities");
+  assert.equal(keep.has("TEST - Oden"), false);
+  assert.equal(keep.has("20260829000609_290006-46703580024-Lars_Nordström"), false);
+});
+
+test("shipped fixtures: demo tree and the inbox readme survive, ingested files do not", () => {
+  assert.ok(isShippedFixture("demo"));
+  assert.ok(isShippedFixture("demo/facit.json"));
+  assert.ok(isShippedFixture("demo/batch-01/TNR010534.md"));
+  assert.ok(isShippedFixture("inkorg/LÄS-MIG.md"));
+  assert.ok(isShippedFixture("Välkommen.md"));
+  assert.equal(isShippedFixture("inkorg/290007-4c6eb23f-Joel_Danielsson.md"), false);
+  assert.equal(isShippedFixture("entities/🕸️ Aktör.md"), false);
+  assert.equal(isShippedFixture("demoted/other.md"), false);
 });
 
 test("origin keys: ids and filenames, id optional", () => {

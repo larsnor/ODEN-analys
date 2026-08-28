@@ -71,8 +71,9 @@ fortsätt batch för batch.
 När du är klar visar `demo/facit.json` hur det faktiskt låg till – jämför gärna
 med vad du själv hittade. Vill du börja om kör du *"ODEN: Nollställ valvet"*
 (finns även under `⋯` → *Avancerat*): demorapporterna flyttas tillbaka till
-`demo/`, allt ODEN härlett rensas och alla beslut nollställs, medan
-operationsområdet och de namngivna platserna står kvar – sedan är det bara att
+`demo/` och allt annat i valvet hamnar i papperskorgen – noter, beslut,
+namngivna platser och analyssvar. Kvar står `demo/`, `inkorg/`, den här filen
+och operationsområdet, precis som efter installationen. Sedan är det bara att
 mata igen.
 
 Vill du generera egna korpusar, med andra platser och hotbilder, finns

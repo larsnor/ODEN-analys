@@ -30,7 +30,7 @@ import {
   WorkspaceLeaf,
 } from "obsidian";
 import { corpusMinutes, demoSchedule } from "./demo";
-import { demoBatchPlan, demoOriginKeys, FacitEntry } from "./reset";
+import { demoBatchPlan, demoOriginKeys, FacitEntry, isShippedFixture, keptRootEntries } from "./reset";
 import { ParseIssue, parseMapSeed, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
@@ -706,9 +706,8 @@ export default class SevenSPlugin extends Plugin {
    *  and delete the decision-derived owned notes (metod aktor/jobb-b) + stray empty
    *  files. Called when a new/changed operation area is set so nothing from the
    *  previous operation lingers. Location/larm/objektet nodes re-derive on reconcile.
-   *  The vault reset reuses this with keepPlaces (same area, same named places)
-   *  and silent (it reports its own summary). */
-  async clearAllJudgements(opts: { keepPlaces?: boolean; silent?: boolean } = {}): Promise<void> {
+   *  The vault reset reuses this silently — it reports its own summary. */
+  async clearAllJudgements(opts: { silent?: boolean } = {}): Promise<void> {
     this.settings.actorDecisions = {};
     this.settings.markDecisions = {};
     this.settings.locationNicknames = {};
@@ -716,7 +715,7 @@ export default class SevenSPlugin extends Plugin {
     this.settings.actorNames = {};
     this.settings.actorMerges = {};
     this.settings.locationMerges = {};
-    if (!opts.keepPlaces) this.settings.predefinedLocations = {};
+    this.settings.predefinedLocations = {};
     this.settings.seenAlerts = {};
     this.settings.mapSeedHandled = {};
     // Photo CONFIRMATIONS are per-operation judgements; the sighting cache
@@ -2532,22 +2531,28 @@ export default class SevenSPlugin extends Plugin {
       {
         title: "Nollställ valvet?",
         body:
-          "Alla inlästa rapporter tas bort — demorapporter flyttas tillbaka till demo/, " +
-          "övriga läggs i papperskorgen med sina bildmappar. ODEN:s härledda noter raderas " +
-          "och alla beslut nollställs. Operationsområdet och namngivna platser behålls.",
+          "Valvet återställs till nyinstallerat skick: demorapporterna flyttas tillbaka " +
+          "till demo/, och ALLT annat i valvet läggs i papperskorgen — inlästa rapporter, " +
+          "ODEN:s noter, bildmappar och det som intagsappen skrivit (grupp- och " +
+          "avsändarnoter). Alla beslut, namngivna platser och analyssvar nollställs. " +
+          "Kvar står bara demo/, inkorg/, Välkommen.md och operationsområdet.",
         confirmText: "Nollställ",
       },
       () => this.resetVault(),
     ).open();
   }
 
-  /** The demo feeder's inverse, plus a full wipe of everything ODEN produced:
-   *  demo-origin reports (per demo/facit.json) move back into their original
-   *  batch folders with their photo folders, every other report goes to the
-   *  trash, all owned notes are deleted and every judgement is cleared.
-   *  Configuration survives — the operation area, named places, model settings
-   *  and the LLM run-once caches (keyed by content hash), so a replayed demo
-   *  is fast and identical. */
+  /** Back to a freshly installed vault, standing at the moment after the
+   *  operation area was set. The demo feeder's inverse (demo-origin reports per
+   *  demo/facit.json move back into their batch folders with their photo
+   *  folders), then an ALLOWLIST sweep: everything that is not a shipped
+   *  fixture goes to the trash — ODEN's own notes, ingested reports whatever
+   *  their shape, the intake app's group/sender notes and attachment folders,
+   *  map seeds, stray images. Recognizing formats would keep missing things;
+   *  the package's own contents are the only stable definition of "fresh".
+   *  Settings keep configuration only (area, folders, model, toggles); every
+   *  judgement, named place and cached analysis is cleared, so a replayed demo
+   *  runs exactly like the first one. */
   private async resetVault(): Promise<void> {
     // A running playback would keep feeding the vault we are emptying.
     if (this.demoTimer !== null) window.clearTimeout(this.demoTimer);
@@ -2564,64 +2569,85 @@ export default class SevenSPlugin extends Plugin {
     const origin = demoOriginKeys(facit);
     const plan = demoBatchPlan(facit);
 
+    // 1. Rescue the corpus first: demo-origin reports (frontmatter id, or the
+    //    filename for a report predating the id) go home before the sweep runs.
     let restored = 0;
-    let trashed = 0;
     const taken = (p: string) => this.app.vault.getAbstractFileByPath(normalizePath(p)) !== null;
     for (const f of this.app.vault.getMarkdownFiles()) {
       if (f.path.startsWith("demo/")) continue;
       const r = parseReport(await this.app.vault.cachedRead(f), f.path, []);
-      if (r.typ !== "7S-rapport") continue;
+      if (!((r.id !== "" && origin.ids.has(r.id)) || origin.files.has(f.name))) continue;
+      const target = plan.get(f.name) ?? "demo";
+      if (!(this.app.vault.getAbstractFileByPath(normalizePath(target)) instanceof TFolder)) {
+        await this.app.vault.createFolder(normalizePath(target));
+      }
       // Photo folders travel with their report (folder name contains `_<tnr>-`,
       // the same contract the packager and the feeder use).
       const tnr = /^TNR(\d+)\.md$/.exec(f.name)?.[1];
       const parent = f.parent;
-      const photoDirs =
-        tnr && parent instanceof TFolder
-          ? parent.children.filter((c): c is TFolder => c instanceof TFolder && c.name.includes(`_${tnr}-`))
-          : [];
-      if ((r.id !== "" && origin.ids.has(r.id)) || origin.files.has(f.name)) {
-        const target = plan.get(f.name) ?? "demo";
-        if (!(this.app.vault.getAbstractFileByPath(normalizePath(target)) instanceof TFolder)) {
-          await this.app.vault.createFolder(normalizePath(target));
+      if (tnr && parent instanceof TFolder) {
+        for (const d of [...parent.children]) {
+          if (d instanceof TFolder && d.name.includes(`_${tnr}-`) && !taken(`${target}/${d.name}`)) {
+            await this.app.fileManager.renameFile(d, normalizePath(`${target}/${d.name}`));
+          }
         }
-        for (const d of photoDirs) {
-          if (!taken(`${target}/${d.name}`)) await this.app.fileManager.renameFile(d, normalizePath(`${target}/${d.name}`));
-        }
-        if (!taken(`${target}/${f.name}`)) {
-          await this.app.fileManager.renameFile(f, normalizePath(`${target}/${f.name}`));
-          restored++;
-        }
-      } else {
-        for (const d of photoDirs) await this.app.fileManager.trashFile(d);
-        await this.app.fileManager.trashFile(f);
+      }
+      if (!taken(`${target}/${f.name}`)) {
+        await this.app.fileManager.renameFile(f, normalizePath(`${target}/${f.name}`));
+        restored++;
+      }
+    }
+
+    // 2. Sweep everything that a fresh install does not ship. Root entries that
+    //    are not kept go whole (an intake group folder takes its attachment
+    //    folders with it); the kept folders are emptied down to their fixtures.
+    let trashed = 0;
+    const keep = keptRootEntries(this.settings.entitiesFolder);
+    const root = this.app.vault.getRoot();
+    for (const child of [...root.children]) {
+      if (!keep.has(child.name)) {
+        await this.app.fileManager.trashFile(child);
+        trashed++;
+        continue;
+      }
+      if (child.name === "demo" || !(child instanceof TFolder)) continue;
+      for (const inner of [...child.children]) {
+        if (isShippedFixture(inner.path)) continue;
+        await this.app.fileManager.trashFile(inner);
         trashed++;
       }
     }
 
-    // Every owned note goes — larm, platser, aktörer, återkomster, bildfynd,
-    // regplåtar, textmärken, Objektet (rewritten below from the kept settings).
-    let notes = 0;
-    const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
-    for (const f of this.app.vault.getMarkdownFiles()) {
-      if (folder !== "" && !(f.path === folder || f.path.startsWith(folder + "/"))) continue;
-      const text = await this.app.vault.read(f);
-      if (text.trim() === "" || isPluginOwned(text)) {
-        await this.app.vault.delete(f);
-        notes++;
-      }
+    // 3. Settings back to configuration only: judgements, named places and the
+    //    run-once analysis caches all go, so a replay re-runs the analysis for
+    //    real instead of replaying yesterday's answers.
+    await this.clearAllJudgements({ silent: true });
+    this.settings.photoAnalyses = {};
+    this.settings.textExtractions = {};
+    await this.saveSettings();
+
+    // In-memory derivations describe a vault that no longer exists.
+    this.lastJobB = null;
+    this.lastActors = null;
+    this.lastCorroboration = new Map();
+    this.knownReportFiles = null;
+    this.analyzingPhotos.clear();
+    this.analyzingTexts.clear();
+    this.attachmentHashMemo.clear();
+    this.photoBacklog = false;
+    this.textBacklog = false;
+
+    // The inbox is part of a fresh vault even if the sweep found it missing.
+    if (!(this.app.vault.getAbstractFileByPath("inkorg") instanceof TFolder)) {
+      await this.app.vault.createFolder("inkorg");
     }
-
-    // Judgements go, configuration stays — a demo turnaround is not a new
-    // operation, so the named places survive alongside the area.
-    await this.clearAllJudgements({ keepPlaces: true, silent: true });
-
     // Same self-heal sequence as startup: Objektet back, prune, silent baseline.
     if (this.settings.setupComplete) await this.writeAoiNote();
     await this.reconcileActorNodes();
     if (this.settings.watcherEnabled) await this.baselineAlerts();
     else await this.refreshPanel();
     new Notice(
-      `ODEN: valvet nollställt — ${restored} rapporter tillbaka i demo/, ${trashed} i papperskorgen, ${notes} noter borttagna.`,
+      `ODEN: valvet nollställt — ${restored} rapporter tillbaka i demo/, ${trashed} poster i papperskorgen.`,
       10000,
     );
   }
