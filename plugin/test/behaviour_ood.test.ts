@@ -19,7 +19,9 @@ import { CORPUS_B } from "./fixtures/behaviour_ood/corpus_b.ts";
 // The weight-3 categories self-elevate a report at night — a benign sentence tripping
 // one is the dangerous false positive. The soft weight-2 categories (optik/observation)
 // firing on a birdwatcher is tolerable (needs geo+time to actually elevate; documented).
-const WEIGHT3 = new Set(["sabotage", "attentat"]);
+// infiltration joined 2026-08-28 (GitHub #3): measured zero benign fires across both
+// corpora before promotion — this assertion is what keeps that true forever.
+const WEIGHT3 = new Set(["sabotage", "attentat", "infiltration"]);
 
 test("OOD behaviour: measure recall/precision (printed), assert guards + safety", () => {
   const a = scoreBehaviour(CORPUS_A);
@@ -39,8 +41,8 @@ test("OOD behaviour: measure recall/precision (printed), assert guards + safety"
   // Regression floors (well below the measured 62%/74% recall, 97%/91% precision), so
   // a future change that guts recall or precision fails loudly. Not pinned to exact
   // numbers — recall is an acknowledged ceiling, precision has the optik ambiguity.
-  assert.ok(a.recall >= 0.55, `corpus A recall regressed: ${(a.recall * 100).toFixed(0)}%`);
-  assert.ok(b.recall >= 0.65, `corpus B recall regressed: ${(b.recall * 100).toFixed(0)}%`);
+  assert.ok(a.recall >= 0.6, `corpus A recall regressed: ${(a.recall * 100).toFixed(0)}%`);
+  assert.ok(b.recall >= 0.7, `corpus B recall regressed: ${(b.recall * 100).toFixed(0)}%`);
   assert.ok(a.precision >= 0.85, `corpus A precision regressed: ${(a.precision * 100).toFixed(0)}%`);
   assert.ok(b.precision >= 0.85, `corpus B precision regressed: ${(b.precision * 100).toFixed(0)}%`);
 });

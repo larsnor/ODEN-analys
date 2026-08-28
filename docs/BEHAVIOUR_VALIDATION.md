@@ -56,6 +56,42 @@ The list is now **frozen** at this size (a comment marks the boundary in
 `suspicion.ts`). The remaining ~26–38% gap is the keyword ceiling — activities only
 separable from benign life by *context*, which is open-vocabulary (LLM) territory.
 
+## Infiltration expansion + weight promotion (2026-08-28, GitHub #3)
+
+An external reporter measured infiltration-cell recall at **0.22** against
+0.80–1.00 for the other modes on generated corpora, with two causes we verified
+independently: missing ELICITATION vocabulary (asking about routines/pass
+times/pass cards — no stem existed), and a weight asymmetry — infiltration is
+structurally a DAYTIME activity (guard changes, staff flows), so the night bonus
+never helps it, and weight 2 + närområde 2 = 4 stalled under the threshold even
+when a stem DID hit ("skuggade en", "gled in vid", "saknade arbetsorder").
+
+Fix, precision-gated per the standing protocol: seven elicitation/false-
+authority stems ("om rutiner", "passertider", "passerkorten", "kändes inte
+igen", "prata sig förbi"/"pratar sig förbi", "begär tillträde") — each verified
+to fire on ZERO benign sentences across corpus A, corpus B and the
+recon_indicators benign sets — and `infiltration` promoted to **weight 3**. The
+promotion is enforced, not assumed: infiltration now sits inside the WEIGHT3
+safety assertion in `behaviour_ood.test.ts`, so any future benign fire fails CI.
+
+| | infiltration before | after | overall recall before | after |
+|---|---|---|---|---|
+| Corpus A (dev) | 7/10 | **10/10** | 62% | **68%** |
+| Corpus B (held-out) | 8/10 | **10/10** | 74% | **78%** |
+| Reporter's corpus (seed 21 + infiltration seed 31, 18 hostile) | **0.22** (4/18) | **0.78** (14/18) | — | civilian FP unchanged (8) |
+
+Regression floors raised to 55→60% (A) and 65→70% (B).
+
+Residuals, honestly: (1) "Fotograferade skyltar och passersystem" scores only
+via `optik` (weight 2) — optik can NEVER be promoted (the birdwatcher/tourist
+ambiguity is inherent); (2) a lone infiltration signal far from the objektet in
+daytime still does not self-elevate (3 < 5) — by design; (3) "ställde
+elsparkcykeln utom synhåll" is outside any keyword vocabulary — 📝-layer
+territory. Caveat on the broadest new stem: "om rutiner" would fire on
+administrative prose like "informerade om rutinerna", which the blind corpora
+never produced as a field observation — the weight-3 reason line names the
+matched stem, so an operator sees exactly why.
+
 ## Two things an operator must keep in mind
 1. **A missed behaviour keyword usually silences the report.** A weight-2 behaviour
    hit needs geo+time support to reach the elevation threshold (5); a report elevates

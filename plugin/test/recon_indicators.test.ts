@@ -66,6 +66,11 @@ const THREATS = [
   "Utgav sig för att vara hantverkare men saknade arbetsorder.",
   "Smet in genom en dörr vid vaktbyte.",
   "Skuggade en anställd och testade en dörr som skulle vara låst.",
+  // elicitation + false authority (GitHub #3 — the generator's repertoire phrases)
+  "Ställde ingående frågor om rutiner och passertider.",
+  "Bar synbart passerkort men kändes inte igen av vakten.",
+  "Man i väst frågar vakten om rutinerna för in- och utpassering.",
+  "Försökte prata sig förbi grindvakten utan ärende.",
   // terrorism
   "Lämnade en oidentifierad väska vid entrén och avlägsnade sig.",
   "Körde långsamt förbi upprepade gånger.",

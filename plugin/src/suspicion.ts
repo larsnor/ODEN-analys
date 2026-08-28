@@ -136,15 +136,25 @@ export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: num
     "ställer ifrån sig en väska", "ställer ifrån sig ett paket", "ställer ifrån sig en ryggsäck",
     "grävde ned", "gräver ner", "gräver ned", "fordonsspärr", "körde långsamt förbi",
     "upprepade förbifarter", "rammade"] },
-  // --- Infiltration: unauthorised access + pretext + tailing ------------------
-  { key: "infiltration", label: "infiltration/tillträde", stems: [
+  // --- Infiltration: unauthorised access + pretext + tailing + ELICITATION -----
+  // Weight 3 since 2026-08-28 (GitHub #3): infiltration is structurally a DAYTIME
+  // activity (guard changes, staff flows), so the night bonus never helps it —
+  // weight 2 + närområde 2 = 4 stalled under the threshold even when a stem hit.
+  // Promotion is measured, not assumed: zero benign fires across BOTH OOD corpora
+  // and the recon_indicators benign sets, and the WEIGHT3 safety assertion in
+  // behaviour_ood.test.ts now enforces that permanently. The elicitation stems
+  // (frågor om rutiner/passertider, passerkort-utfrågning, prata sig förbi) were
+  // the missing repertoire — each gated to zero benign hits before inclusion.
+  { key: "infiltration", label: "infiltration/tillträde", weight: 3, stems: [
     "obehörig", "utan behörighet", "smet in", "smiter in", "gled in vid", "glider in",
     "utgav sig för", "utger sig för", "utger sig", "påstår sig vara", "säger sig vara",
     "uppger sig", "låtsades vara", "falsk arbetsorder", "saknade arbetsorder",
     "saknar arbetsorder", "fel firmanamn", "kan inte visa legitimation", "förfalskad",
     "skuggade en", "skuggade personal", "skuggar", "följde efter personal", "följer efter",
     "går tätt bakom", "testade en dörr", "testade dörren", "testar dörren", "testar en dörr",
-    "testar dörrhandtaget"] },
+    "testar dörrhandtaget",
+    "om rutiner", "passertider", "passerkorten", "kändes inte igen",
+    "prata sig förbi", "pratar sig förbi", "begär tillträde"] },
 ];
 
 /** The behaviour concepts (key + operator label + weight), for the LLM text
