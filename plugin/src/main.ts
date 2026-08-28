@@ -240,6 +240,7 @@ const DEFAULT_SETTINGS: SevenSSettings = {
 };
 
 const VIEW_TYPE_7S = "7s-analys-text";
+const VIEW_TYPE_CHAT = "7s-analys-chat";
 
 /** The Map View query for ODEN's marker layers (mirrors obsidian-config/
  *  map-view-data.json defaultState.query — keep the two in sync). Includes the
@@ -280,6 +281,15 @@ export default class SevenSPlugin extends Plugin {
 
     addIcon(ODEN_ICON_ID, ODEN_ICON_SVG);
     this.registerView(VIEW_TYPE_7S, (leaf) => new SevenSTextView(leaf, this));
+    // The chat is its own view (never auto-opened at load) — it is created
+    // lazily beside the panel by revealChat(): command, 💬-knappen or a query.
+    this.registerView(VIEW_TYPE_CHAT, (leaf) => new OdenChatView(leaf, this));
+
+    this.addCommand({
+      id: "open-chat",
+      name: "Öppna chatten",
+      callback: () => void this.revealChat(),
+    });
 
     this.addCommand({
       id: "setup-operation",
@@ -422,6 +432,7 @@ export default class SevenSPlugin extends Plugin {
     // plugin instance, so every button silently does nothing. Detach so the
     // panel is recreated fresh against the live plugin on re-enable.
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_7S);
+    this.app.workspace.detachLeavesOfType(VIEW_TYPE_CHAT);
   }
 
   async loadSettings(): Promise<void> {
@@ -718,8 +729,9 @@ export default class SevenSPlugin extends Plugin {
       }
     }
     // A new operation area also empties the conversation — answers grounded in the
-    // previous operation's KB must not linger next to the fresh one.
-    this.getView()?.clearChat();
+    // previous operation's KB must not linger next to the fresh one (safe no-op
+    // when the chat view is closed).
+    this.getChatView()?.clearChat();
     new Notice(`ODEN: raderade tidigare beslut, tog bort ${removed} noter.`);
   }
 
@@ -1066,8 +1078,8 @@ export default class SevenSPlugin extends Plugin {
   async answerQuery(raw: string): Promise<void> {
     const trimmed = raw.trim();
     if (!trimmed) return;
-    await this.revealPanel();
-    const view = this.getView();
+    await this.revealChat();
+    const view = this.getChatView();
     const pending = view?.beginChat(trimmed) ?? null;
     const llmOn = this.settings.conversationEnabled;
     const stage = (t: string) => { if (pending && llmOn) pending.setText(t); };
@@ -1102,7 +1114,7 @@ export default class SevenSPlugin extends Plugin {
     }
   }
 
-  /** The chat is shown live in the panel and never persisted; this removes a
+  /** The chat is shown live in its own view and never persisted; this removes a
    *  stale `7s-dialog.md` audit note if one exists (best-effort — a persisted
    *  dialog note would clutter the graph with a node linked to reports). */
   private async cleanupDialogNote(): Promise<void> {
@@ -1400,6 +1412,35 @@ export default class SevenSPlugin extends Plugin {
     await this.getPanelLeaf();
   }
 
+  /** The open chat view, if any. */
+  private getChatView(): OdenChatView | null {
+    const leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_CHAT)[0];
+    return leaf && leaf.view instanceof OdenChatView ? leaf.view : null;
+  }
+
+  /** Get (or create) the chat leaf. Reuse an existing one wherever it sits;
+   *  else split it off NEXT TO the open ODEN panel (side by side — the whole
+   *  point is feed and conversation visible at once, never interleaved); else
+   *  a plain main-area tab. Never auto-opened at plugin load. */
+  private async getChatLeaf(): Promise<WorkspaceLeaf> {
+    const { workspace } = this.app;
+    let leaf = workspace.getLeavesOfType(VIEW_TYPE_CHAT)[0];
+    if (!leaf) {
+      const panelLeaf = workspace.getLeavesOfType(VIEW_TYPE_7S)[0];
+      // createLeafBySplit splits the PANEL's group (not the active leaf), so a
+      // pinned or inactive panel still gets its chat as an adjacent pane.
+      leaf = panelLeaf ? workspace.createLeafBySplit(panelLeaf, "vertical") : workspace.getLeaf("tab");
+      await leaf.setViewState({ type: VIEW_TYPE_CHAT, active: true });
+    }
+    workspace.revealLeaf(leaf);
+    return leaf;
+  }
+
+  /** Open/focus the chat view. */
+  async revealChat(): Promise<void> {
+    await this.getChatLeaf();
+  }
+
   /** Recompute and refresh the feed in the open panel (no alert notices). This is
    *  the EXPLICIT path (back button, ⋯ menu, commands), so it leaves any open
    *  review screen and returns to the live feed. */
@@ -1480,6 +1521,7 @@ export default class SevenSPlugin extends Plugin {
     menu.addItem((i) => i.setTitle("Namnge plats…").setIcon("map-pin").onClick(() => void this.openLocationNamer()));
     menu.addItem((i) => i.setTitle("Namngivna platser…").setIcon("landmark").onClick(() => void this.openManagePlaces()));
     menu.addItem((i) => i.setTitle("Bevakningslista…").setIcon("telescope").onClick(() => void this.openWatchlist()));
+    menu.addItem((i) => i.setTitle("Öppna chatten").setIcon("message-circle").onClick(() => void this.revealChat()));
     if (this.app.vault.getAbstractFileByPath("demo") instanceof TFolder) {
       menu.addItem((i) =>
         i.setTitle(this.demoRunning ? "Pausa demomatning" : "Mata demodata…")
@@ -2603,7 +2645,111 @@ const CHAT_HINT =
   't.ex. "vilka larm har vi?", "visa drönarobservationer", "återkommande fordon", ' +
   '"sammanfatta läget vid Köpmanholm", eller en regplåt.';
 
-/** The plugin's only UI: a passive text panel that renders Markdown. */
+/** The conversation client — its OWN view, side by side with the feed panel so
+ *  the log and a chat answer can never blur together (the old combined panel
+ *  separated them with a 1px line and near-identical grey text). History is
+ *  DOM-only and never persisted. */
+class OdenChatView extends ItemView {
+  private readonly plugin: SevenSPlugin;
+  private chatLogEl!: HTMLElement;
+
+  constructor(leaf: WorkspaceLeaf, plugin: SevenSPlugin) {
+    super(leaf);
+    this.plugin = plugin;
+  }
+
+  getViewType(): string {
+    return VIEW_TYPE_CHAT;
+  }
+
+  getDisplayText(): string {
+    return "ODEN Chat";
+  }
+
+  getIcon(): string {
+    return "message-circle";
+  }
+
+  async onOpen(): Promise<void> {
+    const body = this.containerEl.children[1] as HTMLElement;
+    body.empty();
+    body.addClass("oden-chat");
+    // The tint (--background-secondary) is the pane-level cue that this whole
+    // surface is the conversation, distinct from the feed's default background.
+    body.style.cssText =
+      "display:flex;flex-direction:column;height:100%;background:var(--background-secondary);";
+
+    this.chatLogEl = body.createDiv();
+    this.chatLogEl.style.cssText = "flex:1;overflow-y:auto;padding:8px 10px;";
+    // Rendered [[TNR…]] citations: MarkdownRenderer only BUILDS the anchors — a
+    // custom view must route internal-link clicks itself, or they do nothing.
+    this.chatLogEl.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement).closest?.("a.internal-link");
+      if (!link) return;
+      e.preventDefault();
+      const target = link.getAttribute("data-href") ?? link.getAttribute("href") ?? link.textContent ?? "";
+      if (target) void this.plugin.app.workspace.openLinkText(target, "", false);
+    });
+
+    const bar = body.createDiv();
+    bar.style.cssText =
+      "display:flex;gap:6px;padding:6px 8px;border-top:1px solid var(--background-modifier-border);";
+    const input = bar.createEl("input", { type: "text", placeholder: "Fråga ODEN…" });
+    input.style.flex = "1";
+    const send = () => {
+      const v = input.value.trim();
+      if (v) {
+        input.value = "";
+        void this.plugin.answerQuery(v);
+      }
+    };
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") send();
+    });
+    bar.createEl("button", { text: "Skicka" }).onclick = send;
+
+    this.addChatSystem(CHAT_HINT);
+  }
+
+  /** Empty the conversation back to the opening hint. The chat is DOM-only (never
+   *  persisted), but a NEW operation area must not show answers grounded in the
+   *  previous operation's data — called from clearAllJudgements(). */
+  clearChat(): void {
+    this.chatLogEl.empty();
+    this.addChatSystem(CHAT_HINT);
+  }
+
+  addChatSystem(text: string): void {
+    const d = this.chatLogEl.createDiv();
+    // Italic + semantic muted color — deliberately NOT the feed's quiet
+    // opacity-grey, so system text here never reads as a "mottaget" row.
+    d.style.cssText = "font-style:italic;color:var(--text-muted);font-size:.85em;margin:6px 0;";
+    d.setText(text);
+  }
+
+  /** Append the operator's question + a pending "…" answer; return the answer
+   *  element to fill once the (possibly slow) engine responds. */
+  beginChat(question: string): HTMLElement {
+    const q = this.chatLogEl.createDiv();
+    q.style.cssText = "margin:8px 0 2px;font-weight:600;";
+    q.setText("▸ " + question);
+    const a = this.chatLogEl.createDiv();
+    a.setText("…");
+    a.style.opacity = ".6";
+    this.chatLogEl.scrollTop = this.chatLogEl.scrollHeight;
+    return a;
+  }
+
+  /** Replace a pending placeholder with the rendered answer (never blank). */
+  async fillChat(a: HTMLElement, prose: string): Promise<void> {
+    a.empty();
+    a.style.opacity = "";
+    await MarkdownRenderer.render(this.plugin.app, prose || "_(inget svar)_", a, "", this.plugin);
+    this.chatLogEl.scrollTop = this.chatLogEl.scrollHeight;
+  }
+}
+
+/** The plugin's main UI: the passive feed/review panel (chat lives in OdenChatView). */
 class SevenSTextView extends ItemView {
   private readonly plugin: SevenSPlugin;
 
@@ -2626,7 +2772,6 @@ class SevenSTextView extends ItemView {
 
   private feedEl!: HTMLElement;
   private modeEl!: HTMLElement;
-  private chatLogEl!: HTMLElement;
   /** Whether the feed region currently shows the live feed or a review screen.
    *  While "review", background feed refreshes are suppressed so an incoming
    *  message can't wipe the screen the operator is working in. */
@@ -2655,6 +2800,9 @@ class SevenSTextView extends ItemView {
     const obs = header.createEl("button", { text: "＋ Obs" });
     obs.setAttribute("aria-label", "Ny observation");
     obs.onclick = () => this.plugin.openNewObservation();
+    const chatBtn = header.createEl("button", { text: "💬" });
+    chatBtn.setAttribute("aria-label", "Öppna chatten");
+    chatBtn.onclick = () => void this.plugin.revealChat();
     header.createEl("button", { text: "⋯" }).onclick = (e) => this.plugin.openPanelMenu(e);
 
     // Mode strip — operation mode the operator sees + changes directly (the status
@@ -2666,47 +2814,7 @@ class SevenSTextView extends ItemView {
     this.feedEl = body.createDiv();
     this.feedEl.style.cssText = "flex:1;overflow-y:auto;padding:6px 8px;";
 
-    // Chat (bottom) — always available.
-    const chat = body.createDiv();
-    chat.style.cssText =
-      "display:flex;flex-direction:column;border-top:1px solid var(--background-modifier-border);max-height:45%;";
-    this.chatLogEl = chat.createDiv();
-    this.chatLogEl.style.cssText = "flex:1;overflow-y:auto;padding:6px 8px;";
-    // Rendered [[TNR…]] citations: MarkdownRenderer only BUILDS the anchors — a
-    // custom view must route internal-link clicks itself, or they do nothing.
-    this.chatLogEl.addEventListener("click", (e) => {
-      const link = (e.target as HTMLElement).closest?.("a.internal-link");
-      if (!link) return;
-      e.preventDefault();
-      const target = link.getAttribute("data-href") ?? link.getAttribute("href") ?? link.textContent ?? "";
-      if (target) void this.plugin.app.workspace.openLinkText(target, "", false);
-    });
-    const bar = chat.createDiv();
-    bar.style.cssText = "display:flex;gap:6px;padding:6px 8px;";
-    const input = bar.createEl("input", { type: "text", placeholder: "Fråga ODEN…" });
-    input.style.flex = "1";
-    const send = () => {
-      const v = input.value.trim();
-      if (v) {
-        input.value = "";
-        void this.plugin.answerQuery(v);
-      }
-    };
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") send();
-    });
-    bar.createEl("button", { text: "Skicka" }).onclick = send;
-
-    this.addChatSystem(CHAT_HINT);
     void this.plugin.refreshPanel();
-  }
-
-  /** Empty the conversation back to the opening hint. The chat is DOM-only (never
-   *  persisted), but a NEW operation area must not show answers grounded in the
-   *  previous operation's data — called from clearAllJudgements(). */
-  clearChat(): void {
-    this.chatLogEl.empty();
-    this.addChatSystem(CHAT_HINT);
   }
 
   /** Leave a review screen and return to showing the live feed. */
@@ -2805,33 +2913,6 @@ class SevenSTextView extends ItemView {
         row.onmouseleave = () => (row.style.background = "");
       }
     }
-  }
-
-  addChatSystem(text: string): void {
-    const d = this.chatLogEl.createDiv();
-    d.style.cssText = "opacity:.6;font-size:.85em;margin:4px 0;";
-    d.setText(text);
-  }
-
-  /** Append the operator's question + a pending "…" answer; return the answer
-   *  element to fill once the (possibly slow) engine responds. */
-  beginChat(question: string): HTMLElement {
-    const q = this.chatLogEl.createDiv();
-    q.style.cssText = "margin:8px 0 2px;font-weight:600;";
-    q.setText("▸ " + question);
-    const a = this.chatLogEl.createDiv();
-    a.setText("…");
-    a.style.opacity = ".6";
-    this.chatLogEl.scrollTop = this.chatLogEl.scrollHeight;
-    return a;
-  }
-
-  /** Replace a pending placeholder with the rendered answer (never blank). */
-  async fillChat(a: HTMLElement, prose: string): Promise<void> {
-    a.empty();
-    a.style.opacity = "";
-    await MarkdownRenderer.render(this.plugin.app, prose || "_(inget svar)_", a, "", this.plugin);
-    this.chatLogEl.scrollTop = this.chatLogEl.scrollHeight;
   }
 
   /** Header (with ← back) for a review screen shown in the feed region. */

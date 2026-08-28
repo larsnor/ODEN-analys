@@ -75,7 +75,7 @@
           {
             "id": "173f4c99fa521e9b",
             "type": "tabs",
-            "dimension": 34.90740740740741,
+            "dimension": 30,
             "children": [
               {
                 "id": "9f6490974924575c",
@@ -96,7 +96,7 @@
           {
             "id": "6b921ec02fba2ac4",
             "type": "tabs",
-            "dimension": 65.0925925925926,
+            "dimension": 40,
             "children": [
               {
                 "id": "da27902fb862991d",
@@ -108,6 +108,25 @@
                   "pinned": true,
                   "icon": "oden",
                   "title": "ODEN"
+                }
+              }
+            ]
+          },
+          {
+            "id": "c4b2a1d0e9f80317",
+            "type": "tabs",
+            "dimension": 30,
+            "children": [
+              {
+                "id": "ab12cd34ef567890",
+                "type": "leaf",
+                "pinned": true,
+                "state": {
+                  "type": "7s-analys-chat",
+                  "state": {},
+                  "pinned": true,
+                  "icon": "message-circle",
+                  "title": "ODEN Chat"
                 }
               }
             ]

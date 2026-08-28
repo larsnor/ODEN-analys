@@ -120,8 +120,14 @@ not shown inline. (Equivalent to Settings → Editor → *Properties in document
 ## `workspace.json` — default pane layout
 
 Copy to `<vault>/.obsidian/workspace.json`. The operator workspace: the **map**,
-the **graph**, and the **ODEN panel** as **pinned** tabs — pinned so clicking a
-report opens it in a *new* tab instead of hijacking one of the panels. Session
+the **graph**, the **ODEN panel** and the **ODEN Chat** (bottom row: Välkommen
+30 | ODEN 40 | chat 30) as **pinned** tabs — pinned so clicking a report opens
+it in a *new* tab instead of hijacking one of the panels.
+
+**Existing vaults** (workspace.json already materialized by Obsidian) get no
+chat pane automatically: open it once via 💬-knappen i ODEN-panelen, `⋯ →
+"Öppna chatten"` or the command palette ("ODEN: Öppna chatten") — it splits in
+beside the panel and Obsidian persists the layout from then on. Session
 state (`lastOpenFiles`, the active leaf, and any open report file/title) is
 stripped from the committed template — Obsidian repopulates that as the operator
 works. The `left-ribbon.hiddenItems` block also hides the **quick switcher** and
