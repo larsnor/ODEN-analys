@@ -30,6 +30,7 @@ import {
   WorkspaceLeaf,
 } from "obsidian";
 import { corpusMinutes, demoSchedule } from "./demo";
+import { demoBatchPlan, demoOriginKeys, FacitEntry } from "./reset";
 import { ParseIssue, parseMapSeed, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
@@ -350,6 +351,14 @@ export default class SevenSPlugin extends Plugin {
         if (!checking) this.toggleDemoFeed();
         return true;
       },
+    });
+
+    // Demo turnaround: back to a freshly installed vault — fed reports return
+    // to demo/, everything else ODEN ingested, derived or judged is removed.
+    this.addCommand({
+      id: "reset-vault",
+      name: "Nollställ valvet",
+      callback: () => this.runResetVault(),
     });
 
     this.addRibbonIcon(ODEN_ICON_ID, "ODEN — indexera & sammanfatta", () =>
@@ -696,8 +705,10 @@ export default class SevenSPlugin extends Plugin {
   /** Wipe EVERY operator judgement (decisions, names, nicknames, merges, seen-set)
    *  and delete the decision-derived owned notes (metod aktor/jobb-b) + stray empty
    *  files. Called when a new/changed operation area is set so nothing from the
-   *  previous operation lingers. Location/larm/objektet nodes re-derive on reconcile. */
-  async clearAllJudgements(): Promise<void> {
+   *  previous operation lingers. Location/larm/objektet nodes re-derive on reconcile.
+   *  The vault reset reuses this with keepPlaces (same area, same named places)
+   *  and silent (it reports its own summary). */
+  async clearAllJudgements(opts: { keepPlaces?: boolean; silent?: boolean } = {}): Promise<void> {
     this.settings.actorDecisions = {};
     this.settings.markDecisions = {};
     this.settings.locationNicknames = {};
@@ -705,7 +716,7 @@ export default class SevenSPlugin extends Plugin {
     this.settings.actorNames = {};
     this.settings.actorMerges = {};
     this.settings.locationMerges = {};
-    this.settings.predefinedLocations = {};
+    if (!opts.keepPlaces) this.settings.predefinedLocations = {};
     this.settings.seenAlerts = {};
     this.settings.mapSeedHandled = {};
     // Photo CONFIRMATIONS are per-operation judgements; the sighting cache
@@ -737,7 +748,7 @@ export default class SevenSPlugin extends Plugin {
     // previous operation's KB must not linger next to the fresh one (safe no-op
     // when the chat view is closed).
     this.getChatView()?.clearChat();
-    new Notice(`ODEN: raderade tidigare beslut, tog bort ${removed} noter.`);
+    if (!opts.silent) new Notice(`ODEN: raderade tidigare beslut, tog bort ${removed} noter.`);
   }
 
   // --- Location nicknames (operator names for MGRS grids) --------------------
@@ -1551,6 +1562,8 @@ export default class SevenSPlugin extends Plugin {
     menu.addSeparator();
     menu.addItem((i) => i.setTitle("Nollställ kopplingsbeslut").setIcon("trash").onClick(() => void this.resetMarkDecisions()));
     menu.addItem((i) => i.setTitle("Nollställ aktörsbeslut").setIcon("trash-2").onClick(() => void this.resetActorDecisions()));
+    menu.addSeparator();
+    menu.addItem((i) => i.setTitle("Nollställ valvet…").setIcon("rotate-ccw").onClick(() => this.runResetVault()));
     menu.showAtMouseEvent(evt);
   }
 
@@ -2508,6 +2521,109 @@ export default class SevenSPlugin extends Plugin {
     } catch (err) {
       console.error("ODEN: demo move failed", report.path, err);
     }
+  }
+
+  // --- Vault reset (demo turnaround) -----------------------------------------
+
+  /** Confirmation gate for the full vault reset. */
+  runResetVault(): void {
+    new ConfirmModal(
+      this.app,
+      {
+        title: "Nollställ valvet?",
+        body:
+          "Alla inlästa rapporter tas bort — demorapporter flyttas tillbaka till demo/, " +
+          "övriga läggs i papperskorgen med sina bildmappar. ODEN:s härledda noter raderas " +
+          "och alla beslut nollställs. Operationsområdet och namngivna platser behålls.",
+        confirmText: "Nollställ",
+      },
+      () => this.resetVault(),
+    ).open();
+  }
+
+  /** The demo feeder's inverse, plus a full wipe of everything ODEN produced:
+   *  demo-origin reports (per demo/facit.json) move back into their original
+   *  batch folders with their photo folders, every other report goes to the
+   *  trash, all owned notes are deleted and every judgement is cleared.
+   *  Configuration survives — the operation area, named places, model settings
+   *  and the LLM run-once caches (keyed by content hash), so a replayed demo
+   *  is fast and identical. */
+  private async resetVault(): Promise<void> {
+    // A running playback would keep feeding the vault we are emptying.
+    if (this.demoTimer !== null) window.clearTimeout(this.demoTimer);
+    this.demoTimer = null;
+    this.demoRunning = false;
+
+    // facit.json is the authority on what belongs to the demo corpus.
+    let facit: FacitEntry[] = [];
+    try {
+      facit = JSON.parse(await this.app.vault.adapter.read(normalizePath("demo/facit.json"))) as FacitEntry[];
+    } catch {
+      // No demo corpus in this vault — every ingested report is simply removed.
+    }
+    const origin = demoOriginKeys(facit);
+    const plan = demoBatchPlan(facit);
+
+    let restored = 0;
+    let trashed = 0;
+    const taken = (p: string) => this.app.vault.getAbstractFileByPath(normalizePath(p)) !== null;
+    for (const f of this.app.vault.getMarkdownFiles()) {
+      if (f.path.startsWith("demo/")) continue;
+      const r = parseReport(await this.app.vault.cachedRead(f), f.path, []);
+      if (r.typ !== "7S-rapport") continue;
+      // Photo folders travel with their report (folder name contains `_<tnr>-`,
+      // the same contract the packager and the feeder use).
+      const tnr = /^TNR(\d+)\.md$/.exec(f.name)?.[1];
+      const parent = f.parent;
+      const photoDirs =
+        tnr && parent instanceof TFolder
+          ? parent.children.filter((c): c is TFolder => c instanceof TFolder && c.name.includes(`_${tnr}-`))
+          : [];
+      if ((r.id !== "" && origin.ids.has(r.id)) || origin.files.has(f.name)) {
+        const target = plan.get(f.name) ?? "demo";
+        if (!(this.app.vault.getAbstractFileByPath(normalizePath(target)) instanceof TFolder)) {
+          await this.app.vault.createFolder(normalizePath(target));
+        }
+        for (const d of photoDirs) {
+          if (!taken(`${target}/${d.name}`)) await this.app.fileManager.renameFile(d, normalizePath(`${target}/${d.name}`));
+        }
+        if (!taken(`${target}/${f.name}`)) {
+          await this.app.fileManager.renameFile(f, normalizePath(`${target}/${f.name}`));
+          restored++;
+        }
+      } else {
+        for (const d of photoDirs) await this.app.fileManager.trashFile(d);
+        await this.app.fileManager.trashFile(f);
+        trashed++;
+      }
+    }
+
+    // Every owned note goes — larm, platser, aktörer, återkomster, bildfynd,
+    // regplåtar, textmärken, Objektet (rewritten below from the kept settings).
+    let notes = 0;
+    const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
+    for (const f of this.app.vault.getMarkdownFiles()) {
+      if (folder !== "" && !(f.path === folder || f.path.startsWith(folder + "/"))) continue;
+      const text = await this.app.vault.read(f);
+      if (text.trim() === "" || isPluginOwned(text)) {
+        await this.app.vault.delete(f);
+        notes++;
+      }
+    }
+
+    // Judgements go, configuration stays — a demo turnaround is not a new
+    // operation, so the named places survive alongside the area.
+    await this.clearAllJudgements({ keepPlaces: true, silent: true });
+
+    // Same self-heal sequence as startup: Objektet back, prune, silent baseline.
+    if (this.settings.setupComplete) await this.writeAoiNote();
+    await this.reconcileActorNodes();
+    if (this.settings.watcherEnabled) await this.baselineAlerts();
+    else await this.refreshPanel();
+    new Notice(
+      `ODEN: valvet nollställt — ${restored} rapporter tillbaka i demo/, ${trashed} i papperskorgen, ${notes} noter borttagna.`,
+      10000,
+    );
   }
 
   /** File-menu: operator flags/unflags a browsed report as an alarm. The flag is

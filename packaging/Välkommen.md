@@ -69,9 +69,11 @@ Vill man hellre mata för hand går det förstås också: dra innehållet i
 fortsätt batch för batch.
 
 När du är klar visar `demo/facit.json` hur det faktiskt låg till – jämför gärna
-med vad du själv hittade. Vill du börja om kör du *"Konfigurera
-operationsområde"* igen med en ny koordinat (alla beslut rensas, du varnas
-först) och tömmer `inkorg/`.
+med vad du själv hittade. Vill du börja om kör du *"ODEN: Nollställ valvet"*
+(finns även under `⋯` → *Avancerat*): demorapporterna flyttas tillbaka till
+`demo/`, allt ODEN härlett rensas och alla beslut nollställs, medan
+operationsområdet och de namngivna platserna står kvar – sedan är det bara att
+mata igen.
 
 Vill du generera egna korpusar, med andra platser och hotbilder, finns
 verktyget [7S-generator](https://github.com/larsnor/7S-generator).
