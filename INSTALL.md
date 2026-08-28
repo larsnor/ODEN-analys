@@ -134,10 +134,12 @@ ett befintligt valv. Manuellt är det samma tre delar, **i denna ordning**:
 
 Bra att veta i drift:
 
-- Rapporterna landar i en **mapp med Signal-gruppens namn** (Odens
-  group-split). ODEN identifierar rapporter på frontmatter (`typ: 7S-rapport`)
-  och analyserar hela valvet — mappen spelar ingen roll. `inkorg/` är demo- och
-  handmatningsvägen, inget krav.
+- **Rekommenderat: styr rapporterna till `inkorg/`.** Som standard sparar Oden
+  i en mapp per Signal-grupp (group-split). I Odens dashboard: **Konfiguration →
+  Katalogstruktur → stäng av "Grupp uppdelning"**, och **Pipelines →
+  7S RAPPORT-pipeline → slå på "Underkatalog (relativ till vault)" = `inkorg`**
+  → Spara. ODEN identifierar rapporter på frontmatter (`typ: 7S-rapport`) och
+  analyserar hela valvet, så detta är ordning och tydlighet — inte ett funktionskrav.
 - Plåtar i Symbol-fältet länkas `[[SÅ HÄR]]` av Oden själv; ODEN läser dem både
   som länkar och som ren prosa.
 - **Versionsnot:** Oden **t.o.m. v3.1.2** har två kända luckor (E2E-verifierade

@@ -82,8 +82,11 @@ Får förbandet rapporterna via **Signal**? Installera intagsappen
 Signal-grupp och skriver varje `7S RAPPORT`-meddelande som en färdig rapportfil
 här i valvet, som ODEN analyserar direkt. Viktigt i dess setup-wizard: peka
 vault-sökvägen på den här mappen och **hoppa över Obsidian-mallsteget** (valvet
-är redan komplett). Rapporterna hamnar i en mapp med Signal-gruppens namn — det
-går lika bra som `inkorg/`.
+är redan komplett). Ställ sedan gärna in att rapporterna landar i `inkorg/`:
+i Odens dashboard, stäng av **"Grupp uppdelning"** (Konfiguration →
+Katalogstruktur) och sätt 7S-pipelinens **"Underkatalog"** till `inkorg`
+(Pipelines). Annars hamnar de i en mapp per Signal-grupp — ODEN analyserar dem
+var de än ligger.
 
 
 Radera mappen `demo/` och eventuellt övningsinnehåll i `inkorg/`. Sätt ditt

@@ -101,8 +101,13 @@ cat <<EOF
    - Vault-sökväg:  $VALV_DIR
    - Obsidian-mallsteget: HOPPA ÖVER — valvet är redan komplett konfigurerat
      (Oden rör aldrig en befintlig .obsidian-mapp)
-4. Testa: skicka ett 7S RAPPORT-meddelande i Signal-gruppen — rapporten landar i
-   valvet (i en mapp med gruppens namn) och dyker upp i ODEN-panelens flöde.
+4. Rekommenderat: låt rapporterna landa i inkorg/ (i stället för en mapp per
+   Signal-grupp). I Odens dashboard: fliken Konfiguration → Katalogstruktur →
+   stäng av "Grupp uppdelning"; fliken Pipelines → 7S RAPPORT-pipeline →
+   slå på "Underkatalog (relativ till vault)" = inkorg → Spara.
+   (ODEN analyserar hela valvet oavsett — detta är ordning, inte funktion.)
+5. Testa: skicka ett 7S RAPPORT-meddelande i Signal-gruppen — rapporten landar i
+   inkorg/ och dyker upp i ODEN-panelens flöde.
 EOF
 printf '\n'
 ok "Klart."
