@@ -1,8 +1,10 @@
 # ODEN — TODO / deferred work
 
-Features and improvements discussed and consciously deferred during the build.
-Ordered roughly by value. Each item notes *what*, *why*, and any decisions already
-made, so work can resume without re-deriving context.
+**Struck 2026-08-28 (operator decision): the open TODO items are retired — open
+work is tracked as [GitHub issues](https://github.com/larsnor/ODEN-analys/issues)
+from now on.** What remains below is the RECORD: delivered items ([x]) and the
+cross-repo reference notes (contracts and observations), kept because they
+document decisions, not pending work.
 
 ## LLM / vision layer (the big cluster — "Phase B")
 
@@ -33,67 +35,7 @@ made, so work can resume without re-deriving context.
   by (image/text hash + model/config), persisted as provenance, so results stay
   reproducible and auditable.
 
-- [ ] **Option B — operator-gated message enrichment (DECIDED).** For a brief,
-  image-only message, the VLM drafts the **Händelse + Symbol** text; the operator
-  verifies; then the note is stored. Since we do NOT control the Bin 1 intake, this
-  is a deliberate, explicit, operator-gated **exception to the write-contract (§5)**:
-  the plugin writes message content only on operator accept, stamped
-  `föreslagen-av: llm-vision` + a `verifierad` flag, never automatically. Needs a
-  small vision-review lane in the panel (show the cropped region beside the draft).
-
-## Operational / offline
-
-- [ ] **Offline map-tile pre-download helper.** A `simulator/`-style tool that,
-  given the AOI (lat/lon + radius + zoom range), downloads OSM tiles into a local
-  Map View source (custom `mapSource` / `.mbtiles`), so an operation can run
-  air-gapped. Map View already caches viewed tiles (`cacheAllTiles`, 2 GB); this is
-  for *pre-provisioning* an area before going dark. Network is used only at prep
-  time — nothing at operation time. (Map tiles are ODEN's only external dependency;
-  the plugin itself makes zero network calls.)
-  NB (2026-08): CARTO now requires an API key for its basemaps, so the one external
-  dependency is also an *attributable* one — tile requests are tied to the operator's
-  key and reveal which areas are being viewed. That strengthens the case for this
-  item: a local tile source removes the key, the watermark and the disclosure at once.
-
-- [ ] **Offline geocoding (name → coordinate) — separate from tiles.** Downloading
-  tiles only makes the map *visible*; name search still hits OSM Nominatim (a live
-  API). For air-gapped use: (1) prefer **MGRS / lat-lon** input — already offline via
-  `mgrs.ts`, no lookup needed; (2) optionally build a small **AOI gazetteer** (local
-  place name → coordinate, extracted from OSM data for the region). A full local
-  Nominatim instance gives real offline geocoding but is heavy (OSM → PostgreSQL).
-
 ## Detection vocabulary (deterministic layer)
-
-### GitHub issues #1–#4 — agreed roadmap (2026-08-27, work in this order)
-
-- [ ] **#3 — infiltration recall 0.22 (vs 0.80–1.00 for other threat modes).** Add
-  elicitation stems ("frågor om rutiner", "frågade om passertider", …) and
-  false-authority phrases to `THREAT_INDICATORS.infiltration`. Two verified caveats:
-  (a) NOT a bare `passerkort` stem — `recon_indicators.test.ts` asserts "Personal
-  visade passerkort vid grinden." fires nothing; key on the fuller phrase ("kändes
-  inte igen"). (b) Promoting infiltration weight 2→3 pulls its whole stem list under
-  `behaviour_ood.test.ts`'s WEIGHT3 = {sabotage, attentat} safety assertion — requires
-  re-running BOTH OOD corpora and updating that set, never just the constant. Update
-  `docs/BEHAVIOUR_VALIDATION.md` numbers either way. Repro: the reporter's seed-21
-  corpus recipe in the issue (7s-generator now installed locally).
-- [ ] **#4 — craft threat weight lacks area context** (civil helicopter traffic near an
-  airfield AOI → false-alarm swarm; measured precision 0.90 → 0.50–0.63). Preferred
-  fix: require ≥1 behaviour hit before a craft weight ≥2 may carry a report over the
-  elevation threshold — surgical, and drones keep self-elevating via the frozen
-  `drönar` stem (beteende:optik); only helicopter/boat/aircraft stop elevating on
-  type+proximity alone. Alternative (more work, closer to ODEN's grain): operator
-  setting "förväntade farkosttyper vid objektet" zeroing the type weight per AOI,
-  shown in the reason line. Do BEFORE #2's remainder (which raises recall on exactly
-  these threat-bearing types).
-- [ ] **#2 — morphological rework of the craft matcher** (the stopgap keywords shipped
-  2026-08-27; this is the general fix). Head-suffix matching for compound-final heads
-  (`-bil`, `-båt`, `-cykel`) with most-specific-head-wins (else lastbil→bil,
-  motorcykel→cykel) + small stoplist (`mobil`); agent-noun suffixes (`-ist`, `-are`,
-  `-ör`); bounded edit-distance 1 for tokens ≥6 chars (real typos — NOT slang like
-  `kajja`, which stays the 📝 layer's job). Validate on a blind-authored, held-out
-  corpus with a precision gate per the BEHAVIOUR_VALIDATION protocol;
-  `test/fixtures/craft_phrases.ts` CRAFT_BENIGN is the guard rail.
-- [ ] **#1 — close as duplicate of #2** once #2 closes (no code).
 
 - [x] **`vocab.ts` mark categories for recon gear** — DONE (bounded, frozen): added
   `optik` (distinctive only on a specific sub-type — teleobjektiv/nattkikare/… — so
@@ -101,17 +43,7 @@ made, so work can resume without re-deriving context.
   (signals gear), with fine per-item signatures. `skyddsväst`/hi-vis was deliberately
   NOT added (too close to benign workers). OOD-measured in `docs/RE-ID_VALIDATION.md`.
 
-- [ ] **Enrich the generator's recon templates.** 7S-generator work — its corpora
-  still lean on the original phrasings. NB: the plugin-side behaviour vocabulary
-  (`THREAT_INDICATORS`, renamed from RECON_INDICATORS) has now been OOD-validated and
-  tense-expanded independently — see `docs/BEHAVIOUR_VALIDATION.md`; this item is only
-  about broadening the *generator's* prose.
-
 ## Testing / repo hygiene
-
-- [ ] **Permanent Tierp regression test.** Currently Tierp detection is validated
-  ad-hoc (regenerable). Commit a small Tierp fixture + `tierp.test.ts` asserting
-  recall/precision thresholds so the site-independence guarantee is locked in CI.
 
 - [x] **LICENSE + CI workflow** — DONE. MIT `LICENSE` at the repo root and
   `.github/workflows/test.yml` (typecheck + test + build on push/PR).
@@ -160,8 +92,3 @@ recorded so they are not re-derived:
   root — `inkorg/` is OUR demo/manual convention, not their contract. Analysis scans
   the whole vault by `typ:`, so layout is cosmetic.
 
-## Minor
-
-- [ ] **Tierp corpus with plate images.** A Tierp image demo (plate photos) is a
-  7S-generator run (`generate --images`); low priority — images are
-  plate-corroboration only.
