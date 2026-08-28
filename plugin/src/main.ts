@@ -29,7 +29,7 @@ import {
   TFolder,
   WorkspaceLeaf,
 } from "obsidian";
-import { demoSchedule } from "./demo";
+import { corpusMinutes, demoSchedule } from "./demo";
 import { ParseIssue, parseMapSeed, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
@@ -2360,10 +2360,16 @@ export default class SevenSPlugin extends Plugin {
    *  resume (and app restarts) need no persisted state. Only files under demo/
    *  are ever touched; the move is an explicit operator command. */
   private startDemoFeed(minutes: number): void {
-    const reports = this.app.vault
+    const candidates = this.app.vault
       .getMarkdownFiles()
-      .filter((f) => f.path.startsWith("demo/") && /^TNR\d+\.md$/.test(f.name))
-      .sort((a, b) => a.name.localeCompare(b.name)); // TNR = DDHHMM → chronological
+      .filter((f) => f.path.startsWith("demo/") && /^TNR\d+\.md$/.test(f.name));
+    // Wrap-aware chronological order: plain name sort breaks when the corpus
+    // crosses a month boundary (TNR has no month — Sep 1 sorts before Aug 29).
+    const order = corpusMinutes(candidates.map((f) => f.name.slice(3, 9)));
+    const reports = candidates
+      .map((f, i) => ({ f, key: order[i] }))
+      .sort((a, b) => a.key - b.key || a.f.name.localeCompare(b.f.name))
+      .map((x) => x.f);
     if (reports.length === 0) {
       new Notice("ODEN: demo/ innehåller inga rapporter (klart, eller redan matat).");
       return;

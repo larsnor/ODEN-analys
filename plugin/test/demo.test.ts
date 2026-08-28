@@ -4,7 +4,7 @@
  */
 import { strict as assert } from "node:assert";
 import { test } from "node:test";
-import { demoSchedule, tnrMinutes } from "../src/demo.ts";
+import { corpusMinutes, demoSchedule, tnrMinutes } from "../src/demo.ts";
 
 test("tnrMinutes: DDHHMM → monotonic minutes within the corpus month", () => {
   assert.equal(tnrMinutes("150000"), 15 * 24 * 60);
@@ -28,6 +28,21 @@ test("demoSchedule: min gap keeps arrivals individually visible", () => {
   for (let i = 1; i < out.length; i++) {
     assert.ok(out[i] - out[i - 1] >= 2000, `gap ${i} = ${out[i] - out[i - 1]}`);
   }
+});
+
+test("corpusMinutes: month-wrap corpora order chronologically (Aug 29 → Sep 11)", () => {
+  // The re-dated demo corpus: days 29,30,31 then 01..11 — plain day-of-month
+  // ordering would play September first.
+  const tnrs = ["290800", "301200", "310600", "010534", "111900"];
+  const m = corpusMinutes(tnrs);
+  for (let i = 1; i < m.length; i++) assert.ok(m[i] > m[i - 1], `monotonic at ${i}`);
+  // A normal single-month corpus is untouched (identity with tnrMinutes).
+  const plain = ["150000", "180000", "281200"];
+  assert.deepEqual(corpusMinutes(plain), plain.map(tnrMinutes));
+  // And demoSchedule stays monotonic across the wrap.
+  const out = demoSchedule(tnrs, 10, 0);
+  for (let i = 1; i < out.length; i++) assert.ok(out[i] >= out[i - 1], "schedule monotonic");
+  assert.equal(out[0], 0);
 });
 
 test("demoSchedule: empty and single-report inputs", () => {

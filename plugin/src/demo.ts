@@ -5,13 +5,27 @@
  * moves the files; this module only decides WHEN.
  */
 
-/** Minutes since the corpus month's start for a TNR (DDHHMM). A corpus spans at
- *  most one month and TNR order is chronological, so day·24·60 + h·60 + m is a
- *  valid monotonic clock for scheduling. */
+/** Minutes since the corpus month's start for a TNR (DDHHMM). */
 export function tnrMinutes(tnr: string): number {
   const m = tnr.match(/^(\d{2})(\d{2})(\d{2})/);
   if (!m) return 0;
   return Number(m[1]) * 24 * 60 + Number(m[2]) * 60 + Number(m[3]);
+}
+
+/** Wrap-aware monotonic minutes for a whole corpus. TNR carries no month, so a
+ *  corpus crossing a month boundary (day 29,30,31 → 01…) breaks plain
+ *  day-of-month ordering — Sep 1 would sort before Aug 29. A ≤14-day corpus can
+ *  never legitimately span >15 day-numbers, so when it appears to, the LOW day
+ *  numbers are the NEXT month and get +31 days. (Found when re-dating the demo
+ *  corpus to start Aug 29 for a live-mixing demo.) */
+export function corpusMinutes(tnrs: string[]): number[] {
+  const mins = tnrs.map(tnrMinutes);
+  const days = mins.map((m) => Math.floor(m / (24 * 60)));
+  const lo = Math.min(...days);
+  const hi = Math.max(...days);
+  if (hi - lo <= 15) return mins;
+  const pivot = 15; // days below this are next-month when the span is impossible
+  return mins.map((m) => (Math.floor(m / (24 * 60)) < pivot ? m + 31 * 24 * 60 : m));
 }
 
 /** Wall-clock offsets (ms from start) for each report, in input order.
@@ -20,7 +34,7 @@ export function tnrMinutes(tnr: string): number {
 export function demoSchedule(tnrs: string[], minutes: number, minGapMs = 2000): number[] {
   const n = tnrs.length;
   if (n === 0) return [];
-  const t = tnrs.map(tnrMinutes);
+  const t = corpusMinutes(tnrs);
   const span = Math.max(1, t[n - 1] - t[0]);
   const total = Math.max(1, minutes) * 60_000;
   const out: number[] = [];
