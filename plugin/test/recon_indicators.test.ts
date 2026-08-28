@@ -71,6 +71,7 @@ const THREATS = [
   "Bar synbart passerkort men kändes inte igen av vakten.",
   "Man i väst frågar vakten om rutinerna för in- och utpassering.",
   "Försökte prata sig förbi grindvakten utan ärende.",
+  "Försökte följa med personal in genom grinden.",   // tailgating, attempt-verb gated
   // terrorism
   "Lämnade en oidentifierad väska vid entrén och avlägsnade sig.",
   "Körde långsamt förbi upprepade gånger.",
@@ -83,6 +84,7 @@ const THREAT_BENIGN = [
   "Elektriker bytte en säkring i elskåpet.",           // infra noun alone is inert
   "Hantverkare bar sin verktygsväska till bygget.",    // toolbag ≠ breaching tool
   "Personal visade passerkort vid grinden.",           // passcard alone is inert
+  "Besökaren fick följa med personal in genom grinden.", // escorted visitor — authorized, NOT tailgating
   "Bil körde förbi i normal hastighet.",               // NOT "körde långsamt förbi"
   "Familj lämnade stranden på kvällen.",               // NOT "lämnade en väska"
   "Bonde kontrollerade stängslet vid åkerkanten.",

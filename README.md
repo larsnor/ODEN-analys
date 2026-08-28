@@ -44,8 +44,8 @@ Vill du slippa den under tiden byter du kartkälla till **OpenStreetMap (ingen
 nyckel)**, som följer med i valvet.
 
 Vill man öva först finns mappen `demo/` i valvet: en syntetisk övningskorpus
-över fjorton dygn med knappt 350 rapporter, foton, en dold spaningscell och en
-demonstration. Kör kommandot *"ODEN: Mata demodata"* så spelas den upp i
+över fjorton dygn med drygt 360 rapporter, foton, en dold spaningscell, en
+infiltrationscell och en demonstration. Kör kommandot *"ODEN: Mata demodata"* så spelas den upp i
 korpusens egen rytm över den tid du väljer – inga extra verktyg behövs, och
 facit ligger bredvid. För skarp drift raderar man `demo/`, sätter sitt riktiga
 område och låter intaget leverera rapporterna till `inkorg/`.

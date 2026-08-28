@@ -92,6 +92,18 @@ administrative prose like "informerade om rutinerna", which the blind corpora
 never produced as a field observation — the weight-3 reason line names the
 matched stem, so an operator sees exactly why.
 
+**Tailgating follow-up (same day).** Wiring the infiltration cell into the demo
+corpus exposed one remaining surface form: *"Försökte följa med personal in
+genom …"* — tailgating, which "går tätt bakom" does not cover. The raw phrase
+has an escort trap (*"Besökaren fick följa med personal in"* is authorized
+procedure), so the stems carry the attempt verb: `försökte följa med personal`,
+`försöker följa med personal`. Gated to zero hits across corpus A, corpus B,
+the reporter's corpus and 336 civilian demo reports; the escort sentence is a
+benign guard in `recon_indicators.test.ts`. On the demo corpus (AOI HvSS
+Vällinge) this took infiltration from 5/12 to 6/12 with all three cell members
+visible at least once (was 2/3); reporter-corpus recall unchanged at 0.78,
+civilian FP unchanged.
+
 ## Two things an operator must keep in mind
 1. **A missed behaviour keyword usually silences the report.** A weight-2 behaviour
    hit needs geo+time support to reach the elevation threshold (5); a report elevates

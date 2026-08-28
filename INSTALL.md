@@ -163,9 +163,10 @@ operatörens beslut – man varnas först.
 ## Demoläge – lär dig ODEN utan verktyg
 
 I det färdiga valvet ligger mappen `demo/`: en syntetisk övningskorpus över
-fjorton dygn kring HvSS Vällinge, knappt 350 rapporter varav en del med foton,
-en dold spaningscell och en demonstration. Inga riktiga personer eller fordon
-förekommer.
+fjorton dygn kring HvSS Vällinge, drygt 360 rapporter varav en del med foton,
+en dold spaningscell, en infiltrationscell och en demonstration. Korpusen är
+daterad från paketeringsdagen, så den blandas naturligt med skarp trafik i
+flödet. Inga riktiga personer eller fordon förekommer.
 
 Sätt operationsområdet till `59.2622,17.712` och kör kommandot **"ODEN: Mata
 demodata"** – välj speltid (15 minuter är lagom) så droppar rapporterna in i

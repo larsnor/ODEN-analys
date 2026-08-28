@@ -31,6 +31,7 @@ TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 7s-generator generate --aoi "$AOI" --area suburban --from "$FROM" --days "$DAYS" \
   --name "HvSS Vällinge (demo)" --seed "$SEED" --images --photos --obsidian --out "$TMP"
 7s-generator add-hostiles   --corpus "$TMP" --type recon --photos --seed "$SEED"
+7s-generator add-hostiles   --corpus "$TMP" --type infiltration --seed "$SEED"
 7s-generator add-protesters --corpus "$TMP" --type demonstranter --seed "$SEED"
 
 rm -rf "$VAULT/demo"
@@ -69,6 +70,7 @@ trafik). Sätt operationsområdet till \`59.2622,17.712\` och kör
 **Blanddemo-tips:** batch-01–02 ≈ första dygnet — mata dem, eller pausa
 uppspelningen i tid, så håller sig demodatan till samma dag som den skarpa
 trafiken; senare batchar är daterade framåt och sorterar över dagens rader i
-flödet. Facit i \`facit.json\`.
+flödet. I bruset: en spaningscell, en infiltrationscell och en demonstration.
+Facit i \`facit.json\` (\`subtype\` skiljer spaning från infiltration).
 LASEOF
 echo "Klart: $VAULT/demo omdaterad (start $FROM)."

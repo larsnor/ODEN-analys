@@ -51,8 +51,9 @@ misstankepoängen – den styr bara vad du ser.
 ## Testa med demodata
 
 I mappen `demo/` ligger en syntetisk övningskorpus: fjorton dygn kring HvSS
-Vällinge med knappt 350 rapporter (en del med foton), en dold spaningscell och
-en demonstration. Inga riktiga personer eller fordon förekommer.
+Vällinge med drygt 360 rapporter (en del med foton), en dold spaningscell, en
+infiltrationscell och en demonstration. Inga riktiga personer eller fordon
+förekommer.
 
 Sätt operationsområdet till demokoordinaten `59.2622,17.712`. Kör sedan
 kommandot **"ODEN: Mata demodata"** (finns även i `⋯`-menyn), välj hur lång tid

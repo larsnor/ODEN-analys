@@ -21,10 +21,14 @@ MAPVIEW_VERSION="6.1.4"
 MAPVIEW_BASE="https://github.com/esm7/obsidian-map-view/releases/download/$MAPVIEW_VERSION"
 MAPVIEW_LICENSE_URL="https://raw.githubusercontent.com/esm7/obsidian-map-view/master/LICENSE"
 
-# Demo corpus — regenerated deterministically (fixed seed) at package time.
+# Demo corpus — regenerated deterministically at package time. The seed fixes the
+# CONTENT (same reports, same cells, same story); the start date rolls with the
+# build day so a fresh install's demo data mixes with live traffic instead of
+# sorting months under it in the feed. Override with ODEN_DEMO_FROM=YYYY-MM-DD
+# for a demo on a specific date.
 DEMO_AOI="59.26239628419817,17.712273532270785"
 DEMO_SEED="2026"
-DEMO_FROM="2026-06-15"
+DEMO_FROM="${ODEN_DEMO_FROM:-$(date +%Y-%m-%d)}"
 DEMO_DAYS="14"
 BATCH_SIZE="25"
 
@@ -59,6 +63,7 @@ if [ ! -d "$DEMO_CACHE" ]; then
     --from "$DEMO_FROM" --days "$DEMO_DAYS" --name "HvSS Vällinge (demo)" \
     --seed "$DEMO_SEED" --images --photos --obsidian --out "$TMP_CORPUS"
   7s-generator add-hostiles --corpus "$TMP_CORPUS" --type recon --photos --seed "$DEMO_SEED"
+  7s-generator add-hostiles --corpus "$TMP_CORPUS" --type infiltration --seed "$DEMO_SEED"
   7s-generator add-protesters --corpus "$TMP_CORPUS" --type demonstranter --seed "$DEMO_SEED"
   mkdir -p "$DEMO_CACHE"
   mv "$TMP_CORPUS"/* "$DEMO_CACHE/"
@@ -99,7 +104,14 @@ printf 'Rapporter som ska analyseras läggs i den här mappen.\n' > "$VAULT/inko
 python3 - "$DEMO_CACHE" "$VAULT/demo" "$BATCH_SIZE" <<'PYEOF'
 import os, re, shutil, sys
 src, dst, size = sys.argv[1], sys.argv[2], int(sys.argv[3])
-reports = sorted(f for f in os.listdir(src) if re.fullmatch(r"TNR\d+\.md", f))
+def tidpunkt(p):
+    for line in open(p, encoding="utf-8"):
+        if line.startswith("tidpunkt:"): return line.split(":", 1)[1].strip().strip('"')
+    return ""
+# Sort on tidpunkt, not filename — TNR has no month, so a corpus that crosses a
+# month boundary name-sorts wrong (Sep 01 before Aug 29).
+reports = sorted((f for f in os.listdir(src) if re.fullmatch(r"TNR\d+\.md", f)),
+                 key=lambda f: (tidpunkt(os.path.join(src, f)), f))
 os.makedirs(dst, exist_ok=True)
 # Map each report to its per-message attachment dir (named <signaltid>_<TNR-tid>-<uuid>).
 dirs = [d for d in os.listdir(src) if os.path.isdir(os.path.join(src, d))]
@@ -117,23 +129,28 @@ for i, batch in enumerate(batches, 1):
 print(f"demo/: {len(reports)} rapporter i {len(batches)} batchar")
 PYEOF
 cp "$DEMO_CACHE/ground_truth.json" "$VAULT/demo/facit.json"
-cat > "$VAULT/demo/LÄS-MIG.md" <<'EOF'
+cat > "$VAULT/demo/LÄS-MIG.md" <<EOF
 # Demodata — så matar du in den
 
-Övningskorpus: 14 dygn kring HvSS Vällinge (syntetisk — inga riktiga personer
-eller fordon). Sätt först operationsområdet till `59.2622,17.712`
+Övningskorpus: $DEMO_DAYS dygn kring HvSS Vällinge med start **$DEMO_FROM**
+(syntetisk — inga riktiga personer eller fordon; daterad från paketeringsdagen
+så att demodata blandas naturligt med skarp trafik i flödet). Sätt först
+operationsområdet till \`59.2622,17.712\`
 (kommandot "ODEN: Konfigurera operationsområde").
 
 Kör sedan kommandot **"ODEN: Mata demodata"** och välj speltid (15 minuter är
 lagom) — rapporterna droppar in i korpusens egen rytm, och samma kommando
 pausar och återupptar. Vill du hellre mata för hand: dra innehållet i
-`batch-01/` till mappen `inkorg/`, batch för batch (bildmappar ska följa med
+\`batch-01/\` till mappen \`inkorg/\`, batch för batch (bildmappar ska följa med
 sina rapporter — markera hela batchens innehåll).
 
-När du är klar: `facit.json` visar sanningen per rapport (`civil` /
-`hostile` = spaningscellen / `protester`) — jämför med vad du hittade.
+I bruset gömmer sig en spaningscell, en infiltrationscell (frågor om rutiner,
+falsk behörighet, tillträdesförsök) och en demonstration. När du är klar:
+\`facit.json\` visar sanningen per rapport (\`civil\` / \`hostile\` — fältet
+\`subtype\` skiljer spaning från infiltration / \`protester\`) — jämför med vad
+du hittade.
 
-Se `Välkommen.md` för hela genomgången.
+Se \`Välkommen.md\` för hela genomgången.
 EOF
 
 # 7. Zip both. Python's zipfile sets the UTF-8 name flag (macOS `zip` does not),
