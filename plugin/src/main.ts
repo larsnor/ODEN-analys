@@ -468,7 +468,12 @@ export default class SevenSPlugin extends Plugin {
   private async readReports(): Promise<{ reports: Report[]; issues: ParseIssue[] }> {
     const issues: ParseIssue[] = [];
     const reports: Report[] = [];
-    for (const file of this.messageFiles()) {
+    const files = this.messageFiles();
+    // The safety-net sweep compares the live vault against exactly this set --
+    // every file CONSIDERED (reports and non-reports alike), so a Valkommen.md
+    // can never read as "unseen" and busy-loop the net.
+    this.knownReportFiles = new Set(files.map((f) => f.path));
+    for (const file of files) {
       const text = await this.app.vault.cachedRead(file);
       const fileIssues: ParseIssue[] = [];
       const r = parseReport(text, file.path, fileIssues);
@@ -1552,12 +1557,19 @@ export default class SevenSPlugin extends Plugin {
   /** React to vault changes; full recompute each change handles retroactive
    *  transitive completion. Debounced so bulk feeding (auto) is one pass.
    *  Ignores plugin-owned files (entities folder) to avoid self-triggering. */
-  private registerVaultWatcher(): void {
+  /** Paths the analysis cares about — reports, not the demo queue or ODEN's own
+   *  entity notes. Shared by the vault watcher and the safety-net sweep. */
+  private isAnalysisPath(path: string): boolean {
     const folder = this.settings.entitiesFolder.replace(/\/+$/, "");
-    const relevant = (path: string) =>
+    return (
       path.endsWith(".md") &&
       !path.startsWith("demo/") && // the unfed playback queue is invisible to analysis
-      !(folder !== "" && (path === folder || path.startsWith(folder + "/")));
+      !(folder !== "" && (path === folder || path.startsWith(folder + "/")))
+    );
+  }
+
+  private registerVaultWatcher(): void {
+    const relevant = (path: string) => this.isAnalysisPath(path);
     const onChange = (file: { path: string }) => {
       if (!this.settings.watcherEnabled || !relevant(file.path)) return;
       if (this.debounceTimer) window.clearTimeout(this.debounceTimer);
@@ -1582,6 +1594,24 @@ export default class SevenSPlugin extends Plugin {
       window.setTimeout(() => void this.maybeOfferMapSeed(file.path), 500);
     };
     this.registerEvent(this.app.vault.on("create", onCreate));
+
+    // SAFETY NET — the sweep above is event-driven; a single missed create
+    // event (macOS App Nap swallowed one in live E2E) or a health-backoff skip
+    // otherwise waits FOREVER in a quiet vault. Every 2 min: if the vault holds
+    // a relevant file the last recompute never saw, or a sweep left a backlog,
+    // schedule the normal debounced recompute. Idle cost is one in-memory path
+    // scan — no parsing, no I/O.
+    this.registerInterval(
+      window.setInterval(() => {
+        if (!this.settings.watcherEnabled || this.knownReportFiles === null) return;
+        // Same enumeration as readReports (messageFiles) — a filter drift here
+        // would make some file read as "unseen" forever and busy-loop the net.
+        const unseen = this.messageFiles().some((f) => !this.knownReportFiles!.has(f.path));
+        if (!unseen && !this.photoBacklog && !this.textBacklog) return;
+        if (this.debounceTimer) window.clearTimeout(this.debounceTimer);
+        this.debounceTimer = window.setTimeout(() => void this.recomputeAndAlert(true), 100);
+      }, 120_000),
+    );
   }
 
   /** If the just-created note is a map seed, open the seed dialog (create a
@@ -1675,6 +1705,18 @@ export default class SevenSPlugin extends Plugin {
   }
 
   // --- Vision (local Ollama VLM) — the ADDITIVE capability ------------------
+  /** Report files the last recompute/baseline actually processed — the
+   *  safety-net sweep compares the vault against this to catch arrivals whose
+   *  create event never reached us (App Nap, throttling; live E2E 2026-08-28:
+   *  an evening message sat unanalysed for 10+ min because the event was
+   *  swallowed and nothing ever retried). */
+  private knownReportFiles: Set<string> | null = null;
+  /** Photo/text sweeps that SKIPPED real candidates (health backoff) — the
+   *  safety net retries these; an event-driven-only retry never fires in a
+   *  quiet vault. */
+  private photoBacklog = false;
+  private textBacklog = false;
+
   /** Live Ollama reachability, refreshed on toggle/analyse; drives the panel dot. */
   visionOnline = false;
   /** Server answers but the chosen model is NOT pulled — the failure mode that
@@ -1909,8 +1951,10 @@ export default class SevenSPlugin extends Plugin {
       this.getView()?.renderModeStrip();
       if (!usable) {
         this.photoHealthFailedAt = Date.now();
+        this.photoBacklog = true; // the safety-net sweep retries after the backoff
         return;
       }
+      this.photoBacklog = false;
       for (const r of cand) this.analyzingPhotos.add(r.file);
       await this.refreshPanel(); // "📷 Bild mottagen, analys startad" rows appear
       const ran = await this.computePhotoSightings(undefined, new Set(cand.map((r) => r.file)));
@@ -2115,8 +2159,10 @@ export default class SevenSPlugin extends Plugin {
       this.getView()?.renderModeStrip();
       if (!usable) {
         this.textHealthFailedAt = Date.now();
+        this.textBacklog = true;
         return;
       }
+      this.textBacklog = false;
       for (const r of cand) this.analyzingTexts.add(r.file);
       await this.refreshPanel(); // "📝 Meddelande mottaget, analyseras" rows appear
       const ran = await this.computeTextExtractions(undefined, new Set(cand.map((r) => r.file)));
@@ -2881,7 +2927,11 @@ class SevenSTextView extends ItemView {
               ? "color:var(--text-error);font-weight:600;"
               : r.severity === "bevakad"
                 ? "color:var(--color-orange, #d80);font-weight:600;"
-                : "");
+                : r.kind === "fordon" || r.kind === "kännetecken" || r.kind === "aktör"
+                  ? "color:var(--color-blue, var(--text-accent));"
+                  : r.kind === "bildanalys" || r.kind === "textanalys"
+                    ? "color:var(--color-cyan, var(--text-accent));"
+                    : "");
       row.style.cssText = base;
       if (r.kind === "mottaget") row.style.opacity = ".6"; // quiet arrivals; alarms stay dominant
       // A derived event hangs indented under its message's arrival row — the

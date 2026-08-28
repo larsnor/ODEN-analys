@@ -186,6 +186,52 @@ test("buildFeedItems: fordon rows carry the photo flag from the corroboration ma
   assert.ok(fordon.filter((i) => i.label !== plate).every((i) => i.photo === false));
 });
 
+test("buildFeedItems: derived rows hang under the message that produced them (parentPath)", () => {
+  const reports = loadCorpus();
+  const bundle = bundleFrom(reports);
+  const st = state({
+    actorDecisions: Object.fromEntries(bundle.actors.hypotheses.map((h) => [h.id, "confirmed"])),
+    markDecisions: Object.fromEntries(bundle.jobB.nominations.map((n) => [n.signature, "confirmed"])),
+  });
+  const items = buildFeedItems(bundle, st, new Map());
+  // fordon → the report of the LATEST plate observation.
+  for (const i of items.filter((x) => x.kind === "fordon")) {
+    const e = bundle.jobA.entities.find((x) => x.canonical === i.label)!;
+    assert.equal(i.parentPath, e.observations[e.observations.length - 1].file);
+  }
+  // kännetecken → the latest member observation's report.
+  for (const i of items.filter((x) => x.kind === "kännetecken")) {
+    assert.ok(i.parentPath && bundle.reports.some((r) => r.file === i.parentPath), i.parentPath);
+  }
+  // aktör → the last chain step's report.
+  for (const i of items.filter((x) => x.kind === "aktör")) {
+    assert.ok(i.parentPath && bundle.reports.some((r) => r.file === i.parentPath), i.parentPath);
+  }
+});
+
+test("buildFeedItems: transient analysis rows are children of their message", () => {
+  const reports = loadCorpus();
+  const bundle = bundleFrom(reports);
+  const f = reports[0].file;
+  const items = buildFeedItems(bundle, state(), new Map(), new Set([f]), 0, new Set([f]));
+  const photo = items.find((i) => i.kind === "bildanalys");
+  assert.ok(photo, "in-progress photo row exists");
+  assert.equal(photo!.parentPath, f, "hangs under its message's arrival row");
+});
+
+test("buildFeed: a message with several derived results shows them all indented under it", () => {
+  const ms = (t: string) => Date.parse(t);
+  const rows = buildFeed([
+    { path: "inkorg/TNR160300.md", kind: "mottaget", time: ms("2026-06-16T03:00:00"), tnr: "160300" },
+    { path: "larm:inkorg/TNR160300.md", kind: "larm", time: ms("2026-06-16T03:00:00"), level: "Hög", reasons: ["nära objektet"], file: "inkorg/TNR160300.md", parentPath: "inkorg/TNR160300.md" },
+    { path: "entities/Aktör.md", kind: "aktör", time: ms("2026-06-16T03:00:00"), label: "Röd grupp", parentPath: "inkorg/TNR160300.md" },
+    { path: "bildanalys:inkorg/TNR160300.md", kind: "bildanalys", time: Number.MAX_SAFE_INTEGER, tnr: "160300", file: "inkorg/TNR160300.md", parentPath: "inkorg/TNR160300.md" },
+  ]);
+  assert.equal(rows[0].kind, "mottaget");
+  assert.equal(rows[0].child, undefined, "the arrival row itself is top-level");
+  assert.deepEqual(rows.slice(1).map((r) => r.child), [true, true, true], "all three results indent under it");
+});
+
 test("buildFeedItems: pending-review rows count the un-decided hypotheses / nominations", () => {
   const bundle = bundleFrom(loadCorpus());
   const items = buildFeedItems(bundle, state(), new Map());

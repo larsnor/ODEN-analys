@@ -318,7 +318,10 @@ export function buildFeedItems(
   const ms = (t: string) => Date.parse(t) || 0;
   const items: FeedItem[] = [];
 
-  // Identified vehicles (plate re-identification entity notes).
+  // Identified vehicles (plate re-identification entity notes). `parentPath` is
+  // the report of the LATEST observation, so the row hangs indented under that
+  // message's arrival line — the log reads "message arrived → …and this came of
+  // it" for every derived result, exactly like the larm rows.
   for (const e of bundle.jobA.entities) {
     items.push({
       path: inFolder(safeFilename(e.canonical)),
@@ -327,12 +330,20 @@ export function buildFeedItems(
       label: e.canonical,
       count: e.count,
       photo: corroboration.has(e.canonical),
+      parentPath: e.observations[e.observations.length - 1]?.file,
     });
   }
-  // Confirmed marks.
+  // Confirmed marks — hang under the latest member observation's message.
   for (const n of bundle.jobB.nominations) {
     if (s.markDecisions[n.signature] === "confirmed") {
-      items.push({ path: inFolder(markFilename(n)), kind: "kännetecken", time: ms(n.lastSeen), label: n.label });
+      const latest = n.members.reduce((a, b) => (b.tidpunkt > a.tidpunkt ? b : a), n.members[0]);
+      items.push({
+        path: inFolder(markFilename(n)),
+        kind: "kännetecken",
+        time: ms(n.lastSeen),
+        label: n.label,
+        parentPath: latest?.file,
+      });
     }
   }
   // Confirmed actors (folded).
@@ -347,6 +358,9 @@ export function buildFeedItems(
       kind: "aktör",
       time: ms(h.lastSeen),
       label: opName ?? `${h.vehicleCount} fordon + ${h.markCount} kännetecken`,
+      // The chain is time-ordered — the last step is the message that most
+      // recently touched this actor.
+      parentPath: h.chain[h.chain.length - 1]?.file,
     });
   }
   // Alarms — CHILDREN of the arrival row, never replacements for it. The
@@ -404,12 +418,12 @@ export function buildFeedItems(
   let t = Number.MAX_SAFE_INTEGER - 4;
   for (const f of [...analyzingPhotos].sort()) {
     const r = bundle.reports.find((x) => x.file === f);
-    items.push({ path: `bildanalys:${f}`, kind: "bildanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f });
+    items.push({ path: `bildanalys:${f}`, kind: "bildanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f, parentPath: f });
   }
   for (const f of [...analyzingTexts].sort()) {
     if (analyzingPhotos.has(f)) continue; // one in-progress row per report is enough
     const r = bundle.reports.find((x) => x.file === f);
-    items.push({ path: `textanalys:${f}`, kind: "textanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f });
+    items.push({ path: `textanalys:${f}`, kind: "textanalys", time: t--, tnr: r?.tnr ?? "?", plats: r ? placeLabel(r.plats, s.locationNicknames) : undefined, file: f, parentPath: f });
   }
 
   // Nudge: relevant locations still a bare MGRS grid, not yet named/skipped.
