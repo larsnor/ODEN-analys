@@ -6,7 +6,9 @@ made, so work can resume without re-deriving context.
 
 ## LLM / vision layer (the big cluster — "Phase B")
 
-- [ ] **Local LLM layer (Ollama), behind the engine toggle.** The deterministic
+- [x] **Local LLM layer (Ollama), behind the engine toggle.** DONE (2026-07-14/15 —
+  the 📷/📝/💬 capability chips: vision, open-vocab text extraction, chat
+  translate/narrate; all nomination-gated, degrade to deterministic). Original scope: The deterministic
   ⇄ LLM toggle already exists (`settings.engine`, `conversation.ts`). Add a local
   Ollama adapter for: (a) chat *translate/narrate* (`Conversation.toQuery` /
   `narrate` with §7.1 grounding), and (b) open-vocabulary *mark extraction* feeding
@@ -14,14 +16,18 @@ made, so work can resume without re-deriving context.
   Ollama is absent, and ship with a fake adapter for tests. This lifts the
   keyword-vocabulary ceiling the deterministic layer can't reach.
 
-- [ ] **Broaden the vision adapter to general image analysis (§6.7).** Today
+- [x] **Broaden the vision adapter to general image analysis (§6.7).** DONE —
+  `photo_analysis.ts` PhotoSighting: 0+ plates, vehicles, persons (incl.
+  aktivitet, prompt v3) and scene nominations; privileged plate corroboration.
+  Original scope: Today
   `vision.ts` is a narrow `PlateVision` (plate-corroboration only). Widen to a
   `VisionAnalyzer` returning a structured result: **0+ plates, 0+ marks, a scene
   description** (an image may contain no plate, or several). Feed novel findings
   into the existing nominate→confirm review flow (privileged plate nominations;
   Job B marks). Keep the iron rule: vision **nominates, never asserts**.
 
-- [ ] **Run-once-per-artifact cache for vision/LLM.** A real VLM/LLM is expensive
+- [x] **Run-once-per-artifact cache for vision/LLM.** DONE — `photoAnalyses` /
+  `textExtractions` keyed by content-hash + model + prompt version. Original scope: A real VLM/LLM is expensive
   and non-deterministic, so it must NOT re-run on every watcher tick (the current
   stub re-reads images each build — fine for a byte-scan, not for a model). Cache
   by (image/text hash + model/config), persisted as provenance, so results stay
