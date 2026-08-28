@@ -120,10 +120,9 @@ installationsskript**, hoppar över allt som redan finns och skriver aldrig öve
 ett befintligt valv. Manuellt är det samma tre delar, **i denna ordning**:
 
 1. **Valvet först** (Väg A ovan) — packa upp `ODEN-valv-<v>.zip`.
-2. **Oden** — installera **senaste snapshot** (stabila v3.1.2 tappar foton i
-   7S-rapporter och kan skriva fel koordinater; fixarna är ännu inte släppta i
-   en release):
-   `ODEN_SNAPSHOT_SELECT=latest curl -fsSL https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_snapshot_mac.sh | bash`
+2. **Oden** (kräver **v3.2.0 eller senare** — äldre tappar foton i 7S-rapporter
+   och kan skriva fel koordinater):
+   `curl -fsSL https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh | bash`
    (Windows/Docker: se Odens README.)
 3. **Setup-wizarden** (öppnas på `http://127.0.0.1:8080`):
    - **Länka Signal-kontot** med QR-koden. Använd ett **dedikerat nummer** —
@@ -141,11 +140,10 @@ Bra att veta i drift:
   handmatningsvägen, inget krav.
 - Plåtar i Symbol-fältet länkas `[[SÅ HÄR]]` av Oden själv; ODEN läser dem både
   som länkar och som ren prosa.
-- **Versionsnot (Oden t.o.m. v3.1.2):** två kända luckor, båda fixade uppströms
-  efter den releasen (E2E-verifierade 2026-08-27, se `docs/E2E_BIN1.md`): fel
-  `lat`/`lon` när Ställe har en MGRS-ruta med mellanslag, och **foton i
-  7S-meddelanden släpps tyst** (bildstödet mergades fem dagar efter releasen).
-  Välj första release nyare än v3.1.2 — eller en snapshot — om ni skickar bilder.
+- **Versionsnot:** Oden **t.o.m. v3.1.2** har två kända luckor (E2E-verifierade
+  2026-08-27, se `docs/E2E_BIN1.md`): fel `lat`/`lon` när Ställe har en
+  MGRS-ruta med mellanslag, och **foton i 7S-meddelanden släpps tyst**. Båda är
+  fixade i **v3.2.0** (släppt 2026-08-28) — använd den eller senare.
   ODEN-analys korsar dessutom alltid frontmatter-koordinaten mot rutan i Ställe
   och låter **rutan vinna** vid grov avvikelse — positionen på kartan och
   närhetslarmen förblir rätt även mot äldre Oden-versioner.

@@ -141,10 +141,10 @@ recorded so they are not re-derived:
 - **`källa: bin1-intag` never landed** in its spec or output (agreed long ago,
   PLUGIN_DESIGN §2). Our parser treats it as optional — tolerated, not forgotten.
 - **Coordinate bug in ≤3.1.2**: spaced MGRS grids in Ställe mis-convert, so emitted
-  frontmatter lat/lon can be grossly wrong while the grid in the body is right. Fixed
-  upstream (their PR #257, merged 2026-08-26) but in no release yet. Our defence is the
-  parse.ts coordinate cross-check (see E2E work); prefer their ≥ first release
-  containing #257 in production guidance.
+  frontmatter lat/lon can be grossly wrong while the grid in the body is right.
+  RESOLVED upstream: their **v3.2.0 (2026-08-28)** ships both #257 (coordinates) and
+  #245 (7S photos); install guidance now floors at 3.2.0. Our parse.ts coordinate
+  cross-check stays as the defence against any older install or future regression.
 - **Partial-plate linking broken in oden**: its `_PARTIAL_PLATE_RE` is
   `\b`-delimited, and no word boundary exists between a dot and a space — so
   dot-edged masks (`RJK2..`, `..G41.`, i.e. the spec's canonical forms) are never

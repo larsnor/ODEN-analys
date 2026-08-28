@@ -15,14 +15,15 @@
 set -euo pipefail
 
 REPO="larsnor/ODEN-analys"
-# Oden (Bin 1) installeras som SENASTE SNAPSHOT som standard: stabila releasen
-# (v3.1.2) tappar foton i 7S-rapporter och skriver fel koordinater för MGRS-
-# rutor med mellanslag — båda fixade uppströms men ännu inte släppta
-# (E2E-verifierat 2026-08-27, docs/E2E_BIN1.md). ODEN_SNAPSHOT_SELECT=latest
-# gör valet tyst även i terminal. Vill man ha stabila releasen ändå:
-#   ODEN_APP_CHANNEL=release  …  | bash
+# Oden (Bin 1) installeras från dess STABILA release-kanal. (2026-08-27 till
+# 2026-08-28 var snapshot standard här: dåvarande release v3.1.2 tappade foton
+# i 7S-rapporter och skrev fel MGRS-koordinater. v3.2.0, släppt 2026-08-28,
+# innehåller båda fixarna — verifierat mot taggens träd — så stabila kanalen är
+# rätt igen.) Vill man ändå ha senaste snapshot:  ODEN_APP_CHANNEL=snapshot  …  | bash
 ODEN_INSTALLER_SNAPSHOT="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_snapshot_mac.sh"
 ODEN_INSTALLER_RELEASE="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh"
+# Äldsta Oden-version utan kända 7S-luckor (foton + koordinater).
+ODEN_MIN_OK="3.2.0"
 TARGET_PARENT="${ODEN_VALV_DIR:-$HOME/Documents}"
 VALV_DIR="$TARGET_PARENT/ODEN-valv"
 
@@ -63,17 +64,19 @@ if [ -d "/Applications/Oden.app" ]; then
   ODEN_VER=$(defaults read /Applications/Oden.app/Contents/Info.plist CFBundleShortVersionString 2>/dev/null || echo "okänd")
   ok "Oden.app finns redan i /Applications (version $ODEN_VER — hoppar över)"
   case "$ODEN_VER" in
-    snapshot-*) : ;;
-    *) info "OBS: release-versioner t.o.m. 3.1.2 tappar foton i 7S-rapporter och kan skriva fel koordinater."
-       info "Uppgradera vid behov (avsluta Oden först):"
-       info "  ODEN_SNAPSHOT_SELECT=latest curl -fsSL $ODEN_INSTALLER_SNAPSHOT | bash" ;;
+    snapshot-*) : ;; # testkanal — bedöms inte mot versionsnumret
+    *)
+      if [ "$(printf '%s\n' "$ODEN_VER" "$ODEN_MIN_OK" | sort -V | head -1)" != "$ODEN_MIN_OK" ]; then
+        info "OBS: Oden före $ODEN_MIN_OK tappar foton i 7S-rapporter och kan skriva fel koordinater."
+        info "Uppgradera (avsluta Oden först):  curl -fsSL $ODEN_INSTALLER_RELEASE | bash"
+      fi ;;
   esac
-elif [ "${ODEN_APP_CHANNEL:-snapshot}" = "release" ]; then
-  info "Installerar Oden (stabil release) via dess officiella skript…"
-  curl -fsSL "$ODEN_INSTALLER_RELEASE" | bash
-else
-  info "Installerar Oden (senaste snapshot — har 7S-bildstöd + koordinatfixen)…"
+elif [ "${ODEN_APP_CHANNEL:-release}" = "snapshot" ]; then
+  info "Installerar Oden (senaste snapshot — testkanal)…"
   curl -fsSL "$ODEN_INSTALLER_SNAPSHOT" | ODEN_SNAPSHOT_SELECT=latest bash
+else
+  info "Installerar Oden (senaste stabila release) via dess officiella skript…"
+  curl -fsSL "$ODEN_INSTALLER_RELEASE" | bash
 fi
 
 # --- 3. Manuella steg -------------------------------------------------------

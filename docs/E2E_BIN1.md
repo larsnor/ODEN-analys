@@ -240,6 +240,16 @@ personraden i granskningen bär aktiviteten, bekräftelse matar misstankepoänge
 → larmkedjan fungerar för foto-intrång. Detaljer och mättabell:
 `docs/VISION_VALIDATION.md` (v3). Act-not-photograph-antagandet reviderat.
 
+### Epilog (2026-08-28): oden v3.2.0 släppt — snapshot-omvägen stängd
+
+Uppströms släppte **v3.2.0**, identisk med main (0 före/0 efter) och därmed med
+snapshot-68b94d5 som E2E kördes mot — verifierat att taggens träd innehåller
+både #257 (koordinater) och #245 (7S-foton). `install_system.sh` är återställd
+till **stabila release-kanalen** som standard (snapshot nås via
+`ODEN_APP_CHANNEL=snapshot`), med versionsgolv 3.2.0 i uppgraderingsrådet.
+Denna installation (snapshot-68b94d5) är kodmässigt = v3.2.0; nästa uppgradering
+kan gå via stabila kanalen.
+
 ### Fas 4 — efterarbete
 
 - [ ] Komplettera `plugin/test/fixtures/bin1_v3/` med ~4–6 av fas 2-filerna (maska
