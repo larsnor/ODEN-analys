@@ -132,6 +132,38 @@ ett befintligt valv. Manuellt är det samma tre delar, **i denna ordning**:
      och Oden rör aldrig en befintlig `.obsidian`-mapp — ordningen valv-först är
      det som gör att ODEN:s konfiguration (graf, karta, lås) står orörd kvar.
 
+### Windows
+
+Samlingsskriptet är macOS-specifikt, men varje del finns för Windows — flödet
+är den manuella treordningen ovan:
+
+1. **Valvet:** ladda ner `ODEN-valv-<v>.zip` från
+   [senaste releasen](https://github.com/larsnor/ODEN-analys/releases/latest)
+   och packa upp (högerklick → *Extrahera alla*). **Lägg valvet utanför
+   OneDrive** — se varningen nedan.
+2. **Oden:** kör `Oden-Setup-<v>-x64.exe` från
+   [Odens release](https://github.com/NicklasAndersson/oden/releases/latest)
+   (ingen administratörsbehörighet krävs; **v3.2.0 eller senare**). SmartScreen
+   kan varna för den osignerade installeraren — *Mer information → Kör ändå*
+   (Windows-kusinen till Gatekeeper-raden under Felsökning). Docker finns
+   också, se Odens README.
+3. **Obsidian + wizarden:** som ovan — Windows-installeraren från
+   [obsidian.md/download](https://obsidian.md/download), öppna valvmappen,
+   samma setup-wizard på `http://127.0.0.1:8080`.
+
+Ollama för lokal AI har en egen Windows-installerare
+([ollama.com/download](https://ollama.com/download)); samma
+`ollama pull`-kommandon som under *Valfritt: lokal AI*.
+
+> **⚠ OneDrive-varning.** På de flesta Windows-datorer synkas `Dokument` av
+> OneDrive. ODEN-valvet är en mapp där Oden droppar filer live samtidigt som
+> Obsidian bevakar och skriver — inuti en synkklient ger det fillås,
+> dubblettfiler och halvskrivna rapporter. Lägg valvet på en osynkad plats,
+> t.ex. `C:\ODEN-valv`, och peka Odens vault-sökväg dit.
+
+Windows-flödet är dokumenterat men ännu inte fälttestat — säg till om något
+skaver, så rättar vi.
+
 Bra att veta i drift:
 
 - **Rekommenderat: styr rapporterna till `inkorg/`.** Som standard sparar Oden
@@ -211,10 +243,15 @@ du bekräftar eller avvisar (`föreslagen-av: llm`).
 - **macOS vägrar öppna Obsidian** – högerklicka på appen och välj Öppna
   (Gatekeeper, bara första gången).
 - **Obsidian öppnade direkt ett gammalt valv — ingen valv-väljare, ingen
-  Trust-fråga** – Obsidians profil (`~/Library/Application Support/obsidian`)
-  minns tidigare valv och deras förtroende, även efter att appen och valvet
-  raderats. För ett rent installationstest: avsluta Obsidian och radera den
-  mappen, så visas valv-väljaren och *"Trust author…"* igen.
+  Trust-fråga** – Obsidians profil (`~/Library/Application Support/obsidian`
+  på macOS, `%APPDATA%\obsidian` på Windows) minns tidigare valv och deras
+  förtroende, även efter att appen och valvet raderats. För ett rent
+  installationstest: avsluta Obsidian och radera den mappen, så visas
+  valv-väljaren och *"Trust author…"* igen.
+- **Windows: rapporter dyker upp sent, dubblerat eller inte alls** – valvet
+  ligger sannolikt i en OneDrive-synkad mapp (ofta `Dokument`). Flytta valvet
+  till en osynkad plats (se OneDrive-varningen under *Windows*) och uppdatera
+  vault-sökvägen i Odens dashboard.
 - **Kartan har texten "API key required" på varje ruta** – CartoDB kräver en
   egen API-nyckel. Hämta en gratis och klistra in den enligt *Kartnyckel* ovan,
   eller byt kartkälla till **OpenStreetMap (ingen nyckel)** i Map Views
