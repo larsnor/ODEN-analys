@@ -1,9 +1,9 @@
 {
   "id": "7s-analys",
   "name": "ODEN",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "minAppVersion": "1.4.0",
-  "description": "ODEN analyserar 7S-l\u00e4gesrapporter: k\u00e4nner igen \u00e5terkommande fordon och k\u00e4nnetecken, kopplar ihop dem till akt\u00f6rer, po\u00e4ngs\u00e4tter misst\u00e4nkt aktivitet, visar platser i graf och karta, och larmar vid ny aktivitet. Alla kopplingar bekr\u00e4ftas av operat\u00f6ren.",
+  "description": "ODEN analyserar 7S-lägesrapporter: känner igen återkommande fordon och kännetecken, kopplar ihop dem till aktörer, poängsätter misstänkt aktivitet, visar platser i graf och karta, och larmar vid ny aktivitet. Alla kopplingar bekräftas av operatören.",
   "author": "larsnor",
   "authorUrl": "https://github.com/larsnor/ODEN-analys",
   "isDesktopOnly": true

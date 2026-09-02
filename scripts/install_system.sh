@@ -71,6 +71,11 @@ if [ -d "/Applications/Oden.app" ]; then
         info "Uppgradera (avsluta Oden först):  curl -fsSL $ODEN_INSTALLER_RELEASE | bash"
       fi ;;
   esac
+elif [ "$(uname -m)" != "arm64" ]; then
+  # Oden ≥4.0.0 bygger macOS-appen enbart för Apple Silicon — Intel-Macar kör
+  # Oden via Docker i stället (se Odens README).
+  info "OBS: den här datorn är inte Apple Silicon — Oden.app finns bara för arm64 sedan v4.0.0."
+  info "Kör Oden via Docker: se https://github.com/NicklasAndersson/oden#docker"
 elif [ "${ODEN_APP_CHANNEL:-release}" = "snapshot" ]; then
   info "Installerar Oden (senaste snapshot — testkanal)…"
   curl -fsSL "$ODEN_INSTALLER_SNAPSHOT" | ODEN_SNAPSHOT_SELECT=latest bash

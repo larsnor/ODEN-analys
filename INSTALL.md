@@ -117,7 +117,9 @@ curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/in
 
 Det hämtar senaste ODEN-valv, installerar Oden.app via **dess eget officiella
 installationsskript**, hoppar över allt som redan finns och skriver aldrig över
-ett befintligt valv. Manuellt är det samma tre delar, **i denna ordning**:
+ett befintligt valv. (Oden.app för macOS finns sedan v4.0.0 bara för Apple
+Silicon — på en Intel-Mac körs Oden via Docker, se Odens README; skriptet
+upptäcker detta självt.) Manuellt är det samma tre delar, **i denna ordning**:
 
 1. **Valvet först** (Väg A ovan) — packa upp `ODEN-valv-<v>.zip`.
 2. **Oden** (kräver **v3.2.0 eller senare** — äldre tappar foton i 7S-rapporter
