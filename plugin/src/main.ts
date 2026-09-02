@@ -1054,11 +1054,11 @@ export default class SevenSPlugin extends Plugin {
   }
 
   private async revealMarkNominations(): Promise<void> {
-    const leaf = await this.getPanelLeaf();
-    const view = leaf.view;
-    if (view instanceof SevenSTextView && this.lastJobB) {
-      await view.renderNominations(this.lastJobB, this.settings.markDecisions);
-    }
+    if (!this.lastJobB) return;
+    if (this.reviewModal?.kind === "marks") return void (await this.reviewModal.rerender());
+    this.openReview("marks", "Kopplingsförslag att granska", async (c) => {
+      if (this.lastJobB) await this.renderNominationsBody(c, this.lastJobB, this.settings.markDecisions);
+    });
   }
 
   /** After a mark decision: stay on the review only while suggestions remain to
@@ -1066,6 +1066,7 @@ export default class SevenSPlugin extends Plugin {
   private async revealMarksOrFeed(): Promise<void> {
     const pending = this.lastJobB?.nominations.some((n) => !this.settings.markDecisions[n.signature]);
     if (pending) await this.revealMarkNominations();
+    else if (this.reviewModal) this.reviewModal.close();
     else await this.refreshPanel();
   }
 
@@ -1082,7 +1083,7 @@ export default class SevenSPlugin extends Plugin {
     // product, reusing the same functions the notes/map/feed are built from.
     const suspicion = analyzeSuspicion(reports, this.suspicionOpts());
     const actors = foldedConfirmedActors(reports, suspicion, this.settings);
-    const places = buildLocations(reports, suspicion, this.settings.locationMerges, this.settings.predefinedLocations);
+    const places = buildLocations(reports, suspicion, this.settings.locationMerges, this.settings.predefinedLocations, this.aoiForLocations());
     return { reports, vehicles, marks, actors, places, larm: suspicion.elevated, craft: extractAllCraft(reports) };
   }
 
@@ -1165,7 +1166,12 @@ export default class SevenSPlugin extends Plugin {
   async setActorThreshold(t: number): Promise<void> {
     this.settings.actorThreshold = Math.max(1, Math.floor(t) || 1);
     await this.saveSettings();
-    await this.runDeriveActors();
+    // Recompute and update the open modal in place — no reveal re-entry, no
+    // Notice spam while the operator taps −/+.
+    const { reports } = await this.readReports();
+    const suspicion = analyzeSuspicion(reports, this.suspicionOpts());
+    this.lastActors = mergedActors(reports, suspicion, this.settings.actorThreshold);
+    await this.revealActors();
   }
 
   async confirmActor(id: string): Promise<void> {
@@ -1230,7 +1236,7 @@ export default class SevenSPlugin extends Plugin {
   async mergeLocationsFlow(): Promise<void> {
     const { reports } = await this.readReports();
     const s = analyzeSuspicion(reports, this.suspicionOpts());
-    const clusters = buildLocations(reports, s, this.settings.locationMerges, this.settings.predefinedLocations);
+    const clusters = buildLocations(reports, s, this.settings.locationMerges, this.settings.predefinedLocations, this.aoiForLocations());
     if (clusters.length < 2) {
       new Notice("ODEN: behöver minst två platser att slå ihop.");
       return;
@@ -1306,7 +1312,7 @@ export default class SevenSPlugin extends Plugin {
     // Build the location clusters ONCE so actors can link straight to the same
     // location nodes (a direct actor↔plats edge, no message node in between).
     // Includes the operator-predefined places (day-0 nodes + vicinity linking).
-    const clusters = buildLocations(reports, suspicion, this.settings.locationMerges, this.settings.predefinedLocations);
+    const clusters = buildLocations(reports, suspicion, this.settings.locationMerges, this.settings.predefinedLocations, this.aoiForLocations());
     const locStemOf = locationLinker(clusters, this.settings);
     const nearOf = predefNearLinker(clusters, this.settings);
     const confirmedActors = foldedConfirmedActors(reports, suspicion, this.settings);
@@ -1369,11 +1375,11 @@ export default class SevenSPlugin extends Plugin {
   }
 
   private async revealActors(): Promise<void> {
-    const leaf = await this.getPanelLeaf();
-    const view = leaf.view;
-    if (view instanceof SevenSTextView && this.lastActors) {
-      await view.renderActors(this.lastActors, this.settings.actorDecisions, this.settings.actorThreshold);
-    }
+    if (!this.lastActors) return;
+    if (this.reviewModal?.kind === "actors") return void (await this.reviewModal.rerender());
+    this.openReview("actors", "Aktörsförslag att granska", async (c) => {
+      if (this.lastActors) await this.renderActorsBody(c, this.lastActors, this.settings.actorDecisions, this.settings.actorThreshold);
+    });
   }
 
   /** After an actor decision: stay on the review only while suggestions remain to
@@ -1381,9 +1387,299 @@ export default class SevenSPlugin extends Plugin {
   private async revealActorsOrFeed(): Promise<void> {
     const pending = this.lastActors?.hypotheses.some((h) => !this.settings.actorDecisions[h.id]);
     if (pending) await this.revealActors();
+    else if (this.reviewModal) this.reviewModal.close();
     else await this.refreshPanel();
   }
 
+
+  // --- Review modals ---------------------------------------------------------
+  // The confirm flows (actors, marks, photos, texts) open as popup modals; the
+  // "N förslag att granska →" rows stay in the log. One modal at a time; the
+  // renderBody callbacks read CURRENT plugin state on every rerender, so
+  // decisions/undo/sensitivity update the body in place. Closing (Esc, ✕, or
+  // the last decision) refreshes the panel.
+  private reviewModal: ReviewModal | null = null;
+
+  private openReview(kind: ReviewKind, title: string, renderBody: (c: HTMLElement) => Promise<void>): void {
+    const old = this.reviewModal;
+    const m = new ReviewModal(this.app, kind, title, renderBody, () => {
+      // Identity check: replacing one review with another must not fire a
+      // spurious feed refresh between the two.
+      if (this.reviewModal === m) {
+        this.reviewModal = null;
+        void this.refreshPanel();
+      }
+    });
+    this.reviewModal = m;
+    old?.close();
+    m.open();
+  }
+
+/** Per-item photo-review screen: each report's cached
+   *  sighting → per plate/vehicle/person accept-or-reject, shown OVER the photo so
+   *  the operator judges against the evidence. Plates lead (the killer app). */
+  private async renderPhotoReviewBody(content: HTMLElement, rows: { report: Report; noms: { nom: PhotoNomination; status?: "confirmed" | "rejected" }[] }[]): Promise<void> {
+    if (!rows.length) {
+      content.createEl("p", { text: "Inga bildfynd att granska. Kör bildanalys (📷) först." }).style.opacity = ".7";
+      return;
+    }
+    const order = { plate: 0, vehicle: 1, person: 2, scene: 3 } as const;
+    // Reports with pending findings first; fully-decided cards after.
+    const ordered = [
+      ...rows.filter((r) => r.noms.some((n) => !n.status)),
+      ...rows.filter((r) => r.noms.every((n) => n.status)).reverse(),
+    ];
+    for (const { report, noms } of ordered) {
+      const card = content.createDiv();
+      card.style.cssText = "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin:0 0 10px;";
+      const head = card.createEl("div", { text: `TNR${report.tnr}${report.plats ? " — " + report.plats : ""}` });
+      head.style.cssText = "font-weight:600;font-size:.9em;margin-bottom:6px;";
+      // Thumbnail — confirm against the evidence.
+      const img = this.imageAttachments(report)[0];
+      const tf = img ? this.app.metadataCache.getFirstLinkpathDest(img, report.file) : null;
+      if (tf instanceof TFile) {
+        const el = card.createEl("img");
+        el.src = this.app.vault.getResourcePath(tf);
+        el.style.cssText = "max-width:100%;max-height:200px;border-radius:4px;margin-bottom:6px;display:block;";
+      }
+      const sorted = [...noms].sort((a, b) => (a.status ? 1 : 0) - (b.status ? 1 : 0) || order[a.nom.kind] - order[b.nom.kind]);
+      for (const { nom, status } of sorted) {
+        const row = card.createDiv();
+        row.style.cssText = "display:flex;align-items:center;gap:6px;padding:2px 0;font-size:.9em;";
+        const tag =
+          nom.kind === "plate" ? "📷 Skylt"
+          : nom.kind === "vehicle" ? "📷 Fordon"
+          : nom.kind === "person" ? "📷 Person"
+          : "📷 Scen";
+        const val =
+          nom.kind === "plate"
+            ? `${nom.value}${nom.conflict ? " ⚠ avviker från regplåten i texten" : ""}`
+            : nom.label;
+        const statusTxt = status === "confirmed" ? "  ·  ✓ bekräftad" : status === "rejected" ? "  ·  ✗ avvisad" : "";
+        const span = row.createEl("span", { text: `${tag}: ${val}${statusTxt}` });
+        span.style.cssText =
+          "flex:1;" +
+          (nom.kind === "plate" && nom.conflict && !status ? "color:var(--text-error);" : "") +
+          (status ? "opacity:.65;" : "");
+        if (!status) {
+          const acc = row.createEl("button", { text: "Bekräfta", cls: "mod-cta" });
+          acc.onclick = async () => {
+            await this.acceptPhotoNomination(report.file, nom);
+            await this.showPhotoReviewOrFeed();
+          };
+          row.createEl("button", { text: "Avvisa" }).onclick = async () => {
+            await this.rejectPhotoNomination(report.file, nom);
+            await this.showPhotoReviewOrFeed();
+          };
+        } else {
+          row.createEl("button", { text: "↺ Ångra beslut" }).onclick = async () => {
+            await this.undoPhotoNomination(report.file, nom);
+            await this.showPhotoReviewOrFeed();
+          };
+        }
+      }
+    }
+  }
+
+
+/** Text-findings review (📝): recurring open-vocab kännetecken (→ hub note) and
+   *  per-report behaviours (→ suspicion score). Each accepted/rejected on its own. */
+  private async renderTextReviewBody(content: HTMLElement, findings: { behaviours: { report: Report; sigs: Signal[] }[]; marks: TextMarkNomination[] }): Promise<void> {
+    const { behaviours, marks } = findings;
+    if (!behaviours.length && !marks.length) {
+      content.createEl("p", { text: "Inga textfynd att granska. Kör texttolkning (📝) först." }).style.opacity = ".7";
+      return;
+    }
+    const heading = (t: string) => {
+      content.createEl("div", { text: t }).style.cssText = "font-weight:600;opacity:.75;margin:6px 0 4px;";
+    };
+    if (marks.length) {
+      heading("Kännetecken (återkommande — blir en nod)");
+      for (const nom of marks) {
+        // Evidence card: the operator must see WHICH reports carried the mark
+        // (and each report's own phrasing) to be able to judge it.
+        const card = content.createDiv();
+        card.style.cssText =
+          "border:1px solid var(--background-modifier-border);border-radius:6px;padding:6px 8px;margin:0 0 8px;font-size:.9em;";
+        const top = card.createDiv();
+        top.style.cssText = "display:flex;align-items:center;gap:6px;";
+        top.createEl("span", { text: `🔤 ${nom.label} — ${nom.count} rapporter` }).style.cssText = "flex:1;font-weight:600;";
+        top.createEl("button", { text: "Bekräfta", cls: "mod-cta" }).onclick = async () => {
+          await this.acceptTextMark(nom);
+          await this.showTextReviewOrFeed();
+        };
+        top.createEl("button", { text: "Avvisa" }).onclick = async () => {
+          await this.rejectTextMark(nom);
+          await this.showTextReviewOrFeed();
+        };
+        const obs = card.createEl("ul");
+        obs.style.cssText = "margin:4px 0 0;";
+        for (const m of nom.members) {
+          const li = obs.createEl("li");
+          const a = li.createEl("a", { text: `TNR${m.tnr}` });
+          a.onclick = () => this.app.workspace.openLinkText(noteStem(m.file), "", false);
+          li.appendText(` — ${m.tidpunkt} — ${m.plats}${m.label !== nom.label ? ` — ”${m.label}”` : ""}`);
+        }
+      }
+    }
+    if (behaviours.length) {
+      heading("Beteenden (matas till misstankepoängen)");
+      for (const { report, sigs } of behaviours) {
+        for (const sig of sigs) {
+          const row = content.createDiv();
+          row.style.cssText = "display:flex;align-items:center;gap:6px;padding:2px 0;font-size:.9em;";
+          const span = row.createEl("span");
+          span.style.flex = "1";
+          span.appendText("🔤 ");
+          const a = span.createEl("a", { text: `TNR${report.tnr}` });
+          a.onclick = () => this.app.workspace.openLinkText(noteStem(report.file), "", false);
+          span.appendText(`${report.plats ? " — " + report.plats : ""}: ${sig.label}`);
+          row.createEl("button", { text: "Bekräfta", cls: "mod-cta" }).onclick = async () => {
+            await this.acceptTextBehaviour(report.file, sig);
+            await this.showTextReviewOrFeed();
+          };
+          row.createEl("button", { text: "Avvisa" }).onclick = async () => {
+            await this.rejectTextBehaviour(report.file, sig);
+            await this.showTextReviewOrFeed();
+          };
+        }
+      }
+    }
+  }
+
+
+/** Render actor hypotheses with threshold control + confirm/reject. */
+  private async renderActorsBody(content: HTMLElement, result: ActorResult, decisions: Record<string, ActorDecision>, threshold: number): Promise<void> {
+    content.createEl("p", {
+      text: `${result.hypotheses.length} förslag. Bekräfta för att koppla ihop fordon/personer/kännetecken; avvisa för att dölja.`,
+    });
+
+    // Sensitivity control (more shared observations = fewer, stronger suggestions).
+    const tbar = content.createDiv();
+    tbar.style.cssText = "margin:0.4em 0 0.8em 0;display:flex;gap:0.5em;align-items:center;";
+    tbar.createSpan({ text: `Känslighet: ${threshold}` });
+    tbar.createEl("button", { text: "–" }).onclick = () => void this.setActorThreshold(threshold - 1);
+    tbar.createEl("button", { text: "+" }).onclick = () => void this.setActorThreshold(threshold + 1);
+    tbar.createSpan({ text: "  (höj för färre, starkare förslag)" }).style.fontSize = "0.8em";
+
+    if (result.hypotheses.length === 0) {
+      content.createEl("p", { text: "Inga förslag vid denna känslighet. Sänk för att koppla svagare samband." });
+      return;
+    }
+
+    // Pending suggestions first (in derivation order); already-decided ones after,
+    // newest decision-ish last-in-first-out (reverse of appearance) so the
+    // operator's working set is always at the top.
+    const ordered = [
+      ...result.hypotheses.filter((h) => !decisions[h.id]),
+      ...result.hypotheses.filter((h) => decisions[h.id]).reverse(),
+    ];
+    for (const h of ordered) {
+      const decision = decisions[h.id];
+      const card = content.createDiv();
+      card.style.border = "1px solid var(--background-modifier-border)";
+      card.style.borderRadius = "6px";
+      card.style.padding = "0.6em 0.8em";
+      card.style.margin = "0.6em 0";
+
+      const status = decision === "confirmed" ? "  ·  ✓ bekräftad" : decision === "rejected" ? "  ·  ✗ avvisad" : "";
+      const isSuspect = h.id.startsWith("suspect-");
+      const title = isSuspect ? h.explanation : `Aktör: ${h.vehicleCount} fordon + ${h.markCount} kännetecken`;
+      const h3 = card.createEl("h3", { text: `${title}${status}` });
+      h3.style.margin = "0 0 0.3em 0";
+
+      const span = h.firstSeen && h.lastSeen ? ` · ${h.firstSeen.slice(0, 10)}–${h.lastSeen.slice(0, 10)}` : "";
+      card.createEl("div", {
+        text: isSuspect
+          ? `Misstänkt agent · ${h.chain.length} observation(er)${span}. Verifiera som aktör?`
+          : `Kopplas via ${h.chain.length} gemensamma observationer${span}.`,
+      }).style.fontSize = "0.85em";
+
+      const facetList = card.createEl("ul");
+      for (const f of h.facets) {
+        const li = facetList.createEl("li");
+        li.appendText(`${f.kind === "fordon" ? "🚗" : "🎒"} `);
+        const a = li.createEl("a", { text: f.label });
+        a.onclick = () => this.app.workspace.openLinkText(f.noteStem, "", false);
+      }
+
+      const det = card.createEl("details");
+      det.createEl("summary", { text: `Evidenskedja (${h.chain.length} meddelanden)` });
+      const chain = det.createEl("ul");
+      for (const step of h.chain) {
+        const li = chain.createEl("li");
+        const stem = noteStem(step.file);
+        const a = li.createEl("a", { text: `TNR${step.tnr}` });
+        a.onclick = () => this.app.workspace.openLinkText(stem, "", false);
+        li.appendText(` — ${step.tidpunkt} — kopplar: ${step.facets.join(" + ")}`);
+      }
+
+      const btns = card.createDiv();
+      btns.style.display = "flex";
+      btns.style.gap = "0.5em";
+      if (!decision) {
+        btns.createEl("button", { text: "✓ Bekräfta aktör" }).onclick = () => void this.confirmActor(h.id);
+        btns.createEl("button", { text: "✗ Avvisa" }).onclick = () => void this.rejectActor(h.id);
+      } else {
+        btns.createEl("button", { text: "↺ Ångra beslut" }).onclick = () => void this.resetActorDecision(h.id);
+      }
+    }
+  }
+
+
+/** Render mark suggestions with per-suggestion confirm/reject controls. */
+  private async renderNominationsBody(content: HTMLElement, result: JobBResult, decisions: Record<string, MarkDecision>): Promise<void> {
+    const open = result.nominations.filter((n) => !decisions[n.signature]);
+    content.createEl("p", {
+      text: `${result.nominations.length} förslag, ${open.length} att granska. Bekräfta för att skapa ett kännetecken; avvisa för att dölja.`,
+    });
+
+    // Pending first; decided after in reverse order of appearance (see renderActorsBody).
+    const ordered = [
+      ...result.nominations.filter((n) => !decisions[n.signature]),
+      ...result.nominations.filter((n) => decisions[n.signature]).reverse(),
+    ];
+    for (const nom of ordered) {
+      const decision = decisions[nom.signature];
+      const card = content.createDiv({ cls: "seven-s-nom" });
+      card.style.border = "1px solid var(--background-modifier-border)";
+      card.style.borderRadius = "6px";
+      card.style.padding = "0.6em 0.8em";
+      card.style.margin = "0.6em 0";
+
+      const statusTxt = decision === "confirmed" ? "✓ bekräftad" : decision === "rejected" ? "✗ avvisad" : "";
+      const title = card.createEl("h3", {
+        text: `${nom.label}  ·  ${nom.count} observationer` + (statusTxt ? `  ·  ${statusTxt}` : ""),
+      });
+      title.style.margin = "0 0 0.3em 0";
+
+      card.createEl("div", {
+        text: `${nom.count} observationer beskriver samma kännetecken.`,
+      }).style.fontSize = "0.85em";
+
+      const obs = card.createEl("ul");
+      for (const m of nom.members) {
+        const li = obs.createEl("li");
+        const stem = noteStem(m.file);
+        const a = li.createEl("a", { text: `TNR${m.tnr}` });
+        a.onclick = () => this.app.workspace.openLinkText(stem, "", false);
+        li.appendText(` — ${m.tidpunkt} — ${m.plats}`);
+      }
+
+      const btns = card.createDiv();
+      btns.style.display = "flex";
+      btns.style.gap = "0.5em";
+      if (!decision) {
+        btns.createEl("button", { text: "✓ Bekräfta" }).onclick = () =>
+          void this.confirmNomination(nom.signature);
+        btns.createEl("button", { text: "✗ Avvisa" }).onclick = () =>
+          void this.rejectNomination(nom.signature);
+      } else {
+        btns.createEl("button", { text: "↺ Ångra beslut" }).onclick = () =>
+          void this.resetNominationDecision(nom.signature);
+      }
+    }
+  }
   // --- Vault watcher + alerts-with-pointer -----------------------------------
 
   private debounceTimer: number | null = null;
@@ -1569,6 +1865,14 @@ export default class SevenSPlugin extends Plugin {
   /** React to vault changes; full recompute each change handles retroactive
    *  transitive completion. Debounced so bulk feeding (auto) is one pass.
    *  Ignores plugin-owned files (entities folder) to avoid self-triggering. */
+  /** AOI coords for the location layer's place→place correlation — only once
+   *  setup is complete, so pre-setup defaults never spray [[Objektet]] links. */
+  private aoiForLocations(): { lat: number; lon: number } | undefined {
+    return this.settings.setupComplete
+      ? { lat: this.settings.protectedLat, lon: this.settings.protectedLon }
+      : undefined;
+  }
+
   /** Paths the analysis cares about — reports, not the demo queue or ODEN's own
    *  entity notes. Shared by the vault watcher and the safety-net sweep. */
   private isAnalysisPath(path: string): boolean {
@@ -2049,9 +2353,10 @@ export default class SevenSPlugin extends Plugin {
 
   /** Open the per-item photo-review screen in the panel. */
   async showPhotoReview(): Promise<void> {
-    await this.revealPanel();
-    const rows = await this.reportsWithPhotoFindings();
-    this.getView()?.renderPhotoReview(rows);
+    if (this.reviewModal?.kind === "photos") return void (await this.reviewModal.rerender());
+    this.openReview("photos", "Bildfynd att granska", async (c) => {
+      await this.renderPhotoReviewBody(c, await this.reportsWithPhotoFindings());
+    });
   }
 
   /** After a photo decision: stay on the review only while findings remain to
@@ -2059,7 +2364,8 @@ export default class SevenSPlugin extends Plugin {
   async showPhotoReviewOrFeed(): Promise<void> {
     const rows = await this.reportsWithPhotoFindings();
     const pending = rows.some((r) => r.noms.some((n) => !n.status));
-    if (pending) this.getView()?.renderPhotoReview(rows);
+    if (pending) await this.reviewModal?.rerender();
+    else if (this.reviewModal) this.reviewModal.close(); // onClose refreshes the feed
     else await this.refreshPanel();
   }
 
@@ -2306,16 +2612,18 @@ export default class SevenSPlugin extends Plugin {
   }
 
   async showTextReview(): Promise<void> {
-    await this.revealPanel();
-    const findings = await this.pendingTextFindings();
-    this.getView()?.renderTextReview(findings);
+    if (this.reviewModal?.kind === "texts") return void (await this.reviewModal.rerender());
+    this.openReview("texts", "Textfynd att granska", async (c) => {
+      await this.renderTextReviewBody(c, await this.pendingTextFindings());
+    });
   }
 
   /** After a text decision: stay on the review only while findings remain to
    *  act on; with nothing left pending, return the operator to the live feed. */
   async showTextReviewOrFeed(): Promise<void> {
     const findings = await this.pendingTextFindings();
-    if (findings.behaviours.length || findings.marks.length) this.getView()?.renderTextReview(findings);
+    if (findings.behaviours.length || findings.marks.length) await this.reviewModal?.rerender();
+    else if (this.reviewModal) this.reviewModal.close();
     else await this.refreshPanel();
   }
 
@@ -2627,6 +2935,7 @@ export default class SevenSPlugin extends Plugin {
     await this.saveSettings();
 
     // In-memory derivations describe a vault that no longer exists.
+    this.reviewModal?.close();
     this.lastJobB = null;
     this.lastActors = null;
     this.lastCorroboration = new Map();
@@ -3015,6 +3324,9 @@ class SevenSTextView extends ItemView {
   setFeed(rows: FeedRow[], watch: WatchRow[] = []): void {
     if (this.mode === "review") return;
     const el = this.feedEl;
+    // The log is uncapped and fully re-rendered — keep the operator's scroll
+    // position across refreshes (the browser clamps if the list shrank).
+    const scrollTop = el.scrollTop;
     el.empty();
 
     // First-run: guide the operator to set the area of interest before anything else.
@@ -3034,9 +3346,14 @@ class SevenSTextView extends ItemView {
     // pinned above the log. Visibility only; clicking opens the note AND marks
     // its new activity as seen (baseline reset).
     if (watch.length) {
-      el.createEl("div", { text: "🔭 Bevakningslista" }).style.cssText = "font-weight:600;opacity:.7;margin-bottom:4px;";
+      // A real card, not just a muted heading — bevakning must never drown in
+      // the log (operator feedback 2026-09-01).
       const box = el.createDiv();
-      box.style.cssText = "margin:0 0 10px;";
+      box.style.cssText =
+        "margin:0 0 10px;padding:6px 8px;border-radius:6px;border:1px solid var(--color-orange, #d80);" +
+        "background:rgba(216,136,0,.08);background:color-mix(in srgb, var(--color-orange, #d80) 10%, transparent);";
+      box.createEl("div", { text: "🔭 Bevakningslista" }).style.cssText =
+        "font-weight:700;color:var(--color-orange, #d80);margin-bottom:4px;";
       for (const w of watch) {
         const row = box.createDiv();
         row.style.cssText =
@@ -3068,7 +3385,7 @@ class SevenSTextView extends ItemView {
             (r.severity === "larm"
               ? "color:var(--text-error);font-weight:600;"
               : r.severity === "bevakad"
-                ? "color:var(--color-orange, #d80);font-weight:600;"
+                ? "color:var(--color-orange, #d80);font-weight:600;background:rgba(216,136,0,.10);"
                 : r.kind === "fordon" || r.kind === "kännetecken" || r.kind === "aktör"
                   ? "color:var(--color-blue, var(--text-accent));"
                   : r.kind === "bildanalys" || r.kind === "textanalys"
@@ -3085,6 +3402,26 @@ class SevenSTextView extends ItemView {
         row.style.borderRadius = "0 4px 4px 0";
       }
       row.setText(r.text);
+      // Escalation from the log: right-click a message (or its larm child) to
+      // toggle the operator larmflagga — same action as the file-menu, without
+      // leaving the feed. Weight 9 → the red "Misstänkt aktivitet" child row.
+      if (r.file && (r.kind === "mottaget" || r.kind === "larm")) {
+        row.oncontextmenu = (e) => {
+          e.preventDefault();
+          const menu = new Menu();
+          const flagged = !!this.plugin.settings.operatorFlagged[r.file!];
+          menu.addItem((i) =>
+            i.setTitle(flagged ? "ODEN: Ta bort larmflagga" : "ODEN: Flagga som larm")
+              .setIcon(flagged ? "flag-off" : "alert-triangle")
+              .onClick(() => void this.plugin.toggleOperatorFlag(r.file!, r.tnr)),
+          );
+          menu.addItem((i) =>
+            i.setTitle("Öppna rapporten").setIcon("file-text")
+              .onClick(() => this.plugin.app.workspace.openLinkText(r.stem, "", false)),
+          );
+          menu.showAtMouseEvent(e);
+        };
+      }
       row.onclick = () => {
         if (r.review === "actors") void this.plugin.runDeriveActors();
         else if (r.review === "marks") void this.plugin.runMarkNominations();
@@ -3101,13 +3438,17 @@ class SevenSTextView extends ItemView {
         }
       };
       if (r.severity !== "review") {
+        const restBg = r.severity === "bevakad" ? "rgba(216,136,0,.10)" : "";
         row.onmouseenter = () => (row.style.background = "var(--background-modifier-hover)");
-        row.onmouseleave = () => (row.style.background = "");
+        row.onmouseleave = () => (row.style.background = restBg);
       }
     }
+    el.scrollTop = scrollTop;
   }
 
-  /** Header (with ← back) for a review screen shown in the feed region. */
+  /** Header (with ← back) for a screen shown in the feed region. Since the
+   *  confirm flows moved into ReviewModal popups, only Namngivna platser (a
+   *  modal would block the map — see showPlaces) and Bevakningslistan use it. */
   private reviewHead(title: string): HTMLElement {
     this.mode = "review"; // pin the screen until the operator leaves it
     this.feedEl.empty();
@@ -3155,140 +3496,7 @@ class SevenSTextView extends ItemView {
     }
   }
 
-  /** Per-item photo-review screen: each report's cached
-   *  sighting → per plate/vehicle/person accept-or-reject, shown OVER the photo so
-   *  the operator judges against the evidence. Plates lead (the killer app). */
-  async renderPhotoReview(rows: { report: Report; noms: { nom: PhotoNomination; status?: "confirmed" | "rejected" }[] }[]): Promise<void> {
-    const content = this.reviewHead("Bildfynd att granska");
-    if (!rows.length) {
-      content.createEl("p", { text: "Inga bildfynd att granska. Kör bildanalys (📷) först." }).style.opacity = ".7";
-      return;
-    }
-    const order = { plate: 0, vehicle: 1, person: 2, scene: 3 } as const;
-    // Reports with pending findings first; fully-decided cards after.
-    const ordered = [
-      ...rows.filter((r) => r.noms.some((n) => !n.status)),
-      ...rows.filter((r) => r.noms.every((n) => n.status)).reverse(),
-    ];
-    for (const { report, noms } of ordered) {
-      const card = content.createDiv();
-      card.style.cssText = "border:1px solid var(--background-modifier-border);border-radius:6px;padding:8px;margin:0 0 10px;";
-      const head = card.createEl("div", { text: `TNR${report.tnr}${report.plats ? " — " + report.plats : ""}` });
-      head.style.cssText = "font-weight:600;font-size:.9em;margin-bottom:6px;";
-      // Thumbnail — confirm against the evidence.
-      const img = this.plugin.imageAttachments(report)[0];
-      const tf = img ? this.plugin.app.metadataCache.getFirstLinkpathDest(img, report.file) : null;
-      if (tf instanceof TFile) {
-        const el = card.createEl("img");
-        el.src = this.plugin.app.vault.getResourcePath(tf);
-        el.style.cssText = "max-width:100%;max-height:200px;border-radius:4px;margin-bottom:6px;display:block;";
-      }
-      const sorted = [...noms].sort((a, b) => (a.status ? 1 : 0) - (b.status ? 1 : 0) || order[a.nom.kind] - order[b.nom.kind]);
-      for (const { nom, status } of sorted) {
-        const row = card.createDiv();
-        row.style.cssText = "display:flex;align-items:center;gap:6px;padding:2px 0;font-size:.9em;";
-        const tag =
-          nom.kind === "plate" ? "📷 Skylt"
-          : nom.kind === "vehicle" ? "📷 Fordon"
-          : nom.kind === "person" ? "📷 Person"
-          : "📷 Scen";
-        const val =
-          nom.kind === "plate"
-            ? `${nom.value}${nom.conflict ? " ⚠ avviker från regplåten i texten" : ""}`
-            : nom.label;
-        const statusTxt = status === "confirmed" ? "  ·  ✓ bekräftad" : status === "rejected" ? "  ·  ✗ avvisad" : "";
-        const span = row.createEl("span", { text: `${tag}: ${val}${statusTxt}` });
-        span.style.cssText =
-          "flex:1;" +
-          (nom.kind === "plate" && nom.conflict && !status ? "color:var(--text-error);" : "") +
-          (status ? "opacity:.65;" : "");
-        if (!status) {
-          const acc = row.createEl("button", { text: "Bekräfta", cls: "mod-cta" });
-          acc.onclick = async () => {
-            await this.plugin.acceptPhotoNomination(report.file, nom);
-            await this.plugin.showPhotoReviewOrFeed();
-          };
-          row.createEl("button", { text: "Avvisa" }).onclick = async () => {
-            await this.plugin.rejectPhotoNomination(report.file, nom);
-            await this.plugin.showPhotoReviewOrFeed();
-          };
-        } else {
-          row.createEl("button", { text: "↺ Ångra beslut" }).onclick = async () => {
-            await this.plugin.undoPhotoNomination(report.file, nom);
-            await this.plugin.showPhotoReview();
-          };
-        }
-      }
-    }
-  }
-
-  /** Text-findings review (📝): recurring open-vocab kännetecken (→ hub note) and
-   *  per-report behaviours (→ suspicion score). Each accepted/rejected on its own. */
-  async renderTextReview(findings: { behaviours: { report: Report; sigs: Signal[] }[]; marks: TextMarkNomination[] }): Promise<void> {
-    const content = this.reviewHead("Textfynd att granska");
-    const { behaviours, marks } = findings;
-    if (!behaviours.length && !marks.length) {
-      content.createEl("p", { text: "Inga textfynd att granska. Kör texttolkning (📝) först." }).style.opacity = ".7";
-      return;
-    }
-    const heading = (t: string) => {
-      content.createEl("div", { text: t }).style.cssText = "font-weight:600;opacity:.75;margin:6px 0 4px;";
-    };
-    if (marks.length) {
-      heading("Kännetecken (återkommande — blir en nod)");
-      for (const nom of marks) {
-        // Evidence card: the operator must see WHICH reports carried the mark
-        // (and each report's own phrasing) to be able to judge it.
-        const card = content.createDiv();
-        card.style.cssText =
-          "border:1px solid var(--background-modifier-border);border-radius:6px;padding:6px 8px;margin:0 0 8px;font-size:.9em;";
-        const top = card.createDiv();
-        top.style.cssText = "display:flex;align-items:center;gap:6px;";
-        top.createEl("span", { text: `🔤 ${nom.label} — ${nom.count} rapporter` }).style.cssText = "flex:1;font-weight:600;";
-        top.createEl("button", { text: "Bekräfta", cls: "mod-cta" }).onclick = async () => {
-          await this.plugin.acceptTextMark(nom);
-          await this.plugin.showTextReviewOrFeed();
-        };
-        top.createEl("button", { text: "Avvisa" }).onclick = async () => {
-          await this.plugin.rejectTextMark(nom);
-          await this.plugin.showTextReviewOrFeed();
-        };
-        const obs = card.createEl("ul");
-        obs.style.cssText = "margin:4px 0 0;";
-        for (const m of nom.members) {
-          const li = obs.createEl("li");
-          const a = li.createEl("a", { text: `TNR${m.tnr}` });
-          a.onclick = () => this.plugin.app.workspace.openLinkText(noteStem(m.file), "", false);
-          li.appendText(` — ${m.tidpunkt} — ${m.plats}${m.label !== nom.label ? ` — ”${m.label}”` : ""}`);
-        }
-      }
-    }
-    if (behaviours.length) {
-      heading("Beteenden (matas till misstankepoängen)");
-      for (const { report, sigs } of behaviours) {
-        for (const sig of sigs) {
-          const row = content.createDiv();
-          row.style.cssText = "display:flex;align-items:center;gap:6px;padding:2px 0;font-size:.9em;";
-          const span = row.createEl("span");
-          span.style.flex = "1";
-          span.appendText("🔤 ");
-          const a = span.createEl("a", { text: `TNR${report.tnr}` });
-          a.onclick = () => this.plugin.app.workspace.openLinkText(noteStem(report.file), "", false);
-          span.appendText(`${report.plats ? " — " + report.plats : ""}: ${sig.label}`);
-          row.createEl("button", { text: "Bekräfta", cls: "mod-cta" }).onclick = async () => {
-            await this.plugin.acceptTextBehaviour(report.file, sig);
-            await this.plugin.showTextReviewOrFeed();
-          };
-          row.createEl("button", { text: "Avvisa" }).onclick = async () => {
-            await this.plugin.rejectTextBehaviour(report.file, sig);
-            await this.plugin.showTextReviewOrFeed();
-          };
-        }
-      }
-    }
-  }
-
-  /** Places screen IN THE PANEL (not a modal, which would block the map): list +
+      /** Places screen IN THE PANEL (not a modal, which would block the map): list +
    *  remove + add. The map stays interactive alongside, so the operator can
    *  right-click it → "Copy geolocation" and paste into the position field. */
   showPlaces(initCoord?: string): void {
@@ -3437,140 +3645,7 @@ class SevenSTextView extends ItemView {
     }
   }
 
-  /** Render actor hypotheses with threshold control + confirm/reject. */
-  async renderActors(result: ActorResult, decisions: Record<string, ActorDecision>, threshold: number): Promise<void> {
-    const content = this.reviewHead("Aktörsförslag att granska");
-    content.createEl("p", {
-      text: `${result.hypotheses.length} förslag. Bekräfta för att koppla ihop fordon/personer/kännetecken; avvisa för att dölja.`,
-    });
-
-    // Sensitivity control (more shared observations = fewer, stronger suggestions).
-    const tbar = content.createDiv();
-    tbar.style.cssText = "margin:0.4em 0 0.8em 0;display:flex;gap:0.5em;align-items:center;";
-    tbar.createSpan({ text: `Känslighet: ${threshold}` });
-    tbar.createEl("button", { text: "–" }).onclick = () => void this.plugin.setActorThreshold(threshold - 1);
-    tbar.createEl("button", { text: "+" }).onclick = () => void this.plugin.setActorThreshold(threshold + 1);
-    tbar.createSpan({ text: "  (höj för färre, starkare förslag)" }).style.fontSize = "0.8em";
-
-    if (result.hypotheses.length === 0) {
-      content.createEl("p", { text: "Inga förslag vid denna känslighet. Sänk för att koppla svagare samband." });
-      return;
     }
-
-    // Pending suggestions first (in derivation order); already-decided ones after,
-    // newest decision-ish last-in-first-out (reverse of appearance) so the
-    // operator's working set is always at the top.
-    const ordered = [
-      ...result.hypotheses.filter((h) => !decisions[h.id]),
-      ...result.hypotheses.filter((h) => decisions[h.id]).reverse(),
-    ];
-    for (const h of ordered) {
-      const decision = decisions[h.id];
-      const card = content.createDiv();
-      card.style.border = "1px solid var(--background-modifier-border)";
-      card.style.borderRadius = "6px";
-      card.style.padding = "0.6em 0.8em";
-      card.style.margin = "0.6em 0";
-
-      const status = decision === "confirmed" ? "  ·  ✓ bekräftad" : decision === "rejected" ? "  ·  ✗ avvisad" : "";
-      const isSuspect = h.id.startsWith("suspect-");
-      const title = isSuspect ? h.explanation : `Aktör: ${h.vehicleCount} fordon + ${h.markCount} kännetecken`;
-      const h3 = card.createEl("h3", { text: `${title}${status}` });
-      h3.style.margin = "0 0 0.3em 0";
-
-      const span = h.firstSeen && h.lastSeen ? ` · ${h.firstSeen.slice(0, 10)}–${h.lastSeen.slice(0, 10)}` : "";
-      card.createEl("div", {
-        text: isSuspect
-          ? `Misstänkt agent · ${h.chain.length} observation(er)${span}. Verifiera som aktör?`
-          : `Kopplas via ${h.chain.length} gemensamma observationer${span}.`,
-      }).style.fontSize = "0.85em";
-
-      const facetList = card.createEl("ul");
-      for (const f of h.facets) {
-        const li = facetList.createEl("li");
-        li.appendText(`${f.kind === "fordon" ? "🚗" : "🎒"} `);
-        const a = li.createEl("a", { text: f.label });
-        a.onclick = () => this.plugin.app.workspace.openLinkText(f.noteStem, "", false);
-      }
-
-      const det = card.createEl("details");
-      det.createEl("summary", { text: `Evidenskedja (${h.chain.length} meddelanden)` });
-      const chain = det.createEl("ul");
-      for (const step of h.chain) {
-        const li = chain.createEl("li");
-        const stem = noteStem(step.file);
-        const a = li.createEl("a", { text: `TNR${step.tnr}` });
-        a.onclick = () => this.plugin.app.workspace.openLinkText(stem, "", false);
-        li.appendText(` — ${step.tidpunkt} — kopplar: ${step.facets.join(" + ")}`);
-      }
-
-      const btns = card.createDiv();
-      btns.style.display = "flex";
-      btns.style.gap = "0.5em";
-      if (!decision) {
-        btns.createEl("button", { text: "✓ Bekräfta aktör" }).onclick = () => void this.plugin.confirmActor(h.id);
-        btns.createEl("button", { text: "✗ Avvisa" }).onclick = () => void this.plugin.rejectActor(h.id);
-      } else {
-        btns.createEl("button", { text: "↺ Ångra beslut" }).onclick = () => void this.plugin.resetActorDecision(h.id);
-      }
-    }
-  }
-
-  /** Render mark suggestions with per-suggestion confirm/reject controls. */
-  async renderNominations(result: JobBResult, decisions: Record<string, MarkDecision>): Promise<void> {
-    const content = this.reviewHead("Kopplingsförslag att granska");
-    const open = result.nominations.filter((n) => !decisions[n.signature]);
-    content.createEl("p", {
-      text: `${result.nominations.length} förslag, ${open.length} att granska. Bekräfta för att skapa ett kännetecken; avvisa för att dölja.`,
-    });
-
-    // Pending first; decided after in reverse order of appearance (see renderActors).
-    const ordered = [
-      ...result.nominations.filter((n) => !decisions[n.signature]),
-      ...result.nominations.filter((n) => decisions[n.signature]).reverse(),
-    ];
-    for (const nom of ordered) {
-      const decision = decisions[nom.signature];
-      const card = content.createDiv({ cls: "seven-s-nom" });
-      card.style.border = "1px solid var(--background-modifier-border)";
-      card.style.borderRadius = "6px";
-      card.style.padding = "0.6em 0.8em";
-      card.style.margin = "0.6em 0";
-
-      const statusTxt = decision === "confirmed" ? "✓ bekräftad" : decision === "rejected" ? "✗ avvisad" : "";
-      const title = card.createEl("h3", {
-        text: `${nom.label}  ·  ${nom.count} observationer` + (statusTxt ? `  ·  ${statusTxt}` : ""),
-      });
-      title.style.margin = "0 0 0.3em 0";
-
-      card.createEl("div", {
-        text: `${nom.count} observationer beskriver samma kännetecken.`,
-      }).style.fontSize = "0.85em";
-
-      const obs = card.createEl("ul");
-      for (const m of nom.members) {
-        const li = obs.createEl("li");
-        const stem = noteStem(m.file);
-        const a = li.createEl("a", { text: `TNR${m.tnr}` });
-        a.onclick = () => this.plugin.app.workspace.openLinkText(stem, "", false);
-        li.appendText(` — ${m.tidpunkt} — ${m.plats}`);
-      }
-
-      const btns = card.createDiv();
-      btns.style.display = "flex";
-      btns.style.gap = "0.5em";
-      if (!decision) {
-        btns.createEl("button", { text: "✓ Bekräfta" }).onclick = () =>
-          void this.plugin.confirmNomination(nom.signature);
-        btns.createEl("button", { text: "✗ Avvisa" }).onclick = () =>
-          void this.plugin.rejectNomination(nom.signature);
-      } else {
-        btns.createEl("button", { text: "↺ Ångra beslut" }).onclick = () =>
-          void this.plugin.resetNominationDecision(nom.signature);
-      }
-    }
-  }
-}
 
 class SevenSSettingTab extends PluginSettingTab {
   private readonly plugin: SevenSPlugin;
@@ -3760,6 +3835,46 @@ class SevenSSettingTab extends PluginSettingTab {
 
 
 /** Small dialog to give an MGRS grid a human-friendly nickname (or skip). */
+type ReviewKind = "actors" | "marks" | "photos" | "texts";
+
+/** Generic popup frame for the four review flows. The body renderer fetches
+ *  fresh data itself on every call, making rerender() the single refresh
+ *  primitive. A background recompute while the modal is open leaves the body
+ *  stale until the next decision/rerender — same acceptance as the old
+ *  review-mode suppression in the panel. */
+class ReviewModal extends Modal {
+  private body!: HTMLElement;
+
+  constructor(
+    app: App,
+    readonly kind: ReviewKind,
+    private title: string,
+    private renderBody: (content: HTMLElement) => Promise<void>,
+    private onClosed: () => void,
+  ) {
+    super(app);
+  }
+
+  async onOpen(): Promise<void> {
+    this.modalEl.style.width = "640px";
+    this.modalEl.style.maxWidth = "92vw";
+    this.contentEl.style.cssText = "max-height:75vh;overflow-y:auto;";
+    this.contentEl.createEl("h3", { text: this.title }).style.margin = "0 0 8px";
+    this.body = this.contentEl.createDiv();
+    await this.rerender();
+  }
+
+  async rerender(): Promise<void> {
+    this.body.empty();
+    await this.renderBody(this.body);
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+    this.onClosed();
+  }
+}
+
 class NameLocationModal extends Modal {
   constructor(
     app: App,

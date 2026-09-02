@@ -54,7 +54,18 @@ export interface LocationCluster {
   plates: string[];
   /** Set when this cluster is an operator-predefined place (exists from day 0). */
   predefined?: { radiusM: number; sensitive: boolean };
+  /** DERIVED cluster whose centroid lies inside a predefined place's radius —
+   *  key of the nearest covering place. The note links it (**Nära:**), so the
+   *  graph shows message-place → named place instead of two disconnected hubs. */
+  nearPlaceKey?: string;
+  /** No covering predefined place, but within NEAR_AOI_M of the AOI — the note
+   *  links [[Objektet]] instead. */
+  nearObjektet?: boolean;
 }
+
+/** "Near the AOI" band for derived location hubs — matches the suspicion
+ *  layer's närområde band (suspicion.ts proximity <800 m → weight 3). */
+export const NEAR_AOI_M = 800;
 
 /** Group reports by `plats`; keep locations tied to suspicion or a vehicle, and
  *  link only the RELEVANT observations there (elevated or plate-bearing) so the
@@ -71,6 +82,7 @@ export function buildLocations(
   suspicion: SuspicionAnalysis,
   merges?: Record<string, string>,
   predefined?: Record<string, PredefinedLocation>,
+  aoi?: { lat: number; lon: number },
 ): LocationCluster[] {
   const elevatedFiles = new Set(suspicion.elevated.map((e) => e.file));
   const map = new Map<string, LocationCluster>();
@@ -140,6 +152,24 @@ export function buildLocations(
   }
 
   const relevant = [...map.values()];
+  // Place→place correlation (operator request 2026-09-01): a derived hub whose
+  // centroid falls inside a predefined place's radius names that place (nearest
+  // covering wins — the same rule as the report vicinity pass above); with no
+  // covering place, proximity to the AOI itself counts instead.
+  for (const c of relevant) {
+    if (c.predefined || c.lat === undefined || c.lon === undefined) continue;
+    let best: LocationCluster | undefined;
+    let bestD = Infinity;
+    for (const p of predefClusters) {
+      const d = haversineM(c.lat, c.lon, p.lat!, p.lon!);
+      if (d <= p.predefined!.radiusM && d < bestD) {
+        best = p;
+        bestD = d;
+      }
+    }
+    if (best) c.nearPlaceKey = best.key;
+    else if (aoi && haversineM(c.lat, c.lon, aoi.lat, aoi.lon) <= NEAR_AOI_M) c.nearObjektet = true;
+  }
   for (const c of relevant) {
     c.reports.sort((a, b) => a.tidpunkt.localeCompare(b.tidpunkt) || a.tnr.localeCompare(b.tnr));
   }
@@ -160,7 +190,7 @@ export function locationFilename(c: LocationCluster, nicks?: Nicknames): string 
  *  the recurrence node avoids a redundant direct edge. */
 export type PlateRecurrenceLinker = (placeKey: string, plate: string) => string | undefined;
 
-export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recStem?: PlateRecurrenceLinker): RenderedNote {
+export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recStem?: PlateRecurrenceLinker, near?: { stem: string; label: string }): RenderedNote {
   const name = placeLabel(c.label, nicks);
   const named = name !== c.key; // a nickname is set → keep the grid visible too
   const fm: string[] = [
@@ -210,6 +240,10 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
   // Predefined places link the AOI node → a graph edge from day 0, so the place
   // (and Objektet itself) is visible even though the graph hides orphans.
   if (c.predefined) body.push(`  \n**Operationsområde:** [[${OBJEKTET_STEM}]]`);
+  // A derived hub inside a named place's radius links it — the correlation edge
+  // the graph was missing: observation → message-place → named place/AOI.
+  if (!c.predefined && near) body.push(`  \n**Nära:** [[${near.stem}|${mdText(near.label)}]]`);
+  else if (!c.predefined && c.nearObjektet) body.push(`  \n**Nära:** [[${OBJEKTET_STEM}]]`);
   body.push("");
   body.push("## Observationer");
   for (const o of c.reports) {
@@ -236,5 +270,12 @@ export function renderLocationNote(c: LocationCluster, nicks?: Nicknames, recSte
 }
 
 export function renderLocationNotes(clusters: LocationCluster[], nicks?: Nicknames, recStem?: PlateRecurrenceLinker): RenderedNote[] {
-  return clusters.map((c) => renderLocationNote(c, nicks, recStem));
+  const byKey = new Map(clusters.map((c) => [c.key, c]));
+  return clusters.map((c) => {
+    const target = c.nearPlaceKey ? byKey.get(c.nearPlaceKey) : undefined;
+    const near = target
+      ? { stem: noteStem(locationFilename(target, nicks)), label: placeLabel(target.key, nicks) }
+      : undefined;
+    return renderLocationNote(c, nicks, recStem, near);
+  });
 }

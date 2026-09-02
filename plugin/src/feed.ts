@@ -67,6 +67,11 @@ export interface FeedRow {
   /** Render indented under the row above (a derived event hanging under its
    *  message's arrival row). */
   child?: boolean;
+  /** REAL vault path of the report behind this row — only for report-backed
+   *  kinds (mottaget, larm), where path-keyed actions (operator larmflagga)
+   *  need the full path rather than the display stem. */
+  file?: string;
+  tnr?: string;
 }
 
 function label(item: FeedItem): string {
@@ -101,8 +106,12 @@ function label(item: FeedItem): string {
 }
 
 /** Dedup by path (keep newest), sort newest-first, hang children under their
- *  parents (an alarm indents under its message's arrival row), label, cap. */
-export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
+ *  parents (an alarm indents under its message's arrival row), label. The log
+ *  is UNCAPPED by default — the operator's log is the log (the cap parameter
+ *  remains for tests/special callers). Rendering is a plain full re-render
+ *  (one div + a few closures per row): hundreds of rows are fine; tens of
+ *  thousands would need virtualization, which we deliberately don't do yet. */
+export function buildFeed(items: FeedItem[], limit = Infinity): FeedRow[] {
   const byPath = new Map<string, FeedItem>();
   for (const it of items) {
     const prev = byPath.get(it.path);
@@ -139,5 +148,7 @@ export function buildFeed(items: FeedItem[], limit = 60): FeedRow[] {
     place: it.place,
     watchKey: it.watchKey,
     ...(child ? { child: true } : {}),
+    ...(it.kind === "mottaget" || it.kind === "larm" ? { file: it.file ?? it.path } : {}),
+    ...(it.tnr ? { tnr: it.tnr } : {}),
   }));
 }

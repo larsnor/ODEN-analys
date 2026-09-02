@@ -13,6 +13,7 @@ import { dirname, join } from "node:path";
 import {
   buildLocations,
   renderLocationNote,
+  renderLocationNotes,
   PredefinedLocation,
 } from "../src/location_notes.ts";
 import { analyzeSuspicion, SuspicionOpts } from "../src/suspicion.ts";
@@ -128,11 +129,68 @@ test("a predefined place exists as a cluster (and renders) before any report", (
   assert.match(md2, /\[\[Objektet\]\]/);
 });
 
-test("a DERIVED location hub does not link Objektet (no artificial hub edges)", () => {
-  const r = report({ tnr: "1", handelse: "Fordon RJK241." });
-  const clusters = buildLocations([r], analyzeSuspicion([r], PROT)); // no predefined
-  const md = renderLocationNote(clusters.find((c) => c.key === "Vägen")!).markdown;
+// DESIGN CHANGE 2026-09-01 (operator request): derived hubs DO link a covering
+// named place — or Objektet when within NEAR_AOI_M — so the graph shows the
+// correlation observation → message-place → named place/AOI. A hub far from
+// everything still links nothing.
+test("a derived hub far from every place and the AOI links nothing", () => {
+  const r = report({ tnr: "1", handelse: "Fordon RJK241." }); // ~1.2 km from AOI
+  const clusters = buildLocations([r], analyzeSuspicion([r], PROT), undefined, undefined, { lat: 59.0, lon: 17.0 });
+  const c = clusters.find((x) => x.key === "Vägen")!;
+  assert.equal(c.nearPlaceKey, undefined);
+  assert.equal(c.nearObjektet, undefined);
+  const md = renderLocationNote(c).markdown;
   assert.equal(md.includes("[[Objektet]]"), false);
+  assert.equal(md.includes("**Nära:**"), false);
+});
+
+test("place→place: a derived hub inside a named place's radius links it", () => {
+  const r = report({ tnr: "1", handelse: "Fordon RJK241." }); // Vägen at 56 m from Grinden
+  const clusters = buildLocations([r], analyzeSuspicion([r], PROT), undefined, PREDEF, { lat: 59.0, lon: 17.0 });
+  const c = clusters.find((x) => x.key === "Vägen")!;
+  assert.equal(c.nearPlaceKey, "Grinden");
+  const md = renderLocationNotes(clusters).find((n) => n.filename.includes("Vägen"))!.markdown;
+  assert.match(md, /\*\*Nära:\*\* \[\[📍 Grinden\|Grinden\]\]/);
+});
+
+test("place→place: no covering place but within 800 m of the AOI → [[Objektet]]", () => {
+  const r = report({ tnr: "1", lat: 59.005, handelse: "Fordon RJK241." }); // ~556 m from AOI
+  const clusters = buildLocations([r], analyzeSuspicion([r], PROT), undefined, undefined, { lat: 59.0, lon: 17.0 });
+  const c = clusters.find((x) => x.key === "Vägen")!;
+  assert.equal(c.nearObjektet, true);
+  assert.match(renderLocationNote(c).markdown, /\*\*Nära:\*\* \[\[Objektet\]\]/);
+});
+
+test("place→place: without the aoi argument no Objektet link appears (pre-setup guard)", () => {
+  const r = report({ tnr: "1", lat: 59.005, handelse: "Fordon RJK241." });
+  const c = buildLocations([r], analyzeSuspicion([r], PROT)).find((x) => x.key === "Vägen")!;
+  assert.equal(c.nearObjektet, undefined);
+});
+
+test("place→place: the NEAREST covering place wins for the hub too", () => {
+  const two: Record<string, PredefinedLocation> = {
+    G1: { lat: 59.01, lon: 17.0, radiusM: 100 },
+    G2: { lat: 59.0106, lon: 17.0, radiusM: 100 },
+  };
+  const r = report({ tnr: "1", handelse: "Fordon RJK241." }); // hub at 59.0105: 56 m to G1, 11 m to G2
+  const c = buildLocations([r], analyzeSuspicion([r], PROT), undefined, two).find((x) => x.key === "Vägen")!;
+  assert.equal(c.nearPlaceKey, "G2");
+});
+
+test("place→place: a predefined place never gets a Nära line (it has Operationsområde)", () => {
+  const r = report({ tnr: "1", handelse: "Fordon RJK241." });
+  const clusters = buildLocations([r], analyzeSuspicion([r], PROT), undefined, PREDEF, { lat: 59.0, lon: 17.0 });
+  const md = renderLocationNotes(clusters).find((n) => n.filename.includes("Grinden"))!.markdown;
+  assert.equal(md.includes("**Nära:**"), false);
+  assert.match(md, /\*\*Operationsområde:\*\* \[\[Objektet\]\]/);
+});
+
+test("place→place: nicknames flow into the Nära link's stem and label", () => {
+  const nick = { Grinden: "Norra grinden" } as Record<string, string>;
+  const r = report({ tnr: "1", handelse: "Fordon RJK241." });
+  const clusters = buildLocations([r], analyzeSuspicion([r], PROT), undefined, PREDEF);
+  const md = renderLocationNotes(clusters, nick).find((n) => n.filename.includes("Vägen"))!.markdown;
+  assert.match(md, /\*\*Nära:\*\* \[\[📍 Norra grinden\|Norra grinden\]\]/);
 });
 
 test("vicinity: a report within the radius links to BOTH its reported place and the predefined one", () => {

@@ -43,6 +43,30 @@ test("pending-suggestion rows pin to top with a review action", () => {
   assert.equal(rows[2].kind, "fordon"); // real events below the suggestions
 });
 
+test("the default feed is uncapped — the operator's log is the log", () => {
+  const items = Array.from({ length: 100 }, (_, i) => ({
+    path: `inkorg/TNR${String(100000 + i)}.md`, kind: "mottaget" as const,
+    time: 1_000_000 + i, tnr: String(100000 + i),
+  }));
+  assert.equal(buildFeed(items).length, 100);
+});
+
+test("report-backed rows carry the real vault path for path-keyed actions", () => {
+  const ms = (t: string) => Date.parse(t);
+  const rows = buildFeed([
+    { path: "inkorg/TNR160300.md", kind: "mottaget", time: ms("2026-06-16T03:00:00"), tnr: "160300" },
+    { path: "larm:inkorg/TNR160300.md", kind: "larm", time: ms("2026-06-16T03:00:00"), file: "inkorg/TNR160300.md", parentPath: "inkorg/TNR160300.md" },
+    { path: "review:actors", kind: "förslag-aktör", time: Number.MAX_SAFE_INTEGER, pending: 2, review: "actors" },
+    { path: "entities/F1.md", kind: "fordon", time: ms("2026-06-16T03:00:00"), label: "ABC123" },
+  ]);
+  const by = (k: string) => rows.find((r) => r.kind === k)!;
+  assert.equal(by("mottaget").file, "inkorg/TNR160300.md");
+  assert.equal(by("mottaget").tnr, "160300");
+  assert.equal(by("larm").file, "inkorg/TNR160300.md", "larm carries the REAL path, not the synthetic larm: key");
+  assert.equal(by("förslag-aktör").file, undefined);
+  assert.equal(by("fordon").file, undefined);
+});
+
 test("a child row hangs directly under its parent, marked for indentation", () => {
   const items: FeedItem[] = [
     // Deliberately interleaved times: another arrival lands between the flagged
