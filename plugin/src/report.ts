@@ -260,14 +260,24 @@ export const SYNTH_SYS =
  *  think:false — on a 9.5k-token analytical prompt, 4b and 8b spent their
  *  entire output budget reasoning and returned EMPTY content. The text-family
  *  qwen3 honors think:false: qwen3:32b delivered 5 cited hypotheses in 59 s
- *  and pointed at 2 of 3 planted cells (incl. the infiltration cell). Pick
- *  the best pulled text model; fall back to the vision model (which then
- *  yields an honest failure line rather than silence). */
-export const DEEP_TEXT_MODELS = ["qwen3:32b", "qwen3:14b", "qwen3:8b", "qwen3:4b"];
+ *  and pointed at 2 of 3 planted cells (incl. the infiltration cell); 8b is
+ *  marginal (one cell-pointing hypothesis, zero hallucinations, but noisy
+ *  citation-spam); 4b TEXT leaked English chain-of-thought into content and
+ *  never produced a hypothesis — dropped from the ladder (14b is unmeasured
+ *  but sits between two measured points). Fall back to the vision model,
+ *  which then yields an honest failure line rather than silence. */
+export const DEEP_TEXT_MODELS = ["qwen3:32b", "qwen3:14b", "qwen3:8b"];
 
 export function pickDeepModel(available: readonly string[], visionModel: string): string {
   for (const m of DEEP_TEXT_MODELS) if (available.includes(m)) return m;
   return visionModel;
+}
+
+/** Format gate: did the model actually answer in the demanded shape? A weak
+ *  model can leak chain-of-thought prose into content (measured: qwen3:4b) —
+ *  that must become the failure line, never operator-facing rambling. */
+export function looksLikeHypotheses(text: string): boolean {
+  return /\*\*Hypotes/.test(text) && /\[\[TNR|okänd källa/.test(text);
 }
 
 /** Single user message with the TASK AT THE END — measured requirement: with

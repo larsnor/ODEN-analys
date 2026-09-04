@@ -53,6 +53,8 @@ infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
 | 2026-09-04 | qwen3-vl:4b | single-shot | 0 | – | 88–160 s | **tom output: hela genereringsbudgeten gick till tänkande** |
 | 2026-09-04 | qwen3-vl:8b | single-shot | 0 | – | 60 s | samma tänkspiral, tomt innehåll |
 | 2026-09-04 | **qwen3:32b** | single-shot, think:false | **2 (H2 recon + infiltrationscellen)** | 1 (TNR-siffra skiftad — vakten flaggar exakt sådana) | **59 s** | 5 välformade, källhänvisade hypoteser |
+| 2026-09-04 | qwen3:8b (text) | single-shot, think:false | 1 (en samordningshypotes med 5 cell-TNR av 7 citat, H2+H3 blandade) | **0** | 25 s | marginell: övriga hypoteser benignt brus med 30–90-citats-dumpar; budget slut mitt i listan |
+| 2026-09-04 | qwen3:4b (text) | single-shot, think:false | 0 | – | 17 s | **oanvändbar: engelsk tankekedja läckte in i innehållet, ingen hypotes** — struken ur modellstegen |
 
 ## Uppmätta lärdomar (inbyggda i koden)
 
@@ -81,9 +83,15 @@ infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
   på ~1 min och pekade ut infiltrationscellen — exakt operatörsscenariot
   ("var för sig oskyldiga händelser"). Brus förekommer (paketbud,
   häckklippning) — operatören triagerar.
-- **qwen3-vl 4b/8b (thinking-varianterna)**: klarar INTE djupanalysen
-  single-shot — dokumenterat, koden väljer bort dem när en textmodell finns.
-  Maskiner utan textmodell får tier-1-rapporten + ärlig felrad.
+- **qwen3:8b (text)**: fungerar med förbehåll — noll hallucinationer och en
+  äkta cellpekande samordningshypotes, men bruset dominerar och
+  citatsdisciplinen är svag (dumpar halva rostern som "evidens"). Näst-bästa
+  val i modellstegen; operatören bör vänta sig mer triage.
+- **qwen3:4b (text)** och **qwen3-vl 4b/8b (thinking-varianterna)**: klarar
+  INTE djupanalysen — 4b-text läcker tankekedja i svaret (formatvakten
+  looksLikeHypotheses fångar det → ärlig felrad), vl-varianterna tänker upp
+  hela budgeten. Koden väljer aldrig 4b-text; vl bara som sista utväg.
+  Maskiner utan användbar textmodell får tier-1-rapporten + ärlig felrad.
 - **Degradering**: 💬 av → kryssrutan avstängd; Ollama nere vid start →
   tier-1-rapport + ärlig Notice; fel mitt i → felrad i rapporten; hallucinerad
   källa → avlänkad + flaggad + varningsrad.

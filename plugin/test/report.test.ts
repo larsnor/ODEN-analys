@@ -25,6 +25,7 @@ import {
   ReportNoteInput,
   sanitizeHypotheses,
   buildDeepPrompt,
+  looksLikeHypotheses,
   pickDeepModel,
 } from "../src/report.ts";
 import { parseReport, Report } from "../src/parse.ts";
@@ -199,8 +200,17 @@ test("sanitizeHypotheses: invented TNR de-linked and flagged; valid kept", () =>
 
 test("pickDeepModel prefers the best pulled text model, else the vision model", () => {
   assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:8b", "qwen3:32b"], "qwen3-vl:4b"), "qwen3:32b");
-  assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:4b"], "qwen3-vl:4b"), "qwen3:4b");
+  assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:8b"], "qwen3-vl:4b"), "qwen3:8b");
+  // qwen3:4b TEXT is measured-unusable (CoT leakage) — never picked.
+  assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:4b"], "qwen3-vl:4b"), "qwen3-vl:4b");
   assert.equal(pickDeepModel(["qwen3-vl:8b"], "qwen3-vl:8b"), "qwen3-vl:8b");
+});
+
+test("looksLikeHypotheses: accepts the contract shape, rejects CoT leakage", () => {
+  assert.ok(looksLikeHypotheses("- **Hypotes (rumsligt):** x. Evidens: [[TNR160300]]"));
+  assert.ok(looksLikeHypotheses("- **Hypotes (avvikelse):** y. Evidens: TNR999999 (okänd källa — kontrollera)"));
+  assert.ok(!looksLikeHypotheses("Okay, let's tackle this problem. So, I need to act as..."));
+  assert.ok(!looksLikeHypotheses(""));
 });
 
 test("buildDeepPrompt puts the TASK at the END (measured long-context requirement)", () => {

@@ -75,7 +75,7 @@ import { Signal } from "./suspicion";
 import { OllamaVision, OllamaText, VISION_MODELS, DEFAULT_VISION_MODEL, DEFAULT_OLLAMA_URL, ollamaModelCtx, ollamaHealth, ollamaChat } from "./llm";
 import {
   analyzeRange, buildE19Rows, buildLlmDigest, DateRange, DEEP_PLACEHOLDER,
-  buildDeepPrompt, deepFailureText, normalizeRange, pickDeepModel, planDigest, presetRange, RangeAnalysis, renderE19Csv,
+  buildDeepPrompt, deepFailureText, looksLikeHypotheses, normalizeRange, pickDeepModel, planDigest, presetRange, RangeAnalysis, renderE19Csv,
   renderReportNote, reportFilename, REPORT_PROMPT_VERSION, sanitizeHypotheses,
   CHUNK_SYS, HYPOTHESIS_SYS, SYNTH_SYS,
 } from "./report";
@@ -1558,7 +1558,9 @@ export default class SevenSPlugin extends Plugin {
         // the entire roster as a Källor line). The model's own citations are the
         // deliverable; sanitizeHypotheses handles the invented ones.
         const { text, invented } = sanitizeHypotheses(cleaned, allowed);
-        result = text;
+        // Format gate — chain-of-thought leakage (measured on qwen3:4b) becomes
+        // the honest failure line, never operator-facing rambling.
+        result = looksLikeHypotheses(text) ? text : deepFailureText();
         if (invented.length) {
           result += `\n\n_⚠ Modellen angav ${invented.length} källa/källor som inte finns i underlaget — de är markerade ovan. Behandla hypoteserna med extra skepsis._`;
         }
