@@ -142,6 +142,27 @@ export type DigestPlan =
   | { chunked: false; text: string }
   | { chunked: true; chunks: { label: string; text: string }[] };
 
+/** The whole tier-2 sizing decision in ONE place (both the plugin flow and the
+ *  eval harness use it — two callers doing their own chars↔tokens math is how
+ *  the first eval ended up chunking a digest that fit in a single call).
+ *  Single-shot whenever the computed window can hold the full digest;
+ *  otherwise per-day chunks against the same window. */
+export function planDigest(
+  a: RangeAnalysis,
+  state: PluginState,
+  modelMaxCtx: number | null,
+  totalRamBytes: number,
+): { plan: DigestPlan; numCtx: number; needTokens: number } {
+  const full = buildLlmDigest(a, state, Number.MAX_SAFE_INTEGER);
+  const fullText = full.chunked ? "" : full.text; // MAX_SAFE_INTEGER never chunks
+  const needTokens = estimateTokens(fullText.length);
+  const numCtx = computeNumCtx(needTokens, modelMaxCtx, totalRamBytes);
+  if (needTokens + 1500 <= numCtx) return { plan: full, numCtx, needTokens };
+  // Window clamped below the need — chunk per day within the same window.
+  const budgetChars = Math.floor((numCtx - 1500) * 3.2);
+  return { plan: buildLlmDigest(a, state, budgetChars), numCtx, needTokens };
+}
+
 function rosterLine(r: Report, nicks: Record<string, string>): string {
   const hhmm = r.tidpunkt.slice(11, 16);
   const day = r.tidpunkt.slice(0, 10);
@@ -233,6 +254,28 @@ export const SYNTH_SYS =
   "PERIODÖVERGRIPANDE mönsterhypoteser (tidsmönster, rumsliga mönster, samordning, avvikelser) " +
   "för operatören att verifiera. Behåll källhänvisningarna exakt. Hitta ALDRIG på fakta eller " +
   'TNR-nummer. Format: "- **Hypotes (typ):** en mening. Evidens: [[TNR…]]". Svenska, högst 200 ord.';
+
+/** Tier-2 model preference — MEASURED (docs/REPORT_VALIDATION.md, 2026-09-04):
+ *  the qwen3-vl tags Ollama ships are the THINKING variants and ignore
+ *  think:false — on a 9.5k-token analytical prompt, 4b and 8b spent their
+ *  entire output budget reasoning and returned EMPTY content. The text-family
+ *  qwen3 honors think:false: qwen3:32b delivered 5 cited hypotheses in 59 s
+ *  and pointed at 2 of 3 planted cells (incl. the infiltration cell). Pick
+ *  the best pulled text model; fall back to the vision model (which then
+ *  yields an honest failure line rather than silence). */
+export const DEEP_TEXT_MODELS = ["qwen3:32b", "qwen3:14b", "qwen3:8b", "qwen3:4b"];
+
+export function pickDeepModel(available: readonly string[], visionModel: string): string {
+  for (const m of DEEP_TEXT_MODELS) if (available.includes(m)) return m;
+  return visionModel;
+}
+
+/** Single user message with the TASK AT THE END — measured requirement: with
+ *  instructions first (system role), the model lost the task behind the long
+ *  roster and produced nothing usable. Data first, then UPPGIFT. */
+export function buildDeepPrompt(digestText: string, sys: string): string {
+  return `${digestText}\n\n---\nUPPGIFT:\n${sys}`;
+}
 
 /** Inverse citation guard: any [[TNR…]] the model produced that is NOT in the
  *  range's TNR set is de-linked and flagged — an invented citation must never

@@ -34,6 +34,10 @@ export interface OllamaOpts {
   timeoutMs?: number;
   /** Context window for this call (default DEFAULT_NUM_CTX). */
   numCtx?: number;
+  /** Generation cap. Bound analytical calls (a thinking-variant model can
+   *  otherwise spend the whole window musing and return empty content —
+   *  measured in the tier-2 eval 2026-09-04). */
+  numPredict?: number;
 }
 
 export interface HealthResult {
@@ -82,7 +86,7 @@ export async function ollamaChat(
         keep_alive: "10m",
         format: json ? "json" : undefined,
         ...(think === undefined ? {} : { think }),
-        options: { temperature: 0, num_ctx: opts.numCtx ?? DEFAULT_NUM_CTX },
+        options: { temperature: 0, num_ctx: opts.numCtx ?? DEFAULT_NUM_CTX, ...(opts.numPredict ? { num_predict: opts.numPredict } : {}) },
         messages,
       }),
       signal: AbortSignal.timeout(opts.timeoutMs ?? 600_000),

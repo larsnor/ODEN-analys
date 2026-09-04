@@ -56,7 +56,7 @@ import { isMgrsGrid, placeLabel } from "./places";
 import { LatLon, mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
 import { buildFeed, FeedRow } from "./feed";
-import { Conversation, DeterministicConversation, OllamaConversation, stripThink, ensureCitations } from "./conversation";
+import { Conversation, DeterministicConversation, OllamaConversation, stripThink } from "./conversation";
 import {
   PhotoSighting,
   PhotoNomination,
@@ -74,8 +74,8 @@ import {
 import { Signal } from "./suspicion";
 import { OllamaVision, OllamaText, VISION_MODELS, DEFAULT_VISION_MODEL, DEFAULT_OLLAMA_URL, ollamaModelCtx, ollamaHealth, ollamaChat } from "./llm";
 import {
-  analyzeRange, buildE19Rows, buildLlmDigest, computeNumCtx, DateRange, DEEP_PLACEHOLDER,
-  deepFailureText, estimateTokens, normalizeRange, presetRange, RangeAnalysis, renderE19Csv,
+  analyzeRange, buildE19Rows, buildLlmDigest, DateRange, DEEP_PLACEHOLDER,
+  buildDeepPrompt, deepFailureText, normalizeRange, pickDeepModel, planDigest, presetRange, RangeAnalysis, renderE19Csv,
   renderReportNote, reportFilename, REPORT_PROMPT_VERSION, sanitizeHypotheses,
   CHUNK_SYS, HYPOTHESIS_SYS, SYNTH_SYS,
 } from "./report";
@@ -1460,17 +1460,13 @@ export default class SevenSPlugin extends Plugin {
         } else {
           const modelMax = await ollamaModelCtx(this.settings.ollamaUrl, this.settings.visionModel);
           const ram = os.totalmem();
-          // Provisional digest at the ceiling to size the real context need.
-          const probe = buildLlmDigest(analysis, this.settings, Number.MAX_SAFE_INTEGER);
-          const chars = probe.chunked ? 0 : probe.text.length;
-          const numCtx = computeNumCtx(estimateTokens(chars), modelMax, ram);
-          const budgetChars = (numCtx - 1500) * 3; // tokens→chars, conservative
-          digestForDeep = buildLlmDigest(analysis, this.settings, budgetChars);
+          const sized = planDigest(analysis, this.settings, modelMax, ram);
+          digestForDeep = sized.plan;
           deepInfo = {
-            model: this.settings.visionModel,
+            model: pickDeepModel(health.models ?? [], this.settings.visionModel),
             promptV: REPORT_PROMPT_VERSION,
-            numCtx,
-            numCtxWhy: `auto: underlag ~${estimateTokens(chars)} tokens, modelltak ${modelMax ?? "okänt"}, RAM ${Math.round(ram / 1024 ** 3)} GB`,
+            numCtx: sized.numCtx,
+            numCtxWhy: `auto: underlag ~${sized.needTokens} tokens, modelltak ${modelMax ?? "okänt"}, RAM ${Math.round(ram / 1024 ** 3)} GB`,
           };
         }
       }
@@ -1527,42 +1523,42 @@ export default class SevenSPlugin extends Plugin {
   ): Promise<void> {
     const notice = new Notice("ODEN: djupanalys pågår… (lokal modell)", 0);
     try {
-      const opts = { ...this.ollamaOpts(), timeoutMs: 300_000, numCtx };
+      // Text-family model preferred — the vl tags are thinking variants that
+      // ignore think:false and drown analytical prompts (measured; see
+      // DEEP_TEXT_MODELS in report.ts). Task at the END of one user message.
+      const health = await ollamaHealth(this.settings.ollamaUrl);
+      const model = pickDeepModel(health.models ?? [], this.settings.visionModel);
+      const opts = { ...this.ollamaOpts(), model, timeoutMs: 300_000, numCtx, numPredict: 1500 };
       const allowed = new Set(analysis.reports.map((r) => r.tnr));
       let prose: string | null = null;
       let digestText = "";
       if (!digest.chunked) {
         digestText = digest.text;
-        prose = await ollamaChat(opts, [
-          { role: "system", content: HYPOTHESIS_SYS },
-          { role: "user", content: digest.text },
-        ], false, false);
+        prose = await ollamaChat(opts, [{ role: "user", content: buildDeepPrompt(digest.text, HYPOTHESIS_SYS) }], false, false);
       } else {
         const points: string[] = [];
         for (let i = 0; i < digest.chunks.length; i++) {
           const c = digest.chunks[i];
           notice.setMessage(`ODEN: djupanalys… dygn ${i + 1}/${digest.chunks.length}`);
           digestText += c.text + "\n";
-          const p = await ollamaChat(opts, [
-            { role: "system", content: CHUNK_SYS },
-            { role: "user", content: c.text },
-          ], false, false);
+          const p = await ollamaChat(opts, [{ role: "user", content: buildDeepPrompt(c.text, CHUNK_SYS) }], false, false);
           if (p) points.push(`${c.label}:\n${stripThink(p)}`);
         }
         notice.setMessage("ODEN: djupanalys… sammanvägning");
         prose = points.length
-          ? await ollamaChat(opts, [
-              { role: "system", content: SYNTH_SYS },
-              { role: "user", content: points.join("\n\n") },
-            ], false, false)
+          ? await ollamaChat(opts, [{ role: "user", content: buildDeepPrompt(points.join("\n\n"), SYNTH_SYS) }], false, false)
           : null;
       }
 
       let result: string;
       if (prose) {
         const cleaned = stripThink(prose).trim();
+        // NB: no ensureCitations here — that guard re-appends the DETERMINISTIC
+        // text's citations (right for chat answers, but for tier 2 it would dump
+        // the entire roster as a Källor line). The model's own citations are the
+        // deliverable; sanitizeHypotheses handles the invented ones.
         const { text, invented } = sanitizeHypotheses(cleaned, allowed);
-        result = ensureCitations(text, digestText);
+        result = text;
         if (invented.length) {
           result += `\n\n_⚠ Modellen angav ${invented.length} källa/källor som inte finns i underlaget — de är markerade ovan. Behandla hypoteserna med extra skepsis._`;
         }

@@ -16,14 +16,14 @@ import { join } from "node:path";
 import * as os from "node:os";
 import { parseReport } from "../src/parse.ts";
 import { ollamaChat, ollamaModelCtx, DEFAULT_OLLAMA_URL } from "../src/llm.ts";
-import { stripThink, ensureCitations } from "../src/conversation.ts";
+import { stripThink } from "../src/conversation.ts";
 import {
-  analyzeRange, buildLlmDigest, computeNumCtx, estimateTokens, presetRange,
+  analyzeRange, buildDeepPrompt, pickDeepModel, planDigest, presetRange,
   sanitizeHypotheses, CHUNK_SYS, HYPOTHESIS_SYS, SYNTH_SYS,
 } from "../src/report.ts";
 import { PluginState } from "../src/derive.ts";
 
-const [dir, model = "qwen3-vl:4b", url = DEFAULT_OLLAMA_URL, aoiRaw] = process.argv.slice(2);
+const [dir, modelArg, url = DEFAULT_OLLAMA_URL, aoiRaw] = process.argv.slice(2);
 if (!dir) {
   console.error("usage: npx tsx test/run_report_eval.ts <corpusDir> [model] [url] [aoiLat,aoiLon]");
   process.exit(1);
@@ -44,35 +44,33 @@ const reports = readdirSync(dir)
 const range = presetRange("allt", reports)!;
 const analysis = analyzeRange(reports, range, { protectedLat: AOI.lat, protectedLon: AOI.lon, threshold: 5 }, state, undefined, AOI);
 
-const probe = buildLlmDigest(analysis, state, Number.MAX_SAFE_INTEGER);
-const chars = probe.chunked ? 0 : probe.text.length;
+// Same selection rule as production: best pulled text model unless overridden.
+const tags = (await (await fetch(`${url}/api/tags`)).json()) as { models?: { name?: string }[] };
+const available = (tags.models ?? []).map((m) => m.name ?? "");
+const model = modelArg ?? pickDeepModel(available, "qwen3-vl:4b");
 const modelMax = await ollamaModelCtx(url, model);
-const numCtx = computeNumCtx(estimateTokens(chars), modelMax, os.totalmem());
-const digest = buildLlmDigest(analysis, state, (numCtx - 1500) * 3);
+const { plan: digest, numCtx, needTokens } = planDigest(analysis, state, modelMax, os.totalmem());
 
-console.log(`== ${dir}: ${analysis.reports.length} rapporter · digest ~${estimateTokens(chars)} tokens · num_ctx ${numCtx} (modelltak ${modelMax}) · ${model}`);
+console.log(`== ${dir}: ${analysis.reports.length} rapporter · digest ~${needTokens} tokens · num_ctx ${numCtx} (modelltak ${modelMax}) · ${model}`);
 console.log(digest.chunked ? `== map-reduce: ${digest.chunks.length} dygnschunkar` : "== single-shot");
 
 const t0 = Date.now();
-const opts = { url, model, timeoutMs: 600_000, numCtx };
+const opts = { url, model, timeoutMs: 600_000, numCtx, numPredict: 1500 };
 let prose: string | null = null;
 let digestText = "";
 if (!digest.chunked) {
   digestText = digest.text;
-  prose = await ollamaChat(opts, [
-    { role: "system", content: HYPOTHESIS_SYS },
-    { role: "user", content: digest.text },
-  ], false, false);
+  prose = await ollamaChat(opts, [{ role: "user", content: buildDeepPrompt(digest.text, HYPOTHESIS_SYS) }], false, false);
 } else {
   const points: string[] = [];
   for (const c of digest.chunks) {
     digestText += c.text + "\n";
     process.stderr.write(`  dygn ${c.label}…\n`);
-    const p = await ollamaChat(opts, [{ role: "system", content: CHUNK_SYS }, { role: "user", content: c.text }], false, false);
+    const p = await ollamaChat(opts, [{ role: "user", content: buildDeepPrompt(c.text, CHUNK_SYS) }], false, false);
     if (p) points.push(`${c.label}:\n${stripThink(p)}`);
   }
   prose = points.length
-    ? await ollamaChat(opts, [{ role: "system", content: SYNTH_SYS }, { role: "user", content: points.join("\n\n") }], false, false)
+    ? await ollamaChat(opts, [{ role: "user", content: buildDeepPrompt(points.join("\n\n"), SYNTH_SYS) }], false, false)
     : null;
 }
 const secs = Math.round((Date.now() - t0) / 1000);
@@ -83,7 +81,7 @@ if (!prose) {
 } else {
   const allowed = new Set(analysis.reports.map((r) => r.tnr));
   const { text, invented } = sanitizeHypotheses(stripThink(prose).trim(), allowed);
-  console.log(ensureCitations(text, digestText));
+  console.log(text);
   console.log(`\nhallucinerade TNR: ${invented.length}${invented.length ? " — " + invented.join(", ") : ""}`);
 }
 

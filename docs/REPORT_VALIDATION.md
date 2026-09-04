@@ -14,9 +14,10 @@ Djupanalysen producerar **enbart hypoteser att verifiera** — aldrig fakta:
    perioden** (fullständig roster, ordagrann Händelse/Symbol-prosa — mönstret
    kan gömma sig i meddelanden som fått poäng 0).
 2. Varje påstående måste citera `[[TNR…]]`; `sanitizeHypotheses` avlänkar och
-   flaggar varje TNR som inte finns i underlaget ("okänd källa — kontrollera"),
-   `ensureCitations` återinför tappade källor. En hallucinerad källa kan aldrig
-   bli en klickbar länk.
+   flaggar varje TNR som inte finns i underlaget ("okänd källa — kontrollera")
+   — en hallucinerad källa kan aldrig bli en klickbar länk. (`ensureCitations`
+   används INTE här: den återinför den deterministiska textens källor — rätt
+   för chatten, men skulle dumpa hela rostern som Källor-rad; uppmätt.)
 3. Sektionen är märkt _föreslagen-av: llm_; misslyckas körningen skrivs ett
    ärligt fel in i rapporten — aldrig tyst.
 
@@ -43,16 +44,46 @@ bedömer träff.
 
 ## Resultat
 
-| datum | modell | rapporter | roster-tokens | num_ctx | cellträffar (av 2 celler) | hallucinerade TNR (efter vakt) | körtid |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| _(fylls i vid körning)_ | | | | | | | |
+Korpus: suburban seed 2026, 360 rapporter (336 civila + recon- och
+infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
 
-## Ärliga förväntningar
+| datum | modell | anropsform | cellträffar (av 3) | hallucinerade TNR | körtid | utfall |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-09-04 | qwen3-vl:4b | map-reduce 14 dygn (dimensioneringsbugg) | 0 | – | 1622 s | syntessteget gav inget svar |
+| 2026-09-04 | qwen3-vl:4b | single-shot | 0 | – | 88–160 s | **tom output: hela genereringsbudgeten gick till tänkande** |
+| 2026-09-04 | qwen3-vl:8b | single-shot | 0 | – | 60 s | samma tänkspiral, tomt innehåll |
+| 2026-09-04 | **qwen3:32b** | single-shot, think:false | **2 (H2 recon + infiltrationscellen)** | 1 (TNR-siffra skiftad — vakten flaggar exakt sådana) | **59 s** | 5 välformade, källhänvisade hypoteser |
 
-- **qwen3-vl:4b** (standard): flytande omformuleringar av larmen + ytliga
-  tidsmönster; källdisciplinen kommer från vakterna, inte modellen.
-- **8b/32b**: verklig chans till dygnsöverskridande syntes (sektorklustring,
-  återkomstmönster) — men påstå inget innan tabellen ovan har raden.
+## Uppmätta lärdomar (inbyggda i koden)
+
+1. **Ollamas qwen3-vl-taggar är THINKING-varianter** som ignorerar både
+   `think:false` och `/no_think`: på en 9,5k-tokens analysuppgift spenderade
+   4b/8b hela genereringsbudgeten på resonemang och returnerade TOMT innehåll.
+   Textfamiljen qwen3 lyder `think:false`. → `pickDeepModel` väljer bästa
+   dragna qwen3-textmodell (32b→14b→8b→4b) och faller tillbaka på
+   visionsmodellen (som då ger en ärlig felrad, aldrig tystnad).
+2. **Uppgiften måste ligga SIST i prompten** (data först, sedan UPPGIFT): med
+   instruktionerna först tappade modellen bort uppdraget bakom den långa
+   rostern. → `buildDeepPrompt`.
+3. **Generering måste kapas** (`num_predict 1500`) så en tänkande modell inte
+   kan äta hela fönstret. → `numPredict` i OllamaOpts.
+4. **Dimensionering på ett ställe**: två anropare med egen chars↔tokens-mattematik
+   gav first-eval-buggen (chunkade ett underlag som rymdes i ett anrop). →
+   `planDigest`. Verklig tokenisering uppmätt: ~4,4 tecken/token på
+   roster-materialet — 3,2-estimatet är konservativt åt rätt håll.
+5. **Vakten behövdes på riktigt**: 32b citerade TNR260939 — en siffra ifrån
+   den planterade TNR260940. I produktion avlänkas och flaggas den
+   ("okänd källa — kontrollera").
+
+## Ärliga förväntningar (efter mätning)
+
+- **qwen3:32b** (48 GB-klass): levererar användbara, källhänvisade hypoteser
+  på ~1 min och pekade ut infiltrationscellen — exakt operatörsscenariot
+  ("var för sig oskyldiga händelser"). Brus förekommer (paketbud,
+  häckklippning) — operatören triagerar.
+- **qwen3-vl 4b/8b (thinking-varianterna)**: klarar INTE djupanalysen
+  single-shot — dokumenterat, koden väljer bort dem när en textmodell finns.
+  Maskiner utan textmodell får tier-1-rapporten + ärlig felrad.
 - **Degradering**: 💬 av → kryssrutan avstängd; Ollama nere vid start →
-  tier-1-rapport + ärlig Notice; fel mitt i → felrad i rapporten; svag modell
-  → hypoteserna överlever bara som flaggade, källhänvisade förslag.
+  tier-1-rapport + ärlig Notice; fel mitt i → felrad i rapporten; hallucinerad
+  källa → avlänkad + flaggad + varningsrad.

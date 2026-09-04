@@ -24,6 +24,8 @@ import {
   reportFilename,
   ReportNoteInput,
   sanitizeHypotheses,
+  buildDeepPrompt,
+  pickDeepModel,
 } from "../src/report.ts";
 import { parseReport, Report } from "../src/parse.ts";
 import { PluginState } from "../src/derive.ts";
@@ -193,6 +195,18 @@ test("sanitizeHypotheses: invented TNR de-linked and flagged; valid kept", () =>
   assert.ok(!text.includes("[[TNR999999]]"));
   assert.ok(text.includes("TNR999999 (okänd källa — kontrollera)"));
   assert.deepEqual(invented, ["999999"]);
+});
+
+test("pickDeepModel prefers the best pulled text model, else the vision model", () => {
+  assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:8b", "qwen3:32b"], "qwen3-vl:4b"), "qwen3:32b");
+  assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:4b"], "qwen3-vl:4b"), "qwen3:4b");
+  assert.equal(pickDeepModel(["qwen3-vl:8b"], "qwen3-vl:8b"), "qwen3-vl:8b");
+});
+
+test("buildDeepPrompt puts the TASK at the END (measured long-context requirement)", () => {
+  const p = buildDeepPrompt("DATA…", "UPPGIFTEN");
+  assert.ok(p.indexOf("DATA…") < p.indexOf("UPPGIFTEN"));
+  assert.ok(p.includes("UPPGIFT:"));
 });
 
 // --- E19 -----------------------------------------------------------------------------
