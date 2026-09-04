@@ -22,10 +22,18 @@ export const VISION_MODELS = [
 export const DEFAULT_VISION_MODEL = VISION_MODELS[0].tag;
 export const DEFAULT_OLLAMA_URL = "http://localhost:11434";
 
+/** Default context window for every LLM call. The models go far higher
+ *  (qwen3-vl: 262144 trained) — the practical costs are KV-cache RAM
+ *  (≈144 KB/token on 4b) and prompt-processing time, so the default stays
+ *  modest and the report flow computes a per-request value instead. */
+export const DEFAULT_NUM_CTX = 16384;
+
 export interface OllamaOpts {
   url: string;
   model: string;
   timeoutMs?: number;
+  /** Context window for this call (default DEFAULT_NUM_CTX). */
+  numCtx?: number;
 }
 
 export interface HealthResult {
@@ -52,8 +60,10 @@ interface ChatMessage {
 }
 
 /** One raw Ollama /api/chat turn → the message content, or null on any failure
- *  (network/timeout/non-2xx). num_ctx>=8192 is MANDATORY (the 4096 default
- *  truncates structured JSON mid-object — proven in the bake-off).
+ *  (network/timeout/non-2xx). num_ctx defaults to DEFAULT_NUM_CTX (floor 8192 —
+ *  Ollama's old 4096 default truncated structured JSON mid-object, proven in
+ *  the bake-off); callers with bigger inputs (report analysis) pass their own
+ *  computed opts.numCtx.
  *  `think:false` (chat path) turns off qwen3's reasoning preamble — pass only
  *  for interactive calls; batch vision/text keep the validated default. */
 export async function ollamaChat(
@@ -72,7 +82,7 @@ export async function ollamaChat(
         keep_alive: "10m",
         format: json ? "json" : undefined,
         ...(think === undefined ? {} : { think }),
-        options: { temperature: 0, num_ctx: 8192 },
+        options: { temperature: 0, num_ctx: opts.numCtx ?? DEFAULT_NUM_CTX },
         messages,
       }),
       signal: AbortSignal.timeout(opts.timeoutMs ?? 600_000),
@@ -80,6 +90,27 @@ export async function ollamaChat(
     if (!res.ok) return null;
     const body = (await res.json()) as { message?: { content?: string } };
     return body.message?.content ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Trained context length of a pulled model (POST /api/show), or null.
+ *  Input to the report flow's automatic context sizing. */
+export async function ollamaModelCtx(url: string, model: string): Promise<number | null> {
+  try {
+    const res = await fetch(`${url.replace(/\/+$/, "")}/api/show`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model }),
+      signal: AbortSignal.timeout(5_000),
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { model_info?: Record<string, unknown> };
+    for (const [k, v] of Object.entries(body.model_info ?? {})) {
+      if (k.endsWith("context_length") && typeof v === "number") return v;
+    }
+    return null;
   } catch {
     return null;
   }

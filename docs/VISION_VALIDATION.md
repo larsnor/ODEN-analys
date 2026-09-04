@@ -202,7 +202,7 @@ en modellfamilj håller prompt + normalisering konsekvent.
 **Bekräftade designkrav som mätningen tvingade fram:**
 1. `normalizePlate` måste strippa inledande nations-«S» (alla near-fel var detta)
    och vika Ö→O/Ä→A/Å→A vid jämförelse.
-2. `num_ctx ≥ 8192` OBLIGATORISKT i varje sighting-anrop (default 4096 trunkerar).
+2. `num_ctx` = DEFAULT_NUM_CTX (16384; golv 8192 — 4096-defaulten trunkerade JSON) i varje sighting-anrop; rapportflödet beräknar eget värde (default 4096 trunkerar).
 3. Fotoanalys är ASYNKRON och köad, aldrig i watcherns heta väg; bilder skalas
    ned före anrop; modell väljs per maskinklass.
 4. Nomineringsgrinden är load-bearing, inte kosmetisk: 0 WRONG på skyltar är

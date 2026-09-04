@@ -39,7 +39,7 @@ export const PROMPT_VERSION = "3";
  *  optional with an explicit "okänd" escape (forced guessing is where the model
  *  hallucinates); DESCRIPTIVE attributes only, never identity (also dodges VLM
  *  safety-refusals); age as coarse bands. Sent with Ollama `format: json` +
- *  `num_ctx >= 8192` (the 4096 default truncates the JSON mid-object). */
+ *  `num_ctx` >= DEFAULT_NUM_CTX, floor 8192 (the old 4096 default truncated the JSON mid-object). */
 export const SIGHTING_PROMPT =
   "Du analyserar ett foto från en säkerhetsobservation. Svara ENDAST med JSON. " +
   "ALLA textvärden ska vara på SVENSKA (t.ex. \"blå jeans\", inte \"blue jeans\"). " +

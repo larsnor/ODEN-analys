@@ -50,6 +50,11 @@ korpusens egen rytm över den tid du väljer – inga extra verktyg behövs, och
 facit ligger bredvid. För skarp drift raderar man `demo/`, sätter sitt riktiga
 område och låter intaget leverera rapporterna till `inkorg/`.
 
+Behöver du en **periodrapport**? `⋯ → Genomför analys…` väljer ett datumspann
+och skriver en deterministisk analysrapport med E19-lista (CSV för Excel) till
+`analys/` — och kan låta den lokala modellen föreslå källhänvisade
+mönsterhypoteser över periodens samtliga meddelanden (`docs/REPORT_VALIDATION.md`).
+
 AI-förmågorna (📷 bild · 📝 text · 💬 chat) är valfria: installera
 [Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b`, så körs allt
 lokalt på den egna datorn. Modellen föreslår bara – du bekräftar. Detektionen

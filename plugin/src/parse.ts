@@ -51,6 +51,9 @@ export interface Report {
   handelse?: string;
   /** Händelse-format follow-up / "since" field (often "-"). */
   sedan?: string;
+  /** Body "Stund" — event time in TNR format (DDHHMM), as opposed to the
+   *  message TNR (when it was SENT); used by the E19 collation export. */
+  stund?: string;
   /** Body "Ställe" — place name and/or MGRS grid. Carries the grid in the
    *  Händelse format even when frontmatter `plats`/`lat`/`lon` are absent. */
   stalle?: string;
@@ -185,6 +188,7 @@ const BODY_LABELS: Record<string, keyof Report> = {
   Sysselsättning: "sysselsattning",
   Händelse: "handelse",
   Sedan: "sedan",
+  Stund: "stund",
   Ställe: "stalle",
   Symbol: "symbol",
 };
@@ -303,6 +307,7 @@ export function parseReport(text: string, file: string, issues?: ParseIssue[]): 
     sysselsattning: fields.sysselsattning,
     handelse: fields.handelse,
     sedan: fields.sedan,
+    stund: fields.stund,
     stalle: fields.stalle,
     symbol: fields.symbol,
     links,

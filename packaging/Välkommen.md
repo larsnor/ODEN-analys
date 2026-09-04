@@ -98,6 +98,12 @@ riktiga operationsområde och namnge platserna i förväg. Sedan är det bara at
 låta intaget leverera 7S-rapporter till `inkorg/` – ODEN plockar upp dem
 automatiskt.
 
+## Periodrapport
+
+`⋯ → Genomför analys…` väljer ett datumspann och skriver en analysrapport med
+E19-lista (Excel-CSV) till `analys/` — med 💬 på kan djupanalysen föreslå
+källhänvisade mönsterhypoteser över periodens alla meddelanden.
+
 ## Ollama – valfri AI-förstärkning
 
 ODENs kärna är deterministisk och fungerar helt utan AI. Men med en lokal

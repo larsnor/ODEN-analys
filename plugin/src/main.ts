@@ -56,7 +56,7 @@ import { isMgrsGrid, placeLabel } from "./places";
 import { LatLon, mgrsToLatLon, parseCoord } from "./mgrs";
 import { renderObservation } from "./observation";
 import { buildFeed, FeedRow } from "./feed";
-import { Conversation, DeterministicConversation, OllamaConversation } from "./conversation";
+import { Conversation, DeterministicConversation, OllamaConversation, stripThink, ensureCitations } from "./conversation";
 import {
   PhotoSighting,
   PhotoNomination,
@@ -72,7 +72,14 @@ import {
   clusterTextMarks,
 } from "./text_reasoning";
 import { Signal } from "./suspicion";
-import { OllamaVision, OllamaText, VISION_MODELS, DEFAULT_VISION_MODEL, DEFAULT_OLLAMA_URL } from "./llm";
+import { OllamaVision, OllamaText, VISION_MODELS, DEFAULT_VISION_MODEL, DEFAULT_OLLAMA_URL, ollamaModelCtx, ollamaHealth, ollamaChat } from "./llm";
+import {
+  analyzeRange, buildE19Rows, buildLlmDigest, computeNumCtx, DateRange, DEEP_PLACEHOLDER,
+  deepFailureText, estimateTokens, normalizeRange, presetRange, RangeAnalysis, renderE19Csv,
+  renderReportNote, reportFilename, REPORT_PROMPT_VERSION, sanitizeHypotheses,
+  CHUNK_SYS, HYPOTHESIS_SYS, SYNTH_SYS,
+} from "./report";
+import * as os from "os";
 import {
   buildFeedItems,
   buildRecurrences,
@@ -242,6 +249,8 @@ const DEFAULT_SETTINGS: SevenSSettings = {
 
 const VIEW_TYPE_7S = "7s-analys-text";
 const VIEW_TYPE_CHAT = "7s-analys-chat";
+// Operator analysis reports — permanent documents, never pruned, never ingested.
+const ANALYSIS_FOLDER = "analys";
 
 /** The Map View query for ODEN's marker layers (mirrors obsidian-config/
  *  map-view-data.json defaultState.query — keep the two in sync). Includes the
@@ -285,6 +294,12 @@ export default class SevenSPlugin extends Plugin {
     // The chat is its own view (never auto-opened at load) — it is created
     // lazily beside the panel by revealChat(): command, 💬-knappen or a query.
     this.registerView(VIEW_TYPE_CHAT, (leaf) => new OdenChatView(leaf, this));
+
+    this.addCommand({
+      id: "run-analysis",
+      name: "Genomför analys",
+      callback: () => void this.openAnalysisModal(),
+    });
 
     this.addCommand({
       id: "open-chat",
@@ -457,7 +472,9 @@ export default class SevenSPlugin extends Plugin {
     const folder = this.settings.reportsFolder.replace(/\/+$/, "");
     // demo/ is the UNFED playback queue — its reports enter the analysis only
     // when "Mata demodata" (or the operator) moves them into the vault proper.
-    const files = this.app.vault.getMarkdownFiles().filter((f) => !f.path.startsWith("demo/"));
+    const files = this.app.vault
+      .getMarkdownFiles()
+      .filter((f) => !f.path.startsWith("demo/") && !f.path.startsWith(ANALYSIS_FOLDER + "/"));
     if (folder === "") return files;
     const prefix = folder + "/";
     return files.filter((f) => f.path === folder || f.path.startsWith(prefix));
@@ -1392,6 +1409,178 @@ export default class SevenSPlugin extends Plugin {
   }
 
 
+  // --- "Genomför analys" — date-range report (tier 1 deterministic, tier 2 LLM) ---
+  private reportRunActive = false;
+
+  async openAnalysisModal(): Promise<void> {
+    const { reports } = await this.readReports();
+    new AnalysisReportModal(this.app, this, reports).open();
+  }
+
+  /** Photo findings for the in-range reports, from the run-once caches. */
+  private async photoRowsFor(reports: Report[]): Promise<{ file: string; tnr: string; labels: string[] }[]> {
+    const rows: { file: string; tnr: string; labels: string[] }[] = [];
+    for (const r of reports) {
+      if (this.imageAttachments(r).length === 0) continue;
+      const noms = await this.allPhotoNominations(r);
+      if (!noms.length) continue;
+      rows.push({
+        file: r.file,
+        tnr: r.tnr,
+        labels: noms.map((n) => (n.nom.kind === "plate" ? `skylt ${n.nom.value}` : n.nom.label)),
+      });
+    }
+    return rows;
+  }
+
+  async genomforAnalysFlow(range: DateRange, deep: boolean): Promise<void> {
+    if (this.reportRunActive) {
+      new Notice("ODEN: en analys pågår redan.");
+      return;
+    }
+    this.reportRunActive = true;
+    try {
+      const { reports } = await this.readReports();
+      const analysis = analyzeRange(
+        reports, range, this.suspicionOpts(), this.settings,
+        this.settings.predefinedLocations, this.aoiForLocations(),
+      );
+      const photoRows = await this.photoRowsFor(analysis.reports);
+
+      // Deep requested → health-gate FIRST; down = honest tier-1-only note.
+      let deepInfo: { model: string; promptV: string; numCtx: number; numCtxWhy: string } | undefined;
+      let deepUnavailable = false;
+      let digestForDeep: ReturnType<typeof buildLlmDigest> | null = null;
+      if (deep) {
+        const health = await ollamaHealth(this.settings.ollamaUrl);
+        const usable = health.ok && (health.models ?? []).includes(this.settings.visionModel);
+        if (!usable) {
+          deepUnavailable = true;
+          new Notice("ODEN: Ollama/modellen otillgänglig — rapporten skrivs utan djupanalys.");
+        } else {
+          const modelMax = await ollamaModelCtx(this.settings.ollamaUrl, this.settings.visionModel);
+          const ram = os.totalmem();
+          // Provisional digest at the ceiling to size the real context need.
+          const probe = buildLlmDigest(analysis, this.settings, Number.MAX_SAFE_INTEGER);
+          const chars = probe.chunked ? 0 : probe.text.length;
+          const numCtx = computeNumCtx(estimateTokens(chars), modelMax, ram);
+          const budgetChars = (numCtx - 1500) * 3; // tokens→chars, conservative
+          digestForDeep = buildLlmDigest(analysis, this.settings, budgetChars);
+          deepInfo = {
+            model: this.settings.visionModel,
+            promptV: REPORT_PROMPT_VERSION,
+            numCtx,
+            numCtxWhy: `auto: underlag ~${estimateTokens(chars)} tokens, modelltak ${modelMax ?? "okänt"}, RAM ${Math.round(ram / 1024 ** 3)} GB`,
+          };
+        }
+      }
+
+      const input = {
+        analysis, state: this.settings, photoRows,
+        deep: deepInfo, deepUnavailable,
+        generatedAt: new Date().toISOString().slice(0, 19),
+        operationName: this.settings.operationName ?? "",
+        build: `${this.manifest.version}`,
+      };
+
+      await this.app.vault.createFolder(ANALYSIS_FOLDER).catch(() => undefined);
+      const taken = (name: string) => this.app.vault.getAbstractFileByPath(`${ANALYSIS_FOLDER}/${name}`) !== null;
+      const filename = reportFilename(range, taken);
+      const notePath = `${ANALYSIS_FOLDER}/${filename}`;
+      const file = await this.app.vault.create(notePath, renderReportNote(input));
+
+      // E19 collation CSV beside the note (Swedish Excel: BOM + semicolons).
+      const seq = this.app.vault.getMarkdownFiles().filter((f) => f.path.startsWith(ANALYSIS_FOLDER + "/")).length;
+      const rows = buildE19Rows(analysis, reports, `Report${seq}`, new Set(
+        [...this.lastCorroboration.values()].flatMap((set) => [...set]),
+      ));
+      const csvName = filename.replace(/\.md$/, " underlag.csv");
+      await this.app.vault.create(`${ANALYSIS_FOLDER}/${csvName}`, renderE19Csv(rows)).catch((err) => {
+        console.error("ODEN: E19-listan kunde inte skrivas", err);
+        new Notice("ODEN: E19-listan kunde inte skrivas (se konsolen).");
+      });
+
+      this.app.workspace.openLinkText(noteStem(notePath), "", false);
+      new Notice(`ODEN: analysrapport skapad — ${analysis.reports.length} rapporter i perioden.`);
+
+      if (deepInfo && digestForDeep) {
+        // The async job owns the flag from here (reset in its finally).
+        void this.runDeepAnalysis(file, analysis, digestForDeep, deepInfo.numCtx);
+      } else {
+        this.reportRunActive = false;
+      }
+    } catch (err) {
+      console.error("ODEN: analys misslyckades", err);
+      new Notice("ODEN: analysen misslyckades (se konsolen).");
+      this.reportRunActive = false;
+    }
+  }
+
+  /** Tier 2: the LLM over the COMPLETE roster digest — async, guarded, never
+   *  silent. Every output claim passes stripThink → sanitizeHypotheses (an
+   *  invented TNR can never become a link) → ensureCitations. */
+  private async runDeepAnalysis(
+    file: TFile,
+    analysis: RangeAnalysis,
+    digest: ReturnType<typeof buildLlmDigest>,
+    numCtx: number,
+  ): Promise<void> {
+    const notice = new Notice("ODEN: djupanalys pågår… (lokal modell)", 0);
+    try {
+      const opts = { ...this.ollamaOpts(), timeoutMs: 300_000, numCtx };
+      const allowed = new Set(analysis.reports.map((r) => r.tnr));
+      let prose: string | null = null;
+      let digestText = "";
+      if (!digest.chunked) {
+        digestText = digest.text;
+        prose = await ollamaChat(opts, [
+          { role: "system", content: HYPOTHESIS_SYS },
+          { role: "user", content: digest.text },
+        ], false, false);
+      } else {
+        const points: string[] = [];
+        for (let i = 0; i < digest.chunks.length; i++) {
+          const c = digest.chunks[i];
+          notice.setMessage(`ODEN: djupanalys… dygn ${i + 1}/${digest.chunks.length}`);
+          digestText += c.text + "\n";
+          const p = await ollamaChat(opts, [
+            { role: "system", content: CHUNK_SYS },
+            { role: "user", content: c.text },
+          ], false, false);
+          if (p) points.push(`${c.label}:\n${stripThink(p)}`);
+        }
+        notice.setMessage("ODEN: djupanalys… sammanvägning");
+        prose = points.length
+          ? await ollamaChat(opts, [
+              { role: "system", content: SYNTH_SYS },
+              { role: "user", content: points.join("\n\n") },
+            ], false, false)
+          : null;
+      }
+
+      let result: string;
+      if (prose) {
+        const cleaned = stripThink(prose).trim();
+        const { text, invented } = sanitizeHypotheses(cleaned, allowed);
+        result = ensureCitations(text, digestText);
+        if (invented.length) {
+          result += `\n\n_⚠ Modellen angav ${invented.length} källa/källor som inte finns i underlaget — de är markerade ovan. Behandla hypoteserna med extra skepsis._`;
+        }
+      } else {
+        result = deepFailureText();
+      }
+      await this.app.vault.process(file, (d) => d.replace(DEEP_PLACEHOLDER, result));
+      new Notice(prose ? "ODEN: djupanalys klar — hypoteser att verifiera i rapporten." : "ODEN: djupanalysen misslyckades — rapporten är komplett utan den.");
+    } catch (err) {
+      console.error("ODEN: djupanalys misslyckades", err);
+      await this.app.vault.process(file, (d) => d.replace(DEEP_PLACEHOLDER, deepFailureText())).catch(() => undefined);
+      new Notice("ODEN: djupanalysen misslyckades — rapporten är komplett utan den.");
+    } finally {
+      notice.hide();
+      this.reportRunActive = false;
+    }
+  }
+
   // --- Review modals ---------------------------------------------------------
   // The confirm flows (actors, marks, photos, texts) open as popup modals; the
   // "N förslag att granska →" rows stay in the log. One modal at a time; the
@@ -1832,6 +2021,7 @@ export default class SevenSPlugin extends Plugin {
     menu.addItem((i) => i.setTitle("Namnge plats…").setIcon("map-pin").onClick(() => void this.openLocationNamer()));
     menu.addItem((i) => i.setTitle("Namngivna platser…").setIcon("landmark").onClick(() => void this.openManagePlaces()));
     menu.addItem((i) => i.setTitle("Bevakningslista…").setIcon("telescope").onClick(() => void this.openWatchlist()));
+    menu.addItem((i) => i.setTitle("Genomför analys…").setIcon("clipboard-list").onClick(() => void this.openAnalysisModal()));
     menu.addItem((i) => i.setTitle("Öppna chatten").setIcon("message-circle").onClick(() => void this.revealChat()));
     if (this.app.vault.getAbstractFileByPath("demo") instanceof TFolder) {
       menu.addItem((i) =>
@@ -1880,6 +2070,7 @@ export default class SevenSPlugin extends Plugin {
     return (
       path.endsWith(".md") &&
       !path.startsWith("demo/") && // the unfed playback queue is invisible to analysis
+      !path.startsWith(ANALYSIS_FOLDER + "/") && // operator reports — writes here must not retrigger analysis
       !(folder !== "" && (path === folder || path.startsWith(folder + "/")))
     );
   }
@@ -2841,8 +3032,9 @@ export default class SevenSPlugin extends Plugin {
         body:
           "Valvet återställs till nyinstallerat skick: demorapporterna flyttas tillbaka " +
           "till demo/, och ALLT annat i valvet läggs i papperskorgen — inlästa rapporter, " +
-          "ODEN:s noter, bildmappar och det som intagsappen skrivit (grupp- och " +
-          "avsändarnoter). Alla beslut, namngivna platser och analyssvar nollställs. " +
+          "ODEN:s noter, bildmappar, analysrapporter (analys/) och det som intagsappen " +
+          "skrivit (grupp- och avsändarnoter). Alla beslut, namngivna platser och " +
+          "analyssvar nollställs. " +
           "Kvar står bara demo/, inkorg/, Välkommen.md och operationsområdet.",
         confirmText: "Nollställ",
       },
@@ -4060,6 +4252,81 @@ class PickStringModal extends FuzzySuggestModal<{ value: string; label: string }
 
 /** Generic confirm/cancel dialog for a destructive action. */
 /** Ask for the demo playback window (minutes) before starting the feed. */
+/** "Genomför analys" — range picker + presets + the optional djupanalys. */
+class AnalysisReportModal extends Modal {
+  constructor(
+    app: App,
+    private readonly plugin: SevenSPlugin,
+    private readonly reports: Report[],
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Genomför analys" });
+    contentEl.createEl("p", {
+      text:
+        "Väljer du en period skrivs en deterministisk analysrapport (med E19-lista) till mappen analys/. " +
+        "Djupanalysen låter den lokala modellen föreslå mönsterhypoteser över SAMTLIGA meddelanden i perioden — " +
+        "hypoteser att verifiera, aldrig fakta.",
+    }).style.cssText = "font-size:.9em;opacity:.8;";
+
+    const mk = (label: string) => {
+      const row = contentEl.createDiv();
+      row.style.cssText = "display:flex;gap:8px;align-items:center;margin:6px 0;";
+      row.createEl("label", { text: label }).style.cssText = "width:60px;";
+      const input = row.createEl("input", { type: "datetime-local" });
+      input.style.flex = "1";
+      return input;
+    };
+    const fromIn = mk("Från");
+    const toIn = mk("Till");
+
+    const fill = (kind: "dygn" | "vecka" | "allt") => {
+      const r = presetRange(kind, this.reports);
+      if (!r) return;
+      fromIn.value = r.from.slice(0, 16);
+      toIn.value = r.to.slice(0, 16);
+    };
+    const presets = contentEl.createDiv();
+    presets.style.cssText = "display:flex;gap:6px;margin:4px 0 8px;";
+    presets.createEl("button", { text: "Senaste dygnet" }).onclick = () => fill("dygn");
+    presets.createEl("button", { text: "Senaste veckan" }).onclick = () => fill("vecka");
+    presets.createEl("button", { text: "Allt" }).onclick = () => fill("allt");
+    fill("dygn");
+
+    const deepRow = contentEl.createDiv();
+    deepRow.style.cssText = "display:flex;gap:8px;align-items:center;margin:8px 0;";
+    const deepBox = deepRow.createEl("input", { type: "checkbox" });
+    const llmOn = this.plugin.settings.conversationEnabled;
+    deepBox.disabled = !llmOn;
+    deepRow.createEl("label", {
+      text: "Djupanalys (LLM) — mönsterhypoteser att verifiera" + (llmOn ? "" : " (kräver att 💬 är på)"),
+    }).style.opacity = llmOn ? "1" : ".6";
+
+    const err = contentEl.createEl("div");
+    err.style.cssText = "color:var(--text-error);font-size:.9em;min-height:1.2em;margin:4px 0;";
+
+    const bar = contentEl.createDiv();
+    bar.style.cssText = "display:flex;gap:8px;justify-content:flex-end;margin-top:8px;";
+    bar.createEl("button", { text: "Avbryt" }).onclick = () => this.close();
+    bar.createEl("button", { text: "Starta", cls: "mod-cta" }).onclick = () => {
+      const range = normalizeRange(fromIn.value, toIn.value);
+      if (!range) {
+        err.setText("Ogiltig period — kontrollera att Från ligger före Till.");
+        return;
+      }
+      this.close();
+      void this.plugin.genomforAnalysFlow(range, deepBox.checked && llmOn);
+    };
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
 class DemoFeedModal extends Modal {
   constructor(
     app: App,

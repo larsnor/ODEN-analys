@@ -23,8 +23,10 @@ const ctx = await esbuild.context({
   define: { __ODEN_BUILD__: JSON.stringify(stamp) },
   entryPoints: ["src/main.ts"],
   bundle: true,
-  // `obsidian` and Electron/CodeMirror internals are provided by the host.
-  external: ["obsidian", "electron", "@codemirror/*", "@lezer/*"],
+  // `obsidian` and Electron/CodeMirror internals are provided by the host;
+  // `os` is Node's builtin (desktop Obsidian exposes it via require) — used by
+  // the report flow's RAM-aware context sizing.
+  external: ["obsidian", "electron", "os", "@codemirror/*", "@lezer/*"],
   format: "cjs",
   target: "es2018",
   logLevel: "info",

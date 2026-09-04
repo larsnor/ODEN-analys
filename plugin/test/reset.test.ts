@@ -79,3 +79,7 @@ test("origin keys: ids and filenames, id optional", () => {
   assert.ok(keys.files.has("TNR010534.md"));
   assert.ok(keys.files.has("TNR290539.md"));
 });
+
+test("analys/ is NOT a kept root entry — Nollställ removes analysis reports (fresh install ships none)", () => {
+  assert.ok(!keptRootEntries("entities").has("analys"));
+});

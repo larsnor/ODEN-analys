@@ -219,6 +219,17 @@ operationsområde och namnge kända platser i förväg (`⋯ → Namngivna plats
 skyddsvärda platser larmar vid närhet). Låt sedan intaget leverera
 7S-rapporterna till `inkorg/`, så analyserar ODEN dem automatiskt.
 
+## Periodrapporter — Genomför analys
+
+Kommandot **"ODEN: Genomför analys"** (även i `⋯`-menyn) tar ett datumspann och
+skriver en analysrapport till mappen `analys/`: larm, tidslinje, återkommande
+fordon, aktörer, platser — plus en **E19-lista** (CSV med semikolon och BOM,
+öppnas direkt i Excel; tillförlitlighet/sakriktighet sätts bara så ärligt som
+en maskin kan — F respektive 2/3/6 — och justeras av dig). Med 💬 påslaget kan
+**Djupanalys** dessutom låta den lokala modellen föreslå mönsterhypoteser över
+periodens SAMTLIGA meddelanden — källhänvisade förslag att verifiera, aldrig
+fakta.
+
 ## Valfritt: lokal AI (Ollama)
 
 ODENs kärna är deterministisk och detektionen är aldrig beroende av AI. Chipsen
