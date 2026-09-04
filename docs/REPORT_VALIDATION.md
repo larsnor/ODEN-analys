@@ -77,6 +77,17 @@ infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
    den planterade TNR260940. I produktion avlänkas och flaggas den
    ("okänd källa — kontrollera").
 
+## Operatörens modellval
+
+Modalen listar ALLA dragna Ollama-modeller (även nyss hämtade) i en väljare:
+förvalet är den uppmätta rekommendationen (`pickDeepModel`), uppmätt
+oanvändbara modeller märks "(avråds — uppmätt oanvändbar)", och omärkta
+modeller är helt enkelt omätta — kör evalen och fyll i tabellen innan de
+rekommenderas. Ett dåligt val är ofarligt: formatvakten gör svamlet till den
+ärliga felraden. Tillgänglighetsspärren gäller den VALDA modellen (djupanalysen
+är ren text — visionsmodellen behöver inte vara dragen), och kontexttaket
+hämtas från den valda modellen via /api/show.
+
 ## Ärliga förväntningar (efter mätning)
 
 - **qwen3:32b** (48 GB-klass): levererar användbara, källhänvisade hypoteser

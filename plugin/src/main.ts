@@ -75,7 +75,7 @@ import { Signal } from "./suspicion";
 import { OllamaVision, OllamaText, VISION_MODELS, DEFAULT_VISION_MODEL, DEFAULT_OLLAMA_URL, ollamaModelCtx, ollamaHealth, ollamaChat } from "./llm";
 import {
   analyzeRange, buildE19Rows, buildLlmDigest, DateRange, DEEP_PLACEHOLDER,
-  buildDeepPrompt, deepFailureText, looksLikeHypotheses, normalizeRange, pickDeepModel, planDigest, presetRange, RangeAnalysis, renderE19Csv,
+  buildDeepPrompt, deepFailureText, deepModelLabel, looksLikeHypotheses, normalizeRange, pickDeepModel, planDigest, presetRange, RangeAnalysis, renderE19Csv,
   renderReportNote, reportFilename, REPORT_PROMPT_VERSION, sanitizeHypotheses,
   CHUNK_SYS, HYPOTHESIS_SYS, SYNTH_SYS,
 } from "./report";
@@ -1414,7 +1414,12 @@ export default class SevenSPlugin extends Plugin {
 
   async openAnalysisModal(): Promise<void> {
     const { reports } = await this.readReports();
-    new AnalysisReportModal(this.app, this, reports).open();
+    // Pulled models for the operator's djupanalys selector — ANY pulled model
+    // may be chosen (a newly pulled one included); the default is the measured
+    // recommendation and measured-bad ones carry a warning label.
+    const health = this.settings.conversationEnabled ? await ollamaHealth(this.settings.ollamaUrl) : { ok: false as const };
+    const models = health.ok ? (health.models ?? []) : [];
+    new AnalysisReportModal(this.app, this, reports, models).open();
   }
 
   /** Photo findings for the in-range reports, from the run-once caches. */
@@ -1433,7 +1438,7 @@ export default class SevenSPlugin extends Plugin {
     return rows;
   }
 
-  async genomforAnalysFlow(range: DateRange, deep: boolean): Promise<void> {
+  async genomforAnalysFlow(range: DateRange, deep: boolean, deepModel?: string): Promise<void> {
     if (this.reportRunActive) {
       new Notice("ODEN: en analys pågår redan.");
       return;
@@ -1453,17 +1458,20 @@ export default class SevenSPlugin extends Plugin {
       let digestForDeep: ReturnType<typeof buildLlmDigest> | null = null;
       if (deep) {
         const health = await ollamaHealth(this.settings.ollamaUrl);
-        const usable = health.ok && (health.models ?? []).includes(this.settings.visionModel);
+        const model = deepModel ?? pickDeepModel(health.models ?? [], this.settings.visionModel);
+        // The gate checks the model the analysis will actually RUN on — the
+        // deep analysis is pure text and does not need the vision model.
+        const usable = health.ok && (health.models ?? []).includes(model);
         if (!usable) {
           deepUnavailable = true;
           new Notice("ODEN: Ollama/modellen otillgänglig — rapporten skrivs utan djupanalys.");
         } else {
-          const modelMax = await ollamaModelCtx(this.settings.ollamaUrl, this.settings.visionModel);
+          const modelMax = await ollamaModelCtx(this.settings.ollamaUrl, model);
           const ram = os.totalmem();
           const sized = planDigest(analysis, this.settings, modelMax, ram);
           digestForDeep = sized.plan;
           deepInfo = {
-            model: pickDeepModel(health.models ?? [], this.settings.visionModel),
+            model,
             promptV: REPORT_PROMPT_VERSION,
             numCtx: sized.numCtx,
             numCtxWhy: `auto: underlag ~${sized.needTokens} tokens, modelltak ${modelMax ?? "okänt"}, RAM ${Math.round(ram / 1024 ** 3)} GB`,
@@ -1501,7 +1509,7 @@ export default class SevenSPlugin extends Plugin {
 
       if (deepInfo && digestForDeep) {
         // The async job owns the flag from here (reset in its finally).
-        void this.runDeepAnalysis(file, analysis, digestForDeep, deepInfo.numCtx);
+        void this.runDeepAnalysis(file, analysis, digestForDeep, deepInfo.numCtx, deepInfo.model);
       } else {
         this.reportRunActive = false;
       }
@@ -1520,14 +1528,12 @@ export default class SevenSPlugin extends Plugin {
     analysis: RangeAnalysis,
     digest: ReturnType<typeof buildLlmDigest>,
     numCtx: number,
+    model: string,
   ): Promise<void> {
-    const notice = new Notice("ODEN: djupanalys pågår… (lokal modell)", 0);
+    const notice = new Notice(`ODEN: djupanalys pågår… (${model})`, 0);
     try {
-      // Text-family model preferred — the vl tags are thinking variants that
-      // ignore think:false and drown analytical prompts (measured; see
-      // DEEP_TEXT_MODELS in report.ts). Task at the END of one user message.
-      const health = await ollamaHealth(this.settings.ollamaUrl);
-      const model = pickDeepModel(health.models ?? [], this.settings.visionModel);
+      // The model was chosen in the flow (operator selection or the measured
+      // ladder). Task at the END of one user message.
       const opts = { ...this.ollamaOpts(), model, timeoutMs: 300_000, numCtx, numPredict: 1500 };
       const allowed = new Set(analysis.reports.map((r) => r.tnr));
       let prose: string | null = null;
@@ -4256,6 +4262,8 @@ class AnalysisReportModal extends Modal {
     app: App,
     private readonly plugin: SevenSPlugin,
     private readonly reports: Report[],
+    /** Models pulled in Ollama right now — the operator may pick ANY of them. */
+    private readonly models: string[],
   ) {
     super(app);
   }
@@ -4298,10 +4306,30 @@ class AnalysisReportModal extends Modal {
     deepRow.style.cssText = "display:flex;gap:8px;align-items:center;margin:8px 0;";
     const deepBox = deepRow.createEl("input", { type: "checkbox" });
     const llmOn = this.plugin.settings.conversationEnabled;
-    deepBox.disabled = !llmOn;
+    const deepPossible = llmOn && this.models.length > 0;
+    deepBox.disabled = !deepPossible;
     deepRow.createEl("label", {
-      text: "Djupanalys (LLM) — mönsterhypoteser att verifiera" + (llmOn ? "" : " (kräver att 💬 är på)"),
-    }).style.opacity = llmOn ? "1" : ".6";
+      text:
+        "Djupanalys (LLM) — mönsterhypoteser att verifiera" +
+        (llmOn ? (deepPossible ? "" : " (Ollama nere — inga modeller)") : " (kräver att 💬 är på)"),
+    }).style.opacity = deepPossible ? "1" : ".6";
+
+    // Model selector: EVERY pulled model is offered (a newly pulled one too).
+    // Default = the measured recommendation; measured-bad ones carry a warning
+    // label, and the format gate turns a bad pick into an honest failure line.
+    const recommended = pickDeepModel(this.models, this.plugin.settings.visionModel);
+    let modelSel: HTMLSelectElement | null = null;
+    if (deepPossible) {
+      const mRow = contentEl.createDiv();
+      mRow.style.cssText = "display:flex;gap:8px;align-items:center;margin:2px 0 8px;";
+      mRow.createEl("label", { text: "Modell" }).style.cssText = "width:60px;";
+      modelSel = mRow.createEl("select");
+      modelSel.style.flex = "1";
+      const ordered = [recommended, ...this.models.filter((x) => x !== recommended).sort()];
+      for (const name of ordered) {
+        modelSel.createEl("option", { text: deepModelLabel(name, recommended), value: name });
+      }
+    }
 
     const err = contentEl.createEl("div");
     err.style.cssText = "color:var(--text-error);font-size:.9em;min-height:1.2em;margin:4px 0;";
@@ -4316,7 +4344,7 @@ class AnalysisReportModal extends Modal {
         return;
       }
       this.close();
-      void this.plugin.genomforAnalysFlow(range, deepBox.checked && llmOn);
+      void this.plugin.genomforAnalysFlow(range, deepBox.checked && deepPossible, modelSel?.value ?? undefined);
     };
   }
 

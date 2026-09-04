@@ -268,6 +268,19 @@ export const SYNTH_SYS =
  *  which then yields an honest failure line rather than silence. */
 export const DEEP_TEXT_MODELS = ["qwen3:32b", "qwen3:14b", "qwen3:8b"];
 
+/** Models MEASURED unusable for the deep analysis (REPORT_VALIDATION.md):
+ *  qwen3:4b leaks chain-of-thought into content; the qwen3-vl 4b/8b tags are
+ *  thinking variants that never emit content on analytical prompts. The
+ *  operator may still pick them — the label warns, the format gate catches. */
+export const MEASURED_BAD_DEEP_MODELS = ["qwen3:4b", "qwen3-vl:4b", "qwen3-vl:8b"];
+
+/** Operator-facing dropdown label for a pulled model. */
+export function deepModelLabel(model: string, recommended: string): string {
+  if (model === recommended) return `${model} (rekommenderad)`;
+  if (MEASURED_BAD_DEEP_MODELS.includes(model)) return `${model} (avråds — uppmätt oanvändbar)`;
+  return model;
+}
+
 export function pickDeepModel(available: readonly string[], visionModel: string): string {
   for (const m of DEEP_TEXT_MODELS) if (available.includes(m)) return m;
   return visionModel;

@@ -25,6 +25,7 @@ import {
   ReportNoteInput,
   sanitizeHypotheses,
   buildDeepPrompt,
+  deepModelLabel,
   looksLikeHypotheses,
   pickDeepModel,
 } from "../src/report.ts";
@@ -211,6 +212,12 @@ test("looksLikeHypotheses: accepts the contract shape, rejects CoT leakage", () 
   assert.ok(looksLikeHypotheses("- **Hypotes (avvikelse):** y. Evidens: TNR999999 (okänd källa — kontrollera)"));
   assert.ok(!looksLikeHypotheses("Okay, let's tackle this problem. So, I need to act as..."));
   assert.ok(!looksLikeHypotheses(""));
+});
+
+test("deepModelLabel: recommendation and measured-bad warnings", () => {
+  assert.equal(deepModelLabel("qwen3:32b", "qwen3:32b"), "qwen3:32b (rekommenderad)");
+  assert.equal(deepModelLabel("qwen3:4b", "qwen3:32b"), "qwen3:4b (avråds — uppmätt oanvändbar)");
+  assert.equal(deepModelLabel("mistral:7b", "qwen3:32b"), "mistral:7b");
 });
 
 test("buildDeepPrompt puts the TASK at the END (measured long-context requirement)", () => {
