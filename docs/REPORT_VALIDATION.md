@@ -1,6 +1,6 @@
 # Djupanalysen — mätprotokoll (tier 2 av "Genomför analys")
 
-**Lager:** `plugin/src/report.ts` (prompter, roster-digest, vakter) · `promptversion 1`
+**Lager:** `plugin/src/report.ts` (prompter, roster-digest, vakter) · `promptversion 2` (v1: mönster i allmänhet; v2 2026-09-08: fokus på skyddsvärdet — vardagsrutiner är brus om de inte avviker, varje hypotes slutar med operativ konsekvens, hellre 2 skarpa än 5 tunna — efter att v1 rapporterade "barnfamiljer på lekplatsen" som mönster)
 
 Syskon till `BEHAVIOUR_VALIDATION.md`/`CRAFT_VALIDATION.md`: samma kultur —
 LLM-lagrets värde MÄTS innan det påstås. Tier 1 (den deterministiska rapporten
@@ -55,6 +55,7 @@ infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
 | 2026-09-04 | **qwen3:32b** | single-shot, think:false | **2 (H2 recon + infiltrationscellen)** | 1 (TNR-siffra skiftad — vakten flaggar exakt sådana) | **59 s** | 5 välformade, källhänvisade hypoteser |
 | 2026-09-04 | qwen3:8b (text) | single-shot, think:false | 1 (en samordningshypotes med 5 cell-TNR av 7 citat, H2+H3 blandade) | **0** | 25 s | marginell: övriga hypoteser benignt brus med 30–90-citats-dumpar; budget slut mitt i listan |
 | 2026-09-04 | qwen3:4b (text) | single-shot, think:false | 0 | – | 17 s | **oanvändbar: engelsk tankekedja läckte in i innehållet, ingen hypotes** — struken ur modellstegen |
+| 2026-09-08 | **qwen3:32b, promptversion 2** | single-shot, think:false | **2 (H2 + infiltrationscellen H3)** | **0** | 64 s | 4 hypoteser varav 3 säkerhetsrelevanta (kamerakartläggning, passertidsfrågor, drönare) och 1 vardagsrutin — mot 1 av 4 relevanta under v1 |
 
 ## Uppmätta lärdomar (inbyggda i koden)
 

@@ -136,7 +136,7 @@ export function computeNumCtx(neededTokens: number, modelMaxCtx: number | null, 
 
 // --- Tier-2 digest + prompts ----------------------------------------------------
 
-export const REPORT_PROMPT_VERSION = "1";
+export const REPORT_PROMPT_VERSION = "2";
 
 export type DigestPlan =
   | { chunked: false; text: string }
@@ -234,6 +234,13 @@ export const HYPOTHESIS_SYS =
   "perioden — även de som inte utlöst något. Din uppgift är att föreslå MÖNSTERHYPOTESER som " +
   "operatören ska VERIFIERA: tidsmönster, rumsliga mönster, tecken på samordning mellan " +
   "observationer, och avvikelser. Leta särskilt efter mönster bland de oflaggade meddelandena. " +
+  "FOKUS: skyddsvärdet. Relevant är sådant som kan tyda på spaning, rekognosering, försök till " +
+  "tillträde, sabotage, samma person/fordon som återkommer nära objektet, eller avvikelser från " +
+  "normalbilden (fel tid, fel plats, ovanligt beteende). Vardagliga rutiner — lek, promenader, " +
+  "leveranser, trädgårdsarbete, pendling — är BRUS och ska INTE bli hypoteser i sig; nämn dem " +
+  "bara om något i dem avviker (t.ex. samma individ återkommer vid objektet, ovanlig tidpunkt, " +
+  "fotografering/anteckningar). Varje hypotes ska sluta med en kort operativ konsekvens: " +
+  "varför den spelar roll för objektets skydd. Hellre 2 skarpa hypoteser än 5 tunna. " +
   "Regler: (1) Du hittar ALDRIG på fakta — varje påstående måste stödjas av rader i underlaget. " +
   "(2) Varje hypotes MÅSTE citera sina källor i formatet [[TNR123456]] exakt som de står i " +
   "underlaget — skriv aldrig om, förkorta eller hitta på TNR-nummer. " +
@@ -244,9 +251,11 @@ export const HYPOTHESIS_SYS =
 
 export const CHUNK_SYS =
   "Du är ODEN:s analysassistent. Du får ett deterministiskt dygnsunderlag (alla meddelanden det " +
-  "dygnet). Lista de högst 3 viktigaste mönstren eller avvikelserna i JUST detta dygn, som korta " +
-  "punkter med källor i formatet [[TNR123456]] exakt som de står. Hitta ALDRIG på fakta eller " +
-  "TNR-nummer. Svara ENDAST med punktlistan, på svenska, högst 80 ord.";
+  "dygnet). Lista de högst 3 viktigaste SÄKERHETSRELEVANTA mönstren eller avvikelserna i JUST " +
+  "detta dygn (spaning, tillträdesförsök, återkommande personer/fordon nära objektet, avvikelser " +
+  "från normalbilden — vardagsrutiner är brus), som korta punkter med källor i formatet " +
+  "[[TNR123456]] exakt som de står. Hitta ALDRIG på fakta eller TNR-nummer. Svara ENDAST med " +
+  "punktlistan, på svenska, högst 80 ord.";
 
 export const SYNTH_SYS =
   "Du är ODEN:s analysassistent. Du får dygnsvisa mönsterpunkter (redan källhänvisade med " +
@@ -458,6 +467,10 @@ export function renderReportNote(i: ReportNoteInput): string {
         "(öppnas i Excel via högerklick → \"Open in default app\"; syns i filutforskaren när \"Detect all file extensions\" är på)._",
       "",
       renderE19Table(i.e19.rows),
+      "",
+      "**Graderingsskala** (ur underrättelseregistret — ODEN sätter F och 2/3/6 deterministiskt, resten är din bedömning):",
+      "",
+      renderE19Legend(),
     );
   }
 
@@ -563,20 +576,65 @@ export function buildE19Rows(
   }));
 }
 
-/** CSV for Swedish Excel: UTF-8 BOM, semicolons, CRLF, quoted fields. */
+/** The E19 grading scales, verbatim from the operator's underrättelseregister
+ *  template — printed in the note and in the CSV's legend columns (M/N) so the
+ *  machine-set F/6 is always read against the official meaning. */
+export const E19_TILLFORLITLIGHET: [string, string][] = [
+  ["A Fullt tillförlitlig", "Avser en väl beprövad källa vilken man med förtroende kan förlita sig på"],
+  ["B Vanligen tillförlitlig", "Avser en källa vilken tidigare lämnat korrekt information, men som i enskilda fall fortfarande kan ifrågasättas"],
+  ["C Ganska tillförlitlig", "Avser en källa vilken huvudsakligen tidigare lämnat korrekt information, men där erfarenheten av att arbeta med källan inte är tillräcklig för att den ska kunna ges en högre tillförlitlighetsgrad"],
+  ["D Vanligen inte tillförlitlig", "Avser en källa som huvudsakligen tidigare lämnat inkorrekt information"],
+  ["E Inte tillförlitlig", "Avser en källa vilken visat sig vara opålitlig och för vilken förtroende saknas"],
+  ["F Tillförlitligheten kan inte bedömas", "Avser en källa vilken inte använts tidigare eller vars uppgifter inte kunnat kontrolleras"],
+];
+export const E19_SAKRIKTIGHET: [string, string][] = [
+  ["1 Bekräftad information", "vilken överensstämmer med tidigare information från minst en säkerställd oberoende källa"],
+  ["2 Sannolikt riktig information", "vilken överensstämmer med tidigare information från minst en sannolikt oberoende källa"],
+  ["3 Möjligen riktig information", "vars innehåll inte i sak strider mot tidigare dokumenterade förhållanden eller uppträdande och där en högre grad av sakriktighet ej kunnat fastställas"],
+  ["4 Tvivelaktig information", "vars innehåll dokumenterat avviker från tendenser i tidigare rapporter eller tidigare förhållanden eller uppträdande och där en högre grad av sakriktighet ej kunnat fastställas"],
+  ["5 Osannolik information", "innehåll motsäger tidigare rapporter eller direkt strider mot dokumenterade förhållanden eller uppträdande — högre grad av sakriktighet ej kunnat fastställas"],
+  ["6 Sakriktigheten kan ej bedömas", "Information som inte relaterar till eller kan jämföras med tidigare dokumenterade förhållanden eller uppträdande"],
+];
+
+/** Markdown legend for the note. */
+export function renderE19Legend(): string {
+  const out = ["**Tillförlitlighetsgrad (källan):**"];
+  for (const [k, v] of E19_TILLFORLITLIGHET) out.push(`- **${k}** — ${v}`);
+  out.push("", "**Sakriktighetsgrad (informationen):**");
+  for (const [k, v] of E19_SAKRIKTIGHET) out.push(`- **${k}** — ${v}`);
+  return out.join("\n");
+}
+
+/** CSV for Swedish Excel: UTF-8 BOM, semicolons, CRLF, quoted fields.
+ *  TNR/Stund are written as Excel text formulas (="012001") — a bare 012001
+ *  is parsed as the number 12001 and the leading zero is lost (operator
+ *  finding 2026-09-08). Columns M/N carry the grading legend, as in the
+ *  operator's template. */
 export function renderE19Csv(rows: E19Row[]): string {
   const q = (v: string) => `"${(v ?? "").replace(/"/g, '""')}"`;
+  // Excel text formula: keeps leading zeros and stops date/number coercion.
+  const t = (v: string) => (v ? `"=""${v.replace(/"/g, "")}"""` : '""');
   const header = [
     "Löpnummer", "TNR", "Stund", "Plats", "MGRS", "Struktureringsbegrepp",
     "Händelsebeskrivning", "Tillförlitlighet", "Sakriktighet", "Ref till Undbehov", "Källa", "Diarienr",
+    "Värderingskriterier: Tillförlitlighetsgrad", "Värderingskriterier: Sakriktighetsgrad",
   ];
+  const legend: [string, string][] = [];
+  const n = Math.max(E19_TILLFORLITLIGHET.length, E19_SAKRIKTIGHET.length);
+  for (let i = 0; i < n; i++) {
+    const a = E19_TILLFORLITLIGHET[i]; const b = E19_SAKRIKTIGHET[i];
+    legend.push([a ? `${a[0]} — ${a[1]}` : "", b ? `${b[0]} — ${b[1]}` : ""]);
+  }
   const lines = [header.map(q).join(";")];
-  for (const r of rows) {
-    lines.push(
-      [r.lopnummer, r.tnr, r.stund, r.plats, r.mgrs, r.struktureringsbegrepp,
-        r.handelsebeskrivning, r.tillforlitlighet, r.sakriktighet, r.refUndbehov, r.kalla, r.diarienr]
-        .map(q).join(";"),
-    );
+  const total = Math.max(rows.length, legend.length);
+  for (let i = 0; i < total; i++) {
+    const r = rows[i];
+    const data = r
+      ? [q(r.lopnummer), t(r.tnr), t(r.stund), q(r.plats), q(r.mgrs), q(r.struktureringsbegrepp),
+          q(r.handelsebeskrivning), q(r.tillforlitlighet), q(r.sakriktighet), q(r.refUndbehov), q(r.kalla), q(r.diarienr)]
+      : Array.from({ length: 12 }, () => '""');
+    const [lt, ls] = legend[i] ?? ["", ""];
+    lines.push([...data, q(lt), q(ls)].join(";"));
   }
   return "﻿" + lines.join("\r\n") + "\r\n";
 }

@@ -244,7 +244,7 @@ Kommandot **"ODEN: Genomför analys"** (även i `⋯`-menyn) tar ett datumspann 
 skriver en analysrapport till mappen `analys/`: larm, tidslinje, återkommande
 fordon, aktörer, platser — plus en **E19-lista** (som tabell i rapporten och
 som CSV-fil bredvid — semikolon och BOM,
-öppnas i Excel via högerklick → *Open in default app*; äldre valv behöver **Settings → Files & links → Detect all file extensions** för att visa CSV-filen; tillförlitlighet/sakriktighet sätts bara så ärligt som
+öppnas i Excel via högerklick → *Open in default app*; TNR/Stund skrivs som textformler så inledande nollor bevaras; graderingsskalan (A–F, 1–6) följer med både i rapporten och i listans kolumner M/N; äldre valv behöver **Settings → Files & links → Detect all file extensions** för att visa CSV-filen; tillförlitlighet/sakriktighet sätts bara så ärligt som
 en maskin kan — F respektive 2/3/6 — och justeras av dig). Med 💬 påslaget kan
 **Djupanalys** dessutom låta den lokala modellen föreslå mönsterhypoteser över
 periodens SAMTLIGA meddelanden — källhänvisade förslag att verifiera, aldrig

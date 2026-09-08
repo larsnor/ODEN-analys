@@ -272,6 +272,27 @@ test("E19 sakriktighet: different-sagesman prior → 2, same → 3, first → 6,
   for (const rows of [buildE19Rows(a, all, "x")]) for (const r of rows) assert.ok(["2", "3", "6"].includes(r.sakriktighet));
 });
 
+test("E19 CSV: TNR/Stund as Excel text formulas (leading zeros survive) + legend columns", () => {
+  const all = [report({ tnr: "012001", tidpunkt: "2026-06-16T12:00:00", stund: "011958", handelse: "x" })];
+  const wide = normalizeRange("2026-06-01T00:00", "2026-06-30T23:59")!;
+  const csv = renderE19Csv(buildE19Rows(analyzeRange(all, wide, PROT, state()), all, "R"));
+  assert.ok(csv.includes('"=""012001"""'), "TNR as Excel text formula");
+  assert.ok(csv.includes('"=""011958"""'), "Stund likewise");
+  assert.ok(csv.includes("Värderingskriterier: Tillförlitlighetsgrad"), "legend header M");
+  assert.ok(csv.includes("A Fullt tillförlitlig"), "legend rows present");
+  assert.ok(csv.includes("6 Sakriktigheten kan ej bedömas"));
+  assert.ok(csv.split("\r\n").filter(Boolean).length >= 7, "legend rows padded even with one report");
+});
+
+test("renderReportNote: E19 legend follows the table", () => {
+  const i = noteInput();
+  const rows = buildE19Rows(i.analysis, i.analysis.reports, "Report1");
+  const md = renderReportNote({ ...i, e19: { csvName: "x underlag.csv", rows } });
+  assert.ok(md.includes("**Graderingsskala**"));
+  assert.ok(md.includes("F Tillförlitligheten kan inte bedömas"));
+  assert.ok(md.indexOf("## E19-lista") < md.indexOf("Graderingsskala") && md.indexOf("Graderingsskala") < md.indexOf("## Underlag"));
+});
+
 test("E19 CSV: BOM + semicolons + quoted fields (semicolon inside Händelse survives)", () => {
   const all = [report({ tnr: "161200", tidpunkt: "2026-06-16T12:00:00", handelse: 'Bil; "grå" skåpbil.' })];
   const csv = renderE19Csv(buildE19Rows(analyzeRange(all, RANGE, PROT, state()), all, "Report1"));
