@@ -342,6 +342,10 @@ The two remaining LLM roles, on the SAME model (qwen3-vl is a full LM) and the S
 nomination frame as vision. All three capabilities are independent panel chips
 (📷 Bild · 📝 Text · 💬 Chat), each degrading to deterministic; deterministic core
 always on.
+- **Model split (2026-09-08):** `visionModel` serves 📷 only; `textModel`
+  ("auto" = DEEP_TEXT_MODELS ladder over pulled models, else the vision model)
+  serves 📝, 💬 and the djupanalys. Health probes judge the model each
+  capability actually uses (`noteHealth(health, model)`).
 - **Chat (💬, OllamaConversation in conversation.ts):** LLM only REFINES the
   deterministic parseQuery (intent/kind/term/place) and NARRATES the deterministic
   answer (§7.1 — findings never originate in the model). `converse(conversationEngine())`.

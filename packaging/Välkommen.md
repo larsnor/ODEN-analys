@@ -119,9 +119,11 @@ någonstans. Och som i resten av ODEN gäller samma regel: modellen föreslår
 bara, du bekräftar varje fynd.
 
 Så här kommer du igång: installera [Ollama](https://ollama.com) (gratis, finns
-för macOS, Windows och Linux), kör `ollama pull qwen3-vl:4b` i en terminal
-(cirka 3 GB, laddas ned en gång), och tryck **"Testa anslutning"** under
-**Inställningar → ODEN**. Slå sedan på chipsen i panelen.
+för macOS, Windows och Linux), kör `ollama pull qwen3-vl:4b` (bildmodellen,
+cirka 3 GB) och `ollama pull qwen3:8b` (textmodellen för text, chatt och
+djupanalys, cirka 5 GB) i en terminal – laddas ned en gång – och tryck
+**"Testa anslutning"** under **Inställningar → ODEN**. Textmodellen står på
+*auto* och hittar själv den bästa hämtade. Slå sedan på chipsen i panelen.
 
 ## Mer
 

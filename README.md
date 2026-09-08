@@ -58,9 +58,10 @@ och skriver en deterministisk analysrapport med E19-lista (CSV för Excel) till
 mönsterhypoteser över periodens samtliga meddelanden (`docs/REPORT_VALIDATION.md`).
 
 AI-förmågorna (📷 bild · 📝 text · 💬 chat) är valfria: installera
-[Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b`, så körs allt
-lokalt på den egna datorn. Modellen föreslår bara – du bekräftar. Detektionen
-är aldrig beroende av AI.
+[Ollama](https://ollama.com) och kör `ollama pull qwen3-vl:4b` (bild) och
+`ollama pull qwen3:8b` (text, chatt, djupanalys), så körs allt lokalt på den
+egna datorn. Modellerna föreslår bara – du bekräftar. Detektionen är aldrig
+beroende av AI.
 
 ### Hela systemet: rapporter via Signal
 

@@ -169,8 +169,15 @@ interface SevenSSettings {
   visionEnabled: boolean;
   /** Local Ollama endpoint (configurable so a deployment box can serve remotely). */
   ollamaUrl: string;
-  /** Chosen VLM tag from the curated VISION_MODELS list. */
+  /** Chosen VLM tag from the curated VISION_MODELS list — IMAGE analysis only. */
   visionModel: string;
+  /** Text model for 📝 text extraction, 💬 chat and the djupanalys default.
+   *  "auto" = best pulled text model via the measured DEEP_TEXT_MODELS ladder
+   *  (qwen3:32b→14b→8b), falling back to the vision model — so an install with
+   *  only qwen3-vl keeps working and pulling qwen3:8b upgrades text at once.
+   *  Split from visionModel 2026-09-08: the qwen3-vl tags are THINKING
+   *  variants that ignore think:false and drown on analytical prompts. */
+  textModel: string;
   /** Run-once cache (no-fishing): image-hash → cached sighting + the model/
    *  prompt it was produced under. A recompute NEVER re-hits Ollama; re-analysis
    *  happens only when the model or prompt version changes. */
@@ -190,7 +197,7 @@ interface SevenSSettings {
   /** Reports the operator explicitly flagged as alarms (file-menu "Flagga som
    *  larm"), keyed by report file. Scored via OPERATOR_FLAG_SIGNAL. */
   operatorFlagged: Record<string, true>;
-  // --- Text-reasoning + chat (roles 2 & 3, same local model) ---
+  // --- Text-reasoning + chat (roles 2 & 3, the TEXT model) ---
   /** 💬 chip: LLM refines the query + narrates the deterministic answer. */
   conversationEnabled: boolean;
   /** 📝 chip: LLM extracts open-vocab marks/behaviours the keyword lists miss. */
@@ -236,6 +243,7 @@ const DEFAULT_SETTINGS: SevenSSettings = {
   visionEnabled: false,
   ollamaUrl: DEFAULT_OLLAMA_URL,
   visionModel: DEFAULT_VISION_MODEL,
+  textModel: "auto",
   photoAnalyses: {},
   photoPlates: {},
   photoAnnotations: {},
@@ -1425,8 +1433,9 @@ export default class SevenSPlugin extends Plugin {
     // Pulled models for the operator's djupanalys selector — ANY pulled model
     // may be chosen (a newly pulled one included); the default is the measured
     // recommendation and measured-bad ones carry a warning label.
-    const health = this.settings.conversationEnabled ? await ollamaHealth(this.settings.ollamaUrl) : { ok: false as const };
+    const health = await ollamaHealth(this.settings.ollamaUrl);
     const models = health.ok ? (health.models ?? []) : [];
+    if (health.ok) this.lastModels = models;
     new AnalysisReportModal(this.app, this, reports, models).open();
   }
 
@@ -1466,7 +1475,8 @@ export default class SevenSPlugin extends Plugin {
       let digestForDeep: ReturnType<typeof buildLlmDigest> | null = null;
       if (deep) {
         const health = await ollamaHealth(this.settings.ollamaUrl);
-        const model = deepModel ?? pickDeepModel(health.models ?? [], this.settings.visionModel);
+        if (health.ok) this.lastModels = health.models ?? [];
+        const model = deepModel ?? this.resolveTextModel();
         // The gate checks the model the analysis will actually RUN on — the
         // deep analysis is pure text and does not need the vision model.
         const usable = health.ok && (health.models ?? []).includes(model);
@@ -1487,27 +1497,32 @@ export default class SevenSPlugin extends Plugin {
         }
       }
 
+      // E19 rows + CSV name are decided BEFORE the note renders so the note can
+      // link the file and carry the table itself (the CSV is invisible in
+      // Obsidian's explorer unless "Detect all file extensions" is on).
+      const seq = this.app.vault.getMarkdownFiles().filter((f) => f.path.startsWith(ANALYSIS_FOLDER + "/")).length + 1;
+      const e19Rows = buildE19Rows(analysis, reports, `Report${seq}`, new Set(
+        [...this.lastCorroboration.values()].flatMap((set) => [...set]),
+      ));
+      await this.app.vault.createFolder(ANALYSIS_FOLDER).catch(() => undefined);
+      const taken = (name: string) => this.app.vault.getAbstractFileByPath(`${ANALYSIS_FOLDER}/${name}`) !== null;
+      const filename = reportFilename(range, taken);
+      const csvName = filename.replace(/\.md$/, " underlag.csv");
+
       const input = {
         analysis, state: this.settings, photoRows,
+        e19: { csvName, rows: e19Rows },
         deep: deepInfo, deepUnavailable,
         generatedAt: new Date().toISOString().slice(0, 19),
         operationName: this.settings.operationName ?? "",
         build: `${this.manifest.version}`,
       };
 
-      await this.app.vault.createFolder(ANALYSIS_FOLDER).catch(() => undefined);
-      const taken = (name: string) => this.app.vault.getAbstractFileByPath(`${ANALYSIS_FOLDER}/${name}`) !== null;
-      const filename = reportFilename(range, taken);
       const notePath = `${ANALYSIS_FOLDER}/${filename}`;
       const file = await this.app.vault.create(notePath, renderReportNote(input));
 
       // E19 collation CSV beside the note (Swedish Excel: BOM + semicolons).
-      const seq = this.app.vault.getMarkdownFiles().filter((f) => f.path.startsWith(ANALYSIS_FOLDER + "/")).length;
-      const rows = buildE19Rows(analysis, reports, `Report${seq}`, new Set(
-        [...this.lastCorroboration.values()].flatMap((set) => [...set]),
-      ));
-      const csvName = filename.replace(/\.md$/, " underlag.csv");
-      await this.app.vault.create(`${ANALYSIS_FOLDER}/${csvName}`, renderE19Csv(rows)).catch((err) => {
+      await this.app.vault.create(`${ANALYSIS_FOLDER}/${csvName}`, renderE19Csv(e19Rows)).catch((err) => {
         console.error("ODEN: E19-listan kunde inte skrivas", err);
         new Notice("ODEN: E19-listan kunde inte skrivas (se konsolen).");
       });
@@ -1542,7 +1557,7 @@ export default class SevenSPlugin extends Plugin {
     try {
       // The model was chosen in the flow (operator selection or the measured
       // ladder). Task at the END of one user message.
-      const opts = { ...this.ollamaOpts(), model, timeoutMs: 300_000, numCtx, numPredict: 1500 };
+      const opts = { ...this.textOpts(), model, timeoutMs: 300_000, numCtx, numPredict: 1500 };
       const allowed = new Set(analysis.reports.map((r) => r.tnr));
       let prose: string | null = null;
       let digestText = "";
@@ -2238,24 +2253,38 @@ export default class SevenSPlugin extends Plugin {
 
   /** Live Ollama reachability, refreshed on toggle/analyse; drives the panel dot. */
   visionOnline = false;
-  /** Server answers but the chosen model is NOT pulled — the failure mode that
-   *  otherwise degrades to a silent "0 nya" (found in live E2E: text-only
-   *  qwen3:* pulled, qwen3-vl selected → every call failed quietly while the
-   *  dot showed online). Surfaced in the mode strip + a Notice with the fix. */
-  visionModelMissing = false;
+  /** Server answers but the model a capability needs is NOT pulled — the
+   *  failure mode that otherwise degrades to a silent "0 nya" (found in live
+   *  E2E: text-only qwen3:* pulled, qwen3-vl selected → every call failed
+   *  quietly while the dot showed online). Surfaced in the mode strip + a
+   *  Notice with the fix. Holds the missing tag, per capability. */
+  missingModel: string | null = null;
+  /** Pulled models from the latest health probe — input to resolveTextModel(). */
+  private lastModels: string[] = [];
 
-  /** Record a health probe: online only when the server responds AND the chosen
-   *  model is actually pulled. Returns true when analysis can proceed. */
-  private noteHealth(health: { ok: boolean; models?: string[] }): boolean {
-    this.visionModelMissing = health.ok && !(health.models ?? []).includes(this.settings.visionModel);
-    this.visionOnline = health.ok && !this.visionModelMissing;
+  /** The text model actually used for 📝/💬/djupanalys: the operator's explicit
+   *  choice, or "auto" = the measured ladder over the models pulled at the last
+   *  probe, falling back to the vision model. */
+  resolveTextModel(): string {
+    const t = this.settings.textModel;
+    return t && t !== "auto" ? t : pickDeepModel(this.lastModels, this.settings.visionModel);
+  }
+
+  /** Record a health probe for ONE capability: online only when the server
+   *  responds AND that capability's model is pulled. Returns true when the
+   *  capability can proceed. */
+  private noteHealth(health: { ok: boolean; models?: string[] }, model: string): boolean {
+    if (health.ok) this.lastModels = health.models ?? [];
+    const missing = health.ok && !(health.models ?? []).includes(model);
+    this.missingModel = missing ? model : null;
+    this.visionOnline = health.ok && !missing;
     return this.visionOnline;
   }
 
   /** The operator-facing explanation + fix for a failed probe. */
   private healthProblem(health: { ok: boolean; error?: string }): string {
-    return this.visionModelMissing
-      ? `Ollama svarar, men modellen ${this.settings.visionModel} är inte hämtad. Kör: ollama pull ${this.settings.visionModel}`
+    return this.missingModel
+      ? `Ollama svarar, men modellen ${this.missingModel} är inte hämtad. Kör: ollama pull ${this.missingModel}`
       : `Ollama nås ej (${health.error ?? "okänd"})`;
   }
   /** Report files whose images are being analysed RIGHT NOW — transient
@@ -2466,7 +2495,7 @@ export default class SevenSPlugin extends Plugin {
     this.photoRunActive = true;
     try {
       const health = await this.photoVision().health();
-      const usable = this.noteHealth(health);
+      const usable = this.noteHealth(health, this.settings.visionModel);
       this.getView()?.renderModeStrip();
       if (!usable) {
         this.photoHealthFailedAt = Date.now();
@@ -2535,7 +2564,7 @@ export default class SevenSPlugin extends Plugin {
       return;
     }
     const health = await this.photoVision().health();
-    const usable = this.noteHealth(health);
+    const usable = this.noteHealth(health, this.settings.visionModel);
     this.getView()?.renderModeStrip();
     if (!usable) {
       new Notice(`ODEN: ${this.healthProblem(health)} — deterministiskt läge.`);
@@ -2598,7 +2627,7 @@ export default class SevenSPlugin extends Plugin {
         this.settings.visionEnabled = true;
         await this.saveSettings();
         const health = await this.photoVision().health();
-        const usable = this.noteHealth(health);
+        const usable = this.noteHealth(health, this.settings.visionModel);
         this.getView()?.renderModeStrip();
         if (!usable) new Notice(`ODEN: ${this.healthProblem(health)}.`);
         else void this.analyzePhotosFlow();
@@ -2607,16 +2636,17 @@ export default class SevenSPlugin extends Plugin {
   }
 
   // --- Text-reasoning (📝, open-vocab) + chat (💬) --------------------------
-  private ollamaOpts() {
-    // qwen3-vl is a full language model → one pulled model serves image AND text.
-    return { url: this.settings.ollamaUrl, model: this.settings.visionModel };
+  /** Opts for the TEXT capabilities (📝, 💬, djupanalys) — the resolved text
+   *  model, never the vision model (unless it is the fallback). */
+  private textOpts() {
+    return { url: this.settings.ollamaUrl, model: this.resolveTextModel() };
   }
 
   /** The chat engine for a turn: Ollama refine+narrate when 💬 is on, else the
    *  deterministic parser/passthrough. Findings stay deterministic either way. */
   conversationEngine(): Conversation {
     return this.settings.conversationEnabled
-      ? new OllamaConversation(this.ollamaOpts())
+      ? new OllamaConversation(this.textOpts())
       : new DeterministicConversation();
   }
 
@@ -2633,7 +2663,8 @@ export default class SevenSPlugin extends Plugin {
   async computeTextExtractions(onProgress?: (done: number, total: number) => void, only?: ReadonlySet<string>): Promise<number> {
     if (!this.settings.textReasoningEnabled) return 0;
     const { reports } = await this.readReports();
-    const engine = new OllamaText(this.ollamaOpts());
+    const engine = new OllamaText(this.textOpts());
+    const textModel = this.resolveTextModel();
     const targets = reports.filter((r) => this.prose(r) && (!only || only.has(r.file)));
     let ran = 0;
     let done = 0;
@@ -2641,10 +2672,10 @@ export default class SevenSPlugin extends Plugin {
       const hash = await this.textHash(this.prose(r));
       const cached = this.settings.textExtractions[hash];
       let ok = true;
-      if (!(cached && cached.model === this.settings.visionModel && cached.promptV === TEXT_PROMPT_VERSION)) {
+      if (!(cached && cached.model === textModel && cached.promptV === TEXT_PROMPT_VERSION)) {
         const extraction = await engine.extract(this.prose(r));
         if (extraction) {
-          this.settings.textExtractions[hash] = { model: this.settings.visionModel, promptV: TEXT_PROMPT_VERSION, extraction };
+          this.settings.textExtractions[hash] = { model: textModel, promptV: TEXT_PROMPT_VERSION, extraction };
           await this.saveSettings();
           ran++;
         } else {
@@ -2675,8 +2706,9 @@ export default class SevenSPlugin extends Plugin {
     if (cand.length === 0) return;
     this.textRunActive = true;
     try {
-      const health = await new OllamaText(this.ollamaOpts()).health();
-      const usable = this.noteHealth(health);
+      const health = await new OllamaText(this.textOpts()).health();
+      if (health.ok) this.lastModels = health.models ?? [];
+      const usable = this.noteHealth(health, this.resolveTextModel());
       this.getView()?.renderModeStrip();
       if (!usable) {
         this.textHealthFailedAt = Date.now();
@@ -2794,8 +2826,9 @@ export default class SevenSPlugin extends Plugin {
       new Notice("ODEN: texttolkning pågår redan.");
       return;
     }
-    const health = await new OllamaText(this.ollamaOpts()).health();
-    const usable = this.noteHealth(health);
+    const health = await new OllamaText(this.textOpts()).health();
+    if (health.ok) this.lastModels = health.models ?? [];
+    const usable = this.noteHealth(health, this.resolveTextModel());
     this.getView()?.renderModeStrip();
     if (!usable) {
       new Notice(`ODEN: ${this.healthProblem(health)} — deterministiskt läge.`);
@@ -2854,8 +2887,9 @@ export default class SevenSPlugin extends Plugin {
       async () => {
         this.settings.textReasoningEnabled = true;
         await this.saveSettings();
-        const health = await new OllamaText(this.ollamaOpts()).health();
-        const usable = this.noteHealth(health);
+        const health = await new OllamaText(this.textOpts()).health();
+        if (health.ok) this.lastModels = health.models ?? [];
+        const usable = this.noteHealth(health, this.resolveTextModel());
         this.getView()?.renderModeStrip();
         if (!usable) new Notice(`ODEN: ${this.healthProblem(health)}.`);
         else void this.analyzeTextFlow();
@@ -2868,8 +2902,9 @@ export default class SevenSPlugin extends Plugin {
     this.settings.conversationEnabled = !this.settings.conversationEnabled;
     await this.saveSettings();
     if (this.settings.conversationEnabled) {
-      const health = await new OllamaText(this.ollamaOpts()).health();
-      if (!this.noteHealth(health)) new Notice(`ODEN: ${this.healthProblem(health)}.`);
+      const health = await new OllamaText(this.textOpts()).health();
+      if (health.ok) this.lastModels = health.models ?? [];
+      if (!this.noteHealth(health, this.resolveTextModel())) new Notice(`ODEN: ${this.healthProblem(health)}.`);
     }
     this.getView()?.renderModeStrip();
   }
@@ -3792,9 +3827,14 @@ class SevenSTextView extends ItemView {
     const dot = el.createEl("span");
     if (anyOn) {
       const ok = this.plugin.visionOnline;
-      dot.setText(ok ? `● ${s.visionModel}` : this.plugin.visionModelMissing ? `○ ${s.visionModel} saknas` : "○ offline");
+      const needed = [
+        ...(s.visionEnabled ? [s.visionModel] : []),
+        ...(s.textReasoningEnabled || s.conversationEnabled ? [this.plugin.resolveTextModel()] : []),
+      ].filter((m, i, a) => a.indexOf(m) === i);
+      const missing = this.plugin.missingModel;
+      dot.setText(ok ? `● ${needed.join(" · ")}` : missing ? `○ ${missing} saknas` : "○ offline");
       dot.style.cssText = `color:${ok ? "var(--text-success)" : "var(--text-error)"};`;
-      if (this.plugin.visionModelMissing) dot.setAttribute("aria-label", `Kör: ollama pull ${s.visionModel}`);
+      if (missing) dot.setAttribute("aria-label", `Kör: ollama pull ${missing}`);
     } else {
       dot.setText("deterministiskt läge");
       dot.style.opacity = ".5";
@@ -4051,10 +4091,12 @@ class SevenSSettingTab extends PluginSettingTab {
       );
 
     // --- Lokal LLM — CONFIGURATION only. On/off per capability is a live mode in
-    //     the panel (📷/📝/💬 chips), not here. One model serves all three. ---
+    //     the panel (📷/📝/💬 chips), not here. Two models: bild + text. ---
     new Setting(containerEl).setName("Lokal LLM (bild · text · chat)").setHeading();
     containerEl.createEl("div", {
-      text: "På/av sätts direkt i panelen (📷 bild · 📝 text · 💬 chat) — det är driftläge, inte konfiguration. Kräver en lokal Ollama-server; samma modell betjänar alla tre.",
+      text:
+        "På/av sätts direkt i panelen (📷 bild · 📝 text · 💬 chat) — det är driftläge, inte konfiguration. " +
+        "Kräver en lokal Ollama-server. Bildmodellen används för foton; textmodellen för textanalys, chatten och djupanalysen.",
     }).style.cssText = "opacity:.7;font-size:.85em;margin:-6px 0 8px;";
 
     new Setting(containerEl)
@@ -4071,8 +4113,8 @@ class SevenSSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Modell")
-      .setDesc("Bildmodell (Ollama). qwen3-vl:4b är standard; större modeller är noggrannare men kräver mer RAM.")
+      .setName("Bildmodell")
+      .setDesc("För fotoanalys (Ollama, qwen3-vl). qwen3-vl:4b är standard; större modeller är noggrannare men kräver mer RAM.")
       .addDropdown((d) => {
         for (const m of VISION_MODELS) d.addOption(m.tag, m.label);
         d.setValue(this.plugin.settings.visionModel).onChange(async (v) => {
@@ -4081,16 +4123,45 @@ class SevenSSettingTab extends PluginSettingTab {
         });
       });
 
+    // Textmodell: "auto" + every pulled model (live probe, appended when it
+    // answers). qwen3-vl tags ignore think:false and drown on analytical text
+    // (measured) — hence a separate, text-family default.
+    new Setting(containerEl)
+      .setName("Textmodell")
+      .setDesc("För textanalys, chatten och djupanalysen. \"auto\" väljer bästa hämtade textmodell (qwen3:32b → 14b → 8b) och faller tillbaka på bildmodellen. Hämta t.ex. ollama pull qwen3:8b.")
+      .addDropdown((d) => {
+        d.addOption("auto", "auto — bästa hämtade textmodell (rekommenderas)");
+        const current = this.plugin.settings.textModel || "auto";
+        if (current !== "auto") d.addOption(current, current);
+        d.setValue(current).onChange(async (v) => {
+          this.plugin.settings.textModel = v;
+          await this.plugin.saveSettings();
+        });
+        void ollamaHealth(this.plugin.settings.ollamaUrl).then((h) => {
+          if (!h.ok) return;
+          const rec = pickDeepModel(h.models ?? [], this.plugin.settings.visionModel);
+          for (const m of [...(h.models ?? [])].sort()) {
+            if (m === current) continue;
+            d.addOption(m, deepModelLabel(m, rec));
+          }
+          d.setValue(this.plugin.settings.textModel || "auto");
+        });
+      });
+
     new Setting(containerEl)
       .setName("Anslutning")
       .setDesc(`ODEN v${this.plugin.manifest.version} — build ${ODEN_BUILD}`)
       .addButton((b) =>
         b.setButtonText("Testa anslutning").onClick(async () => {
-          const h = await new OllamaVision({ url: this.plugin.settings.ollamaUrl, model: this.plugin.settings.visionModel }).health();
-          if (!h.ok) new Notice(`ODEN: Ollama nås ej (${h.error ?? "okänd"}).`);
-          else if (!(h.models ?? []).includes(this.plugin.settings.visionModel))
-            new Notice(`ODEN: Ollama svarar, men ${this.plugin.settings.visionModel} är inte hämtad. Kör: ollama pull ${this.plugin.settings.visionModel}`);
-          else new Notice(`ODEN: Ollama ✓ — ${this.plugin.settings.visionModel} redo.`);
+          const h = await ollamaHealth(this.plugin.settings.ollamaUrl);
+          if (!h.ok) { new Notice(`ODEN: Ollama nås ej (${h.error ?? "okänd"}).`); return; }
+          const models = h.models ?? [];
+          const vision = this.plugin.settings.visionModel;
+          const textSetting = this.plugin.settings.textModel || "auto";
+          const text = textSetting === "auto" ? pickDeepModel(models, vision) : textSetting;
+          const line = (tag: string, role: string) =>
+            models.includes(tag) ? `${role}: ${tag} ✓` : `${role}: ${tag} saknas — ollama pull ${tag}`;
+          new Notice(`ODEN: Ollama svarar.\n${line(vision, "Bild")}\n${line(text, textSetting === "auto" ? "Text (auto)" : "Text")}`, 8000);
         }),
       );
   }
@@ -4384,7 +4455,7 @@ class AnalysisReportModal extends Modal {
     // Model selector: EVERY pulled model is offered (a newly pulled one too).
     // Default = the measured recommendation; measured-bad ones carry a warning
     // label, and the format gate turns a bad pick into an honest failure line.
-    const recommended = pickDeepModel(this.models, this.plugin.settings.visionModel);
+    const recommended = this.plugin.resolveTextModel();
     let modelSel: HTMLSelectElement | null = null;
     if (deepPossible) {
       const mRow = contentEl.createDiv();

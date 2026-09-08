@@ -80,7 +80,9 @@ infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
 ## Operatörens modellval
 
 Modalen listar ALLA dragna Ollama-modeller (även nyss hämtade) i en väljare:
-förvalet är den uppmätta rekommendationen (`pickDeepModel`), uppmätt
+förvalet är **textmodellen** (Settings → ODEN → Textmodell; "auto" =
+`pickDeepModel` över hämtade modeller — sedan 2026-09-08 delar textanalys,
+chatt och djupanalys den inställningen, skild från bildmodellen), uppmätt
 oanvändbara modeller märks "(avråds — uppmätt oanvändbar)", och omärkta
 modeller är helt enkelt omätta — kör evalen och fyll i tabellen innan de
 rekommenderas. Ett dåligt val är ofarligt: formatvakten gör svamlet till den

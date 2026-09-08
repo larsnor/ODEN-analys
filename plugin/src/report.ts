@@ -281,9 +281,9 @@ export function deepModelLabel(model: string, recommended: string): string {
   return model;
 }
 
-export function pickDeepModel(available: readonly string[], visionModel: string): string {
+export function pickDeepModel(available: readonly string[], fallback: string): string {
   for (const m of DEEP_TEXT_MODELS) if (available.includes(m)) return m;
-  return visionModel;
+  return fallback;
 }
 
 /** Format gate: did the model actually answer in the demanded shape? A weak
@@ -326,6 +326,9 @@ export interface ReportNoteInput {
   state: PluginState;
   /** Photo findings for in-range reports, assembled by the shell from caches. */
   photoRows: { file: string; tnr: string; labels: string[] }[];
+  /** The E19 collation list: rows rendered as a table IN the note (always
+   *  readable in Obsidian) + the CSV filename written beside it (Excel). */
+  e19?: { csvName: string; rows: E19Row[] };
   /** Set when djupanalys was requested — renders the placeholder section. */
   deep?: { model: string; promptV: string; numCtx: number; numCtxWhy: string };
   /** Deep requested but unavailable (Ollama down) — honest section text. */
@@ -416,6 +419,20 @@ export function buildTier1Report(i: ReportNoteInput): string {
   return out.join("\n");
 }
 
+/** The E19 list as a Markdown table — every cell through mdText. */
+export function renderE19Table(rows: E19Row[]): string {
+  const h = ["Löpnummer", "TNR", "Stund", "Plats", "MGRS", "Strukt.begrepp", "Händelsebeskrivning", "Tillförl.", "Sakrikt.", "Ref Undbehov", "Källa", "Diarienr"];
+  const out = [`| ${h.join(" | ")} |`, `|${h.map(() => " --- ").join("|")}|`];
+  const cell = (v: string) => mdText(v ?? "").replace(/\|/g, "\\|").replace(/\r?\n/g, " ");
+  for (const r of rows) {
+    out.push(
+      `| ${[r.lopnummer, r.tnr, r.stund, r.plats, r.mgrs, r.struktureringsbegrepp, r.handelsebeskrivning,
+        r.tillforlitlighet, r.sakriktighet, r.refUndbehov, r.kalla, r.diarienr].map(cell).join(" | ")} |`,
+    );
+  }
+  return out.join("\n");
+}
+
 export function renderReportNote(i: ReportNoteInput): string {
   const a = i.analysis;
   const fm = [
@@ -432,6 +449,17 @@ export function renderReportNote(i: ReportNoteInput): string {
     "tags: [analysrapport]",
     "---",
   ];
+
+  const e19Section: string[] = [];
+  if (i.e19) {
+    e19Section.push("", "## E19-lista", "");
+    e19Section.push(
+      `_Samma lista som CSV-filen [[${i.e19.csvName.replace(/\.csv$/, "")}.csv|${mdText(i.e19.csvName)}]] bredvid rapporten ` +
+        "(öppnas i Excel via högerklick → \"Open in default app\"; syns i filutforskaren när \"Detect all file extensions\" är på)._",
+      "",
+      renderE19Table(i.e19.rows),
+    );
+  }
 
   const provenance: string[] = ["", "## Underlag", ""];
   provenance.push(`- **Period:** ${a.range.label} (inklusive)`);
@@ -461,7 +489,7 @@ export function renderReportNote(i: ReportNoteInput): string {
     deepSection.push("_Ej begärd._");
   }
 
-  return fm.join("\n") + "\n\n" + buildTier1Report(i) + provenance.join("\n") + "\n" + deepSection.join("\n") + "\n";
+  return fm.join("\n") + "\n\n" + buildTier1Report(i) + e19Section.join("\n") + provenance.join("\n") + "\n" + deepSection.join("\n") + "\n";
 }
 
 /** "Analys 2026-09-01–2026-09-05.md"; collision → " (2)", " (3)"… */

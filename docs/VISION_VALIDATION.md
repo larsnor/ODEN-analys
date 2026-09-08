@@ -187,7 +187,9 @@ rymden nomineras nu ur foto, per-fynd-grindad som förut.
 
 ## Beslut (2026-07-14)
 
-**Kuraterad `VISION_MODELS` (frozen; dropdown i inställningar):**
+**Kuraterad `VISION_MODELS` (frozen; dropdown "Bildmodell" i inställningar —
+gäller ENBART fotoanalysen; text/chatt/djupanalys har sedan 2026-09-08 en egen
+"Textmodell", se REPORT_VALIDATION.md):**
 
 | tag | storlek | roll | belägg |
 |---|---|---|---|

@@ -242,8 +242,9 @@ skyddsvärda platser larmar vid närhet). Låt sedan intaget leverera
 
 Kommandot **"ODEN: Genomför analys"** (även i `⋯`-menyn) tar ett datumspann och
 skriver en analysrapport till mappen `analys/`: larm, tidslinje, återkommande
-fordon, aktörer, platser — plus en **E19-lista** (CSV med semikolon och BOM,
-öppnas direkt i Excel; tillförlitlighet/sakriktighet sätts bara så ärligt som
+fordon, aktörer, platser — plus en **E19-lista** (som tabell i rapporten och
+som CSV-fil bredvid — semikolon och BOM,
+öppnas i Excel via högerklick → *Open in default app*; äldre valv behöver **Settings → Files & links → Detect all file extensions** för att visa CSV-filen; tillförlitlighet/sakriktighet sätts bara så ärligt som
 en maskin kan — F respektive 2/3/6 — och justeras av dig). Med 💬 påslaget kan
 **Djupanalys** dessutom låta den lokala modellen föreslå mönsterhypoteser över
 periodens SAMTLIGA meddelanden — källhänvisade förslag att verifiera, aldrig
@@ -260,11 +261,17 @@ du bekräftar eller avvisar (`föreslagen-av: llm`).
 
 1. Installera [Ollama](https://ollama.com), en lokal modellserver som kör helt
    offline.
-2. Kör `ollama pull qwen3-vl:4b` i en terminal (cirka 3 GB; standardvalet.
-   `:8b` är noggrannare men kräver minst 32 GB RAM – siffror finns i
-   `docs/VISION_VALIDATION.md`).
-3. Öppna **Settings → ODEN**, kontrollera adress och modell, och tryck
-   **"Testa anslutning"**.
+2. Hämta två modeller i en terminal: **`ollama pull qwen3-vl:4b`** (bildmodellen,
+   cirka 3 GB; `:8b` är noggrannare men kräver minst 32 GB RAM – siffror i
+   `docs/VISION_VALIDATION.md`) och **`ollama pull qwen3:8b`** (textmodellen för
+   textanalys, chatten och djupanalysen, cirka 5 GB; `qwen3:32b` på maskiner
+   med 48 GB RAM ger klart bättre djupanalys – mätningar i
+   `docs/REPORT_VALIDATION.md`). Varför två? Bildmodellerna (qwen3-vl) är
+   "tänkande" varianter som drunknar i analytisk text; textfamiljen qwen3 är
+   snabbare och lyder. Textmodellen står på **auto** som standard: ODEN väljer
+   bästa hämtade textmodell och faller tillbaka på bildmodellen om ingen finns.
+3. Öppna **Settings → ODEN**, kontrollera adress, bildmodell och textmodell,
+   och tryck **"Testa anslutning"** — den rapporterar båda.
 4. Slå på chipsen i panelen (en engångsvarning om hastighet visas). Ollama kan
    för övrigt köras på en starkare maskin i nätverket – ändra bara adressen.
 

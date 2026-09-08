@@ -143,6 +143,18 @@ test("renderReportNote: frontmatter + provenance + deep placeholder/absence", ()
   assert.match(deep, /modell: "qwen3-vl:4b"/);
 });
 
+test("renderReportNote: E19 list rendered IN the note as a table + CSV link", () => {
+  const i = noteInput();
+  const rows = buildE19Rows(i.analysis, i.analysis.reports, "Report1");
+  const md = renderReportNote({ ...i, e19: { csvName: "Analys x underlag.csv", rows } });
+  assert.ok(md.includes("## E19-lista"));
+  assert.ok(md.includes("[[Analys x underlag.csv|Analys x underlag.csv]]"), "CSV linked from the note");
+  const tableRows = md.split("\n").filter((l) => /^\| Report1_\d{4} \|/.test(l));
+  assert.equal(tableRows.length, i.analysis.reports.length, "one table row per report");
+  assert.ok(md.includes("| Löpnummer | TNR | Stund | Plats | MGRS |"));
+  assert.ok(md.indexOf("## E19-lista") < md.indexOf("## Underlag"), "table before Underlag");
+});
+
 test("reportFilename: date span + collision suffixes, no illegal chars", () => {
   const seen = new Set<string>(["Analys 2026-06-16–2026-06-16.md"]);
   const name = reportFilename(RANGE, (n) => seen.has(n));
