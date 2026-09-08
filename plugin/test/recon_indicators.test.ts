@@ -60,6 +60,9 @@ test("benign prose (incl. near-misses) raises NO behaviour signal (precision gua
 const THREATS = [
   // sabotage
   "Klippte upp stängslet med en bultsax och tog sig in.",
+  "En kvinna försöker klippa sönder stängslet.", // infinitive + sönder (live E2E TNR292055)
+  "Börjar klippa upp nätet vid grinden.",
+  "Klipper sönder taggtråden bakom förrådet.",
   "Manipulerade ett kabelskåp och kopplade bort strömmen.",
   "Bände upp en lucka med kofot vid stationen.",
   // infiltration

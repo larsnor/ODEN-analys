@@ -102,7 +102,10 @@ export function suspectHypId(key: string): string {
  */
 export function isActorCandidate(s: Suspect): boolean {
   if (s.obs.length > 1) return true; // repeat sighting of the same agent
-  return s.obs.some((o) => o.reasons.some((r) => r.key.startsWith("beteende:")));
+  // A behavioural signal — or the operator's own larmflagga, the strongest
+  // assertion there is (live E2E 2026-09-08: a flagged single sighting became
+  // a map marker whose note promised a review that never existed).
+  return s.obs.some((o) => o.reasons.some((r) => r.key.startsWith("beteende:") || r.key === "operatörsflagga"));
 }
 
 /** Convert suspects to single-facet ActorHypotheses for the actor review. */

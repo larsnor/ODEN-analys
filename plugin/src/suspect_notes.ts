@@ -6,7 +6,7 @@
  * Provenance: källa/generator: 7s-plugin, metod: larm (per-job pruned). The level
  * (Hög/Förhöjd/…) lives HERE (frontmatter `nivå` + a line), not in the feed/log.
  */
-import { Suspect } from "./suspects";
+import { Suspect, isActorCandidate } from "./suspects";
 import { safeFilename } from "./entity_notes";
 import { safeAgentFilename } from "./notenames";
 import { mdText } from "./mdsafe";
@@ -71,9 +71,17 @@ export function renderSuspectNote(s: Suspect, nicks?: Nicknames, locStemOf?: Ste
   body.push("## Observationer");
   body.push(...obsLines);
   body.push("");
+  // Promise only what exists: a candidate (behaviour, operator flag or repeat
+  // sighting) IS in the panel's actor review; a lone proximity/time marker is
+  // not — say so, and point at bevakning instead. Removal is tied to the
+  // alarm ending (no time decay exists), never to "activity fading".
   body.push(
-    "_Misstänkt agent. Verifiera i ODEN-panelen för att skapa en bekräftad aktör. " +
-      "Avförs automatiskt om aktiviteten avtar._",
+    isActorCandidate(s)
+      ? "_Misstänkt agent — ligger som aktörsförslag i ODEN-panelen (⋯ → Aktörsförslag att granska). " +
+          "Avförs automatiskt när larmet upphör (poängen faller under tröskeln eller larmflaggan tas bort)._"
+      : "_Misstänkt agent (närhet/tid, ingen beteendesignal). Blir ett aktörsförslag först vid en " +
+          "beteendesignal, en larmflagga eller en återkommande observation — 🔭 Bevaka tills dess. " +
+          "Avförs automatiskt när larmet upphör (poängen faller under tröskeln)._",
   );
 
   return { filename: suspectFilename(s), markdown: fm.join("\n") + "\n\n" + body.join("\n") + "\n" };

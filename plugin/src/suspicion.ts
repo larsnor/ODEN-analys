@@ -126,6 +126,11 @@ export const THREAT_INDICATORS: Array<{ key: string; label: string; weight?: num
     "manipulera", "bände upp", "bänder upp", "bröt sig in", "bryter sig in", "bryter loss",
     "bryter upp", "kopplade bort", "kopplar bort", "saboterade", "saboterar", "sabotage",
     "klippte upp", "klippte hål", "klipper upp", "klipper hål", "sågade av", "sågar av",
+    // Infinitive after "försöker/börjar" and the "sönder" form — live E2E
+    // 2026-09-08: "försöker klippa sönder stängslet" 334 m from the objektet
+    // scored proximity-only. Gated: zero benign hits in corpus A/B + indicator
+    // lists ("klipper gräset"/"klippte gräs" untouched).
+    "klippa upp", "klippa hål", "klippa sönder", "klipper sönder", "klippte sönder",
     "dyrkade", "dyrkar", "bultsax", "avbitartång", "kofot", "bågfil", "sprängmedel",
     "brytverktyg", "brutit sönder"] },
   // --- Terrorism: unattended object + vehicle probing (weight 3) --------------

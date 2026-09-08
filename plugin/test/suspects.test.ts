@@ -4,6 +4,7 @@ import { strict as assert } from "node:assert";
 import { test } from "node:test";
 import { Report } from "../src/parse.ts";
 import { analyzeSuspicion } from "../src/suspicion.ts";
+import { OPERATOR_FLAG_SIGNAL } from "../src/suspicion.ts";
 import { buildSuspects, suspectHypotheses, suspectHypId, isActorCandidate } from "../src/suspects.ts";
 import { suspectFilename, renderSuspectNote } from "../src/suspect_notes.ts";
 
@@ -93,6 +94,16 @@ test("isActorCandidate: proximity+time only is NOT nominated; behaviour or repea
   const rp = buildSuspects(repeat, analyzeSuspicion(repeat, PROT));
   assert.equal(rp[0].obs.length, 2, "same agent grouped");
   assert.equal(isActorCandidate(rp[0]), true, "repeat sighting → candidate");
+});
+
+test("isActorCandidate: the operator's larmflagga alone nominates (live E2E 2026-09-08)", () => {
+  const r = report({ tnr: "292055", tidpunkt: "2026-08-29T20:55:00", lat: 59.26166, lon: 17.71779, symbol: "korta byxor",
+    handelse: "en kvinna försöker klippa sönder stängslet" });
+  (r as { confirmedBehaviours?: unknown[] }).confirmedBehaviours = [OPERATOR_FLAG_SIGNAL];
+  const susp = analyzeSuspicion([r], { protectedLat: 59.2622, protectedLon: 17.712, threshold: 5 });
+  const s = buildSuspects([r], susp);
+  assert.equal(s.length, 1);
+  assert.equal(isActorCandidate(s[0]), true, "flagged single sighting → reviewable");
 });
 
 test("hypothesis carries the latest observation's coords (→ map position on confirm)", () => {
