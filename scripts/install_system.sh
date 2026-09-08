@@ -24,8 +24,18 @@ ODEN_INSTALLER_SNAPSHOT="https://raw.githubusercontent.com/NicklasAndersson/oden
 ODEN_INSTALLER_RELEASE="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh"
 # Äldsta Oden-version utan kända 7S-luckor (foton + koordinater).
 ODEN_MIN_OK="3.2.0"
+# Profile: "release" = the OPERATIONAL vault (ODEN-valv, no demo data);
+# "training" = the TRAINING vault (ODEN-övning, every demo cartridge). Same
+# release, same plugin — only the vault package differs. install_training.sh
+# is the one-line wrapper that sets this.
+PROFILE="${ODEN_PROFILE:-release}"
+case "$PROFILE" in
+  release)  ASSET_PREFIX="ODEN-valv-";   VALV_NAME="ODEN-valv" ;;
+  training) ASSET_PREFIX="ODEN-ovning-"; VALV_NAME="ODEN-övning" ;;
+  *) printf 'FEL: okänd ODEN_PROFILE=%s (release|training)\n' "$PROFILE" >&2; exit 1 ;;
+esac
 TARGET_PARENT="${ODEN_VALV_DIR:-$HOME/Documents}"
-VALV_DIR="$TARGET_PARENT/ODEN-valv"
+VALV_DIR="$TARGET_PARENT/$VALV_NAME"
 
 info()  { printf '\033[0;34mℹ %s\033[0m\n' "$1"; }
 ok()    { printf '\033[0;32m✓ %s\033[0m\n' "$1"; }
@@ -34,26 +44,30 @@ fail()  { printf '\033[0;31m✗ %s\033[0m\n' "$1" >&2; exit 1; }
 [ "$(uname)" = "Darwin" ] || fail "Det här skriptet är för macOS. Se INSTALL.md för andra plattformar."
 command -v python3 >/dev/null || fail "python3 saknas (ingår i macOS — kör xcode-select --install)."
 
-printf '\n\033[1m=== ODEN — installation av hela systemet ===\033[0m\n\n'
+if [ "$PROFILE" = "training" ]; then
+  printf '\n\033[1m=== ODEN — installation av hela systemet (ÖVNINGSVARIANT) ===\033[0m\n\n'
+else
+  printf '\n\033[1m=== ODEN — installation av hela systemet ===\033[0m\n\n'
+fi
 
 # --- 1. ODEN-valv -----------------------------------------------------------
 if [ -e "$VALV_DIR" ]; then
   ok "Valvet finns redan: $VALV_DIR (rörs inte — ett valv skrivs aldrig över)"
 else
-  info "Hämtar senaste ODEN-valv från GitHub-releasen…"
-  ASSET_URL=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | python3 -c '
-import json, sys
+  info "Hämtar senaste $VALV_NAME från GitHub-releasen…"
+  ASSET_URL=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | ASSET_PREFIX="$ASSET_PREFIX" python3 -c '
+import json, os, sys
 rel = json.load(sys.stdin)
 for a in rel.get("assets", []):
-    if a["name"].startswith("ODEN-valv-") and a["name"].endswith(".zip"):
+    if a["name"].startswith(os.environ["ASSET_PREFIX"]) and a["name"].endswith(".zip"):
         print(a["browser_download_url"]); break
 ')
-  [ -n "$ASSET_URL" ] || fail "Hittade ingen ODEN-valv-*.zip i senaste releasen ($REPO)."
+  [ -n "$ASSET_URL" ] || fail "Hittade ingen ${ASSET_PREFIX}*.zip i senaste releasen ($REPO)."
   TMP_ZIP=$(mktemp -t oden-valv).zip
   trap 'rm -f "$TMP_ZIP"' EXIT
   curl -fsSL "$ASSET_URL" -o "$TMP_ZIP"
   mkdir -p "$TARGET_PARENT"
-  # Zippen innehåller toppmappen ODEN-valv/ — packas upp bredvid, aldrig över.
+  # Zippen innehåller toppmappen $VALV_NAME/ — packas upp bredvid, aldrig över.
   python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])" "$TMP_ZIP" "$TARGET_PARENT"
   [ -d "$VALV_DIR" ] || fail "Uppackningen gav inte $VALV_DIR — kontrollera zip-innehållet."
   ok "Valv på plats: $VALV_DIR"
@@ -114,5 +128,14 @@ cat <<EOF
 5. Testa: skicka ett 7S RAPPORT-meddelande i Signal-gruppen — rapporten landar i
    inkorg/ och dyker upp i ODEN-panelens flöde.
 EOF
+if [ "$PROFILE" = "training" ]; then
+  cat <<EOF
+6. Övning: kommandopaletten har ett kommando per demokassett —
+   "ODEN: Mata demodata — Tierps flygfält" osv. Kommandot byter
+   operationsområde till kassetten och spelar upp korpusen i egen rytm.
+   demo/LÄS-MIG.md beskriver hotbilden i varje kassett; "Nollställ valvet"
+   återställer inför nästa. (Steg 3–5 behövs bara om skarp Signaltrafik ska in.)
+EOF
+fi
 printf '\n'
 ok "Klart."

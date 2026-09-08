@@ -7,7 +7,8 @@ man väljer beror på var man börjar:
 
 | Zip | För vem |
 |---|---|
-| `ODEN-valv-<v>.zip` | **Ny användare (rekommenderas)** – ett komplett, färdigkonfigurerat valv med ODEN, kartpluginet Map View, demodata och en Välkommen-guide. |
+| `ODEN-valv-<v>.zip` | **Operativt valv (rekommenderas för skarp drift)** – komplett, färdigkonfigurerat: ODEN, kartpluginet Map View och en Välkommen-guide. Ingen demodata. |
+| `ODEN-ovning-<v>.zip` | **Övningsvalv** – samma valv (mappen `ODEN-övning`) plus sex demokassetter med olika platser och hotbilder. Kan ligga bredvid det operativa. |
 | `ODEN-plugin-<v>.zip` | Den som redan har ett eget Obsidian-valv och vill lägga in ODEN där. |
 
 ODEN gör inga nätverksanrop. Det enda som någonsin rör nätet är Map Views
@@ -27,9 +28,10 @@ Tre steg, sedan är allt igång:
    [obsidian.md/download](https://obsidian.md/download). På macOS öppnar man
    dmg-filen och drar Obsidian till Program, på Windows kör man installeraren,
    och på Linux finns AppImage och .deb.
-2. **Ladda ner `ODEN-valv-<v>.zip`** från senaste releasen och packa upp den
-   där du vill ha ditt arbetsvalv, till exempel i Dokument. Du får en mapp som
-   heter `ODEN-valv`.
+2. **Ladda ner `ODEN-valv-<v>.zip`** (operativt) **eller `ODEN-ovning-<v>.zip`**
+   (övning, med demokassetter) från senaste releasen och packa upp den där du
+   vill ha ditt arbetsvalv, till exempel i Dokument. Du får en mapp som heter
+   `ODEN-valv` respektive `ODEN-övning` — de kan ligga bredvid varandra.
 3. **Öppna valvet:** starta Obsidian, välj **"Open folder as vault"**, peka ut
    `ODEN-valv` och svara **"Trust author and enable plugins"** när Obsidian
    frågar.
@@ -112,8 +114,16 @@ skriver varje sådant som en färdig rapportfil i valvet — som ODEN analyserar
 direkt. Snabbast är samlingsskriptet:
 
 ```bash
+# Operativ installation (ODEN-valv, ingen demodata):
 curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh | bash
+
+# Övningsinstallation (ODEN-övning, sex demokassetter — samma release, samma plugin):
+curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_training.sh | bash
 ```
+
+Två ingångar, ett system: skripten skiljer sig bara i vilket valvpaket som
+hämtas (`ODEN_PROFILE=training` under huven). Pluginen är identisk — demo-
+kommandona visar sig bara när mappen `demo/` finns.
 
 Det hämtar senaste ODEN-valv, installerar Oden.app via **dess eget officiella
 installationsskript**, hoppar över allt som redan finns och skriver aldrig över
@@ -196,20 +206,29 @@ operatörens beslut – man varnas först.
 
 ## Demoläge – lär dig ODEN utan verktyg
 
-I det färdiga valvet ligger mappen `demo/`: en syntetisk övningskorpus över
-fjorton dygn kring HvSS Vällinge, drygt 360 rapporter varav en del med foton,
-en dold spaningscell, en infiltrationscell och en demonstration. Korpusen är
-daterad från paketeringsdagen, så den blandas naturligt med skarp trafik i
-flödet. Inga riktiga personer eller fordon förekommer.
+I det färdiga valvet ligger mappen `demo/` med sex **demokassetter** — fristående
+syntetiska övningskorpusar med egen plats, egen hotbild och eget facit:
+HvSS Vällinge (standardkorpusen med foton), Centrala Uppsala
+(demonstrationstung, slottet–domkyrkan), Tranbygge läger på Kungsängens
+övningsfält (spaning + infiltration), Norrtälje hamn (sabotagecell), Tierps
+flygfält (hög: spaning, infiltration, demonstration, foton) och Södertälje Syd
+(låg hotnivå, stationsmiljö). Alla är daterade från
+paketeringsdagen så de blandas naturligt med skarp trafik. Inga riktiga
+personer eller fordon förekommer.
 
-Sätt operationsområdet till `59.2622,17.712` och kör kommandot **"ODEN: Mata
-demodata"** – välj speltid (15 minuter är lagom) så droppar rapporterna in i
-korpusens egen rytm; samma kommando pausar och återupptar. Granska förslag,
-flagga larm, bevaka och fråga i chatten under tiden. Den som hellre matar för
-hand drar innehållet i `demo/batch-01/` till `inkorg/`, batch för batch. Facit
-ligger i `demo/facit.json` när du vill rätta dig själv.
+Kommandopaletten har ett kommando per kassett: **"ODEN: Mata demodata —
+Tierps flygfält"** och så vidare. Kommandot erbjuder sig att byta
+operationsområde till kassettens plats (utan bytet uteblir närhetssignalerna),
+frågar efter speltid (15 minuter är lagom) och matar rapporterna i korpusens
+egen rytm; samma kommando pausar och återupptar. `⋯ → Mata demodata…` öppnar en
+väljare. Granska förslag, flagga larm, bevaka och fråga i chatten under tiden.
+Den som hellre matar för hand drar innehållet i `demo/<kassett>/batch-01/`
+till `inkorg/`, batch för batch. Facit ligger i `demo/<kassett>/facit.json`;
+**"ODEN: Nollställ valvet"** flyttar matade rapporter tillbaka till sin
+kassett.
 
-Egna korpusar, med andra platser och hotbilder, genereras med
+Egna kassetter, med andra platser och hotbilder, läggs till i
+`scripts/cartridges.sh` och genereras med
 [7S-generator](https://github.com/larsnor/7S-generator).
 
 ## Skarp drift

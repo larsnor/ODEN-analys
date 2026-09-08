@@ -43,11 +43,13 @@ Utan nyckel fungerar kartan ändå, men rutorna får texten *"API key required"*
 Vill du slippa den under tiden byter du kartkälla till **OpenStreetMap (ingen
 nyckel)**, som följer med i valvet.
 
-Vill man öva först finns mappen `demo/` i valvet: en syntetisk övningskorpus
-över fjorton dygn med drygt 360 rapporter, foton, en dold spaningscell, en
-infiltrationscell och en demonstration. Kör kommandot *"ODEN: Mata demodata"* så spelas den upp i
-korpusens egen rytm över den tid du väljer – inga extra verktyg behövs, och
-facit ligger bredvid. För skarp drift raderar man `demo/`, sätter sitt riktiga
+Vill man öva först finns mappen `demo/` i valvet med sex **demokassetter** –
+syntetiska övningskorpusar på olika platser (HvSS Vällinge, centrala Uppsala,
+Tranbygge läger, Norrtälje hamn, Tierps flygfält, Södertälje Syd) med varierande hotbild:
+spanings-, infiltrations-, sabotage- och terrorceller, demonstrationer, foton.
+Kör *"ODEN: Mata demodata — <plats>"* så byter ODEN operationsområde dit och
+spelar upp kassetten i korpusens egen rytm över den tid du väljer – inga extra
+verktyg behövs, och facit ligger bredvid. För skarp drift raderar man `demo/`, sätter sitt riktiga
 område och låter intaget leverera rapporterna till `inkorg/`.
 
 Behöver du en **periodrapport**? `⋯ → Genomför analys…` väljer ett datumspann
@@ -69,7 +71,11 @@ färdig rapportfil i valvet. ODEN analyserar dem i samma stund de landar. Hela
 kedjan installeras med ett kommando:
 
 ```bash
+# Operativ installation (skarpt valv, ingen demodata):
 curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh | bash
+
+# Övningsinstallation (samma system + sex demokassetter, valvet ODEN-övning):
+curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_training.sh | bash
 ```
 
 Skriptet hämtar valvet, installerar Oden via dess officiella installations­skript
@@ -112,7 +118,7 @@ npm install
 npm run typecheck   # inga typfel
 npm test            # kör hela testsviten mot fixturerna
 npm run build       # skapar main.js
-npm run package     # bygger dist/ODEN-plugin-<v>.zip + dist/ODEN-valv-<v>.zip
+npm run package     # bygger dist/ODEN-plugin-<v>.zip + ODEN-valv-<v>.zip (operativt) + ODEN-ovning-<v>.zip (övning)
 ```
 Kopiera `plugin/main.js` + `plugin/manifest.json` till
 `<din-vault>/.obsidian/plugins/7s-analys/` och aktivera pluginet i Obsidian.

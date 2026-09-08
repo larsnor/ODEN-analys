@@ -83,3 +83,12 @@ test("origin keys: ids and filenames, id optional", () => {
 test("analys/ is NOT a kept root entry — Nollställ removes analysis reports (fresh install ships none)", () => {
   assert.ok(!keptRootEntries("entities").has("analys"));
 });
+
+test("batch plan: a cartridge root places batches under demo/<id>/", () => {
+  const facit: FacitEntry[] = [
+    { file: "TNR010800.md", tidpunkt: "2026-09-01T08:00:00" },
+    { file: "TNR010900.md", tidpunkt: "2026-09-01T09:00:00" },
+  ];
+  const plan = demoBatchPlan(facit, 25, "demo/tierp");
+  assert.equal(plan.get("TNR010800.md"), "demo/tierp/batch-01");
+});

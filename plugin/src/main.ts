@@ -31,6 +31,10 @@ import {
 } from "obsidian";
 import { corpusMinutes, demoSchedule } from "./demo";
 import { demoBatchPlan, demoOriginKeys, FacitEntry, isShippedFixture, keptRootEntries } from "./reset";
+import {
+  Cartridge, cartridgeCommandId, cartridgeCommandName, cartridgeNeedsAoiSwitch, discoverCartridges,
+} from "./cartridge";
+import { haversineM } from "./mgrs";
 import { ParseIssue, parseMapSeed, parseReport, Report } from "./parse";
 import { buildPlateEntities } from "./reid";
 import { plateIdentifiers } from "./ids";
@@ -367,6 +371,9 @@ export default class SevenSPlugin extends Plugin {
         return true;
       },
     });
+    // One palette command per demo cartridge ("Mata demodata — Tierps
+    // flygplats") — registered once the vault index is ready (discovery
+    // reads demo/<id>/cartridge.json).
 
     // Demo turnaround: back to a freshly installed vault — fed reports return
     // to demo/, everything else ODEN ingested, derived or judged is removed.
@@ -443,6 +450,7 @@ export default class SevenSPlugin extends Plugin {
       await this.cleanupDialogNote();
       if (this.settings.setupComplete) await this.writeAoiNote(); // self-heal the Objektet marker
       await this.reconcileActorNodes();
+      await this.discoverDemoCartridges();
       await this.baselineAlerts();
     });
   }
@@ -2946,9 +2954,46 @@ export default class SevenSPlugin extends Plugin {
   // --- Demo playback (operator-commanded moves demo/ → inkorg/) --------------
   private demoTimer: number | null = null;
   private demoRunning = false;
+  /** Cartridges found under demo/ (see cartridge.ts); the legacy flat layout
+   *  appears as one unnamed cartridge rooted at demo/. */
+  private cartridges: Cartridge[] = [];
+  /** The cartridge a paused run belongs to — resume continues the same one. */
+  private demoCartridge: Cartridge | null = null;
 
-  /** Command/menu toggle: running → pause; otherwise ask for a window and start. */
-  toggleDemoFeed(): void {
+  /** Scan demo/ for cartridges and register one palette command each. */
+  private async discoverDemoCartridges(): Promise<void> {
+    const demo = this.app.vault.getAbstractFileByPath("demo");
+    if (!(demo instanceof TFolder)) {
+      this.cartridges = [];
+      return;
+    }
+    const manifests: { root: string; json: string }[] = [];
+    let legacy = false;
+    for (const child of demo.children) {
+      if (!(child instanceof TFolder)) continue;
+      if (/^batch-\d+$/.test(child.name)) {
+        legacy = true;
+        continue;
+      }
+      const manifestPath = normalizePath(`${child.path}/cartridge.json`);
+      if (this.app.vault.getAbstractFileByPath(manifestPath) instanceof TFile) {
+        try {
+          manifests.push({ root: child.path, json: await this.app.vault.adapter.read(manifestPath) });
+        } catch (err) {
+          console.warn("ODEN: kunde inte läsa", manifestPath, err);
+        }
+      }
+    }
+    this.cartridges = discoverCartridges(manifests, legacy);
+    for (const c of this.cartridges) {
+      if (!c.id) continue; // the legacy cartridge is served by the static "feed-demo" command
+      this.addCommand({ id: cartridgeCommandId(c), name: cartridgeCommandName(c), callback: () => this.toggleDemoFeed(c) });
+    }
+  }
+
+  /** Command/menu toggle: running → pause; otherwise pick a cartridge (when
+   *  several), offer to move the operation area to it, ask for a window, start. */
+  toggleDemoFeed(cartridge?: Cartridge): void {
     if (this.demoRunning) {
       if (this.demoTimer !== null) window.clearTimeout(this.demoTimer);
       this.demoTimer = null;
@@ -2956,16 +3001,64 @@ export default class SevenSPlugin extends Plugin {
       new Notice("ODEN: demomatning pausad — kör kommandot igen för att fortsätta.");
       return;
     }
-    new DemoFeedModal(this.app, (minutes) => this.startDemoFeed(minutes)).open();
+    const choose = (c: Cartridge) => {
+      const here = { lat: this.settings.protectedLat, lon: this.settings.protectedLon };
+      const ask = () => new DemoFeedModal(this.app, (minutes) => this.startDemoFeed(minutes, c)).open();
+      if (c.aoi && cartridgeNeedsAoiSwitch(c, here, haversineM)) {
+        // Demo reports are generated around THEIR objektet — without the switch
+        // every proximity signal misses. The operator decides; declining still
+        // feeds (a deliberate "wrong AOI" exercise is legitimate).
+        const aoi = c.aoi;
+        new ConfirmModal(
+          this.app,
+          {
+            title: `Byta operationsområde till ${c.label}?`,
+            body:
+              `Kassetten är genererad kring ${aoi.lat.toFixed(4)}, ${aoi.lon.toFixed(4)}. ` +
+              "Utan bytet hamnar alla rapporter långt från objektet och närhetssignalerna uteblir. " +
+              "Beslut, namngivna platser och analyssvar från nuvarande område behålls.",
+            confirmText: "Byt och mata",
+            cancelText: "Mata utan att byta",
+            cta: true,
+          },
+          async () => {
+            await this.applyOperationSetup({ name: c.label, lat: aoi.lat, lon: aoi.lon });
+            ask();
+          },
+          ask,
+        ).open();
+      } else {
+        ask();
+      }
+    };
+    const resume = this.demoCartridge;
+    if (cartridge) choose(cartridge);
+    else if (resume) choose(resume);
+    else if (this.cartridges.length === 1) choose(this.cartridges[0]);
+    else if (this.cartridges.length > 1) {
+      new PickStringModal(
+        this.app,
+        this.cartridges.map((c) => ({ value: c.root, label: c.beskrivning ? `${c.label} — ${c.beskrivning}` : c.label })),
+        "Välj demokassett…",
+        (root) => {
+          const c = this.cartridges.find((x) => x.root === root);
+          if (c) choose(c);
+        },
+      ).open();
+    } else {
+      new Notice("ODEN: inga demokassetter i demo/.");
+    }
   }
 
-  /** The queue is whatever remains under demo/ — moved files are gone, so pause/
-   *  resume (and app restarts) need no persisted state. Only files under demo/
-   *  are ever touched; the move is an explicit operator command. */
-  private startDemoFeed(minutes: number): void {
+  /** The queue is whatever remains under the cartridge's root — moved files are
+   *  gone, so pause/resume (and app restarts) need no persisted state. Only
+   *  files under demo/ are ever touched; the move is an explicit operator command. */
+  private startDemoFeed(minutes: number, cartridge: Cartridge): void {
+    this.demoCartridge = cartridge;
+    const prefix = cartridge.root + "/";
     const candidates = this.app.vault
       .getMarkdownFiles()
-      .filter((f) => f.path.startsWith("demo/") && /^TNR\d+\.md$/.test(f.name));
+      .filter((f) => f.path.startsWith(prefix) && /^TNR\d+\.md$/.test(f.name));
     // Wrap-aware chronological order: plain name sort breaks when the corpus
     // crosses a month boundary (TNR has no month — Sep 1 sorts before Aug 29).
     const order = corpusMinutes(candidates.map((f) => f.name.slice(3, 9)));
@@ -2974,7 +3067,8 @@ export default class SevenSPlugin extends Plugin {
       .sort((a, b) => a.key - b.key || a.f.name.localeCompare(b.f.name))
       .map((x) => x.f);
     if (reports.length === 0) {
-      new Notice("ODEN: demo/ innehåller inga rapporter (klart, eller redan matat).");
+      new Notice(`ODEN: ${cartridge.root}/ innehåller inga rapporter (klart, eller redan matat).`);
+      this.demoCartridge = null;
       return;
     }
     const offsets = demoSchedule(reports.map((f) => f.name.slice(3, 9)), minutes);
@@ -2986,7 +3080,8 @@ export default class SevenSPlugin extends Plugin {
         if (i + 1 >= reports.length) {
           this.demoRunning = false;
           this.demoTimer = null;
-          new Notice("ODEN: demodata slut — facit finns i demo/facit.json.", 10000);
+          this.demoCartridge = null;
+          new Notice(`ODEN: demodata slut — facit finns i ${cartridge.root}/facit.json.`, 10000);
           return;
         }
         this.demoTimer = window.setTimeout(() => step(i + 1), offsets[i + 1] - offsets[i]);
@@ -2997,7 +3092,12 @@ export default class SevenSPlugin extends Plugin {
 
   /** Move one report into inkorg/, its photo folder(s) first so embeds resolve
    *  the moment the report lands (folder names contain `_<tnr>-`, the same
-   *  contract the packager uses). */
+   *  contract the packager uses). NB `vault.rename`, not
+   *  `fileManager.renameFile`: the latter is Obsidian's link-aware move — it
+   *  prompts "update links?" (seen live a few reports into a demo feed, at the
+   *  first photo report) and would then REWRITE the message file, which the
+   *  write contract forbids. Embeds resolve by shortest path after the move
+   *  without any rewrite. Same rule in resetVault. */
   private async moveDemoReport(report: TFile): Promise<void> {
     try {
       if (!(this.app.vault.getAbstractFileByPath("inkorg") instanceof TFolder)) {
@@ -3011,7 +3111,7 @@ export default class SevenSPlugin extends Plugin {
       if (parent instanceof TFolder) {
         for (const child of [...parent.children]) {
           if (child instanceof TFolder && child.name.includes(`_${tnr}-`) && !taken(`inkorg/${child.name}`)) {
-            await this.app.fileManager.renameFile(child, normalizePath(`inkorg/${child.name}`));
+            await this.app.vault.rename(child, normalizePath(`inkorg/${child.name}`));
           }
         }
       }
@@ -3019,7 +3119,7 @@ export default class SevenSPlugin extends Plugin {
         console.warn("ODEN: demo-rapport hoppas över (finns redan i inkorg):", report.name);
         return;
       }
-      await this.app.fileManager.renameFile(report, normalizePath(`inkorg/${report.name}`));
+      await this.app.vault.rename(report, normalizePath(`inkorg/${report.name}`));
     } catch (err) {
       console.error("ODEN: demo move failed", report.path, err);
     }
@@ -3063,15 +3163,21 @@ export default class SevenSPlugin extends Plugin {
     this.demoTimer = null;
     this.demoRunning = false;
 
-    // facit.json is the authority on what belongs to the demo corpus.
-    let facit: FacitEntry[] = [];
-    try {
-      facit = JSON.parse(await this.app.vault.adapter.read(normalizePath("demo/facit.json"))) as FacitEntry[];
-    } catch {
-      // No demo corpus in this vault — every ingested report is simply removed.
+    this.demoCartridge = null;
+
+    // Each cartridge's facit.json is the authority on what belongs to it —
+    // reports go home to THEIR cartridge's batch folders. A vault with no
+    // manifests falls back to the legacy demo/facit.json.
+    const roots = this.cartridges.length ? this.cartridges.map((c) => c.root) : ["demo"];
+    const cartridgePlans: { origin: ReturnType<typeof demoOriginKeys>; plan: Map<string, string>; root: string }[] = [];
+    for (const root of roots) {
+      try {
+        const facit = JSON.parse(await this.app.vault.adapter.read(normalizePath(`${root}/facit.json`))) as FacitEntry[];
+        cartridgePlans.push({ origin: demoOriginKeys(facit), plan: demoBatchPlan(facit, undefined, root), root });
+      } catch {
+        // No facit for this root — nothing to rescue there.
+      }
     }
-    const origin = demoOriginKeys(facit);
-    const plan = demoBatchPlan(facit);
 
     // 1. Rescue the corpus first: demo-origin reports (frontmatter id, or the
     //    filename for a report predating the id) go home before the sweep runs.
@@ -3080,8 +3186,11 @@ export default class SevenSPlugin extends Plugin {
     for (const f of this.app.vault.getMarkdownFiles()) {
       if (f.path.startsWith("demo/")) continue;
       const r = parseReport(await this.app.vault.cachedRead(f), f.path, []);
-      if (!((r.id !== "" && origin.ids.has(r.id)) || origin.files.has(f.name))) continue;
-      const target = plan.get(f.name) ?? "demo";
+      const home = cartridgePlans.find(
+        (cp) => (r.id !== "" && cp.origin.ids.has(r.id)) || cp.origin.files.has(f.name),
+      );
+      if (!home) continue;
+      const target = home.plan.get(f.name) ?? home.root;
       if (!(this.app.vault.getAbstractFileByPath(normalizePath(target)) instanceof TFolder)) {
         await this.app.vault.createFolder(normalizePath(target));
       }
@@ -3092,12 +3201,12 @@ export default class SevenSPlugin extends Plugin {
       if (tnr && parent instanceof TFolder) {
         for (const d of [...parent.children]) {
           if (d instanceof TFolder && d.name.includes(`_${tnr}-`) && !taken(`${target}/${d.name}`)) {
-            await this.app.fileManager.renameFile(d, normalizePath(`${target}/${d.name}`));
+            await this.app.vault.rename(d, normalizePath(`${target}/${d.name}`));
           }
         }
       }
       if (!taken(`${target}/${f.name}`)) {
-        await this.app.fileManager.renameFile(f, normalizePath(`${target}/${f.name}`));
+        await this.app.vault.rename(f, normalizePath(`${target}/${f.name}`));
         restored++;
       }
     }
@@ -3748,58 +3857,16 @@ class SevenSTextView extends ItemView {
       }
     }
 
-    // Add form.
-    const nameIn = content.createEl("input", { type: "text" });
-    nameIn.placeholder = "Namn (t.ex. Norra grinden)";
-    nameIn.style.cssText = "width:100%;margin:0 0 6px;";
-
-    const coordIn = content.createEl("input", { type: "text" });
-    coordIn.placeholder = "Position: 59.2622,17.712  eller  33VXF5453072480";
-    coordIn.style.cssText = "width:100%;margin:0 0 2px;";
-    if (initCoord) coordIn.value = initCoord; // from a map seed
-    content.createEl("div", {
-      text:
-        "Tips: högerklicka i kartan → “Copy geolocation as front matter” (kopierar direkt, " +
-        "ingen dialog) och klistra in här. Eller “New note here (front matter)” — då fylls " +
-        "positionen i automatiskt.",
-    }).style.cssText = "opacity:.55;font-size:.8em;margin:0 0 6px;";
-
-    const optRow = content.createDiv();
-    optRow.style.cssText = "display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 6px;";
-    optRow.createEl("span", { text: "Radie (m):" }).style.cssText = "font-size:.9em;";
-    const radIn = optRow.createEl("input", { type: "number" });
-    radIn.value = "100";
-    radIn.style.cssText = "width:90px;";
-    const sensLbl = optRow.createEl("label");
-    sensLbl.style.cssText = "display:flex;gap:4px;align-items:center;font-size:.9em;cursor:pointer;";
-    const sensIn = sensLbl.createEl("input", { type: "checkbox" });
-    sensLbl.appendText("Skyddsvärd (larma vid närhet)");
-
-    const err = content.createEl("div");
-    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin-bottom:8px;";
-
-    const add = content.createEl("button", { text: "Lägg till", cls: "mod-cta" });
-    add.onclick = async () => {
-      const name = nameIn.value.trim();
-      if (!name) {
-        err.setText("Ange ett namn på platsen.");
-        return;
-      }
-      const c = parseCoord(coordIn.value);
-      if (!c) {
-        err.setText("Kunde inte tolka positionen — ange lat,lon, en MGRS-ruta eller klistra in från kartan.");
-        return;
-      }
-      const radiusM = Math.round(Number(radIn.value));
-      if (!Number.isFinite(radiusM) || radiusM < 10) {
-        err.setText("Radien måste vara minst 10 m.");
-        return;
-      }
-      err.setText("");
-      await this.plugin.addPredefinedPlace(name, { lat: c.lat, lon: c.lon, radiusM, sensitive: sensIn.checked });
-      this.showPlaces(); // stay on the screen — the operator often adds several
-    };
-    window.setTimeout(() => nameIn.focus(), 0);
+    // Adding is its own dialog (the panel is too short to show the whole form
+    // with its button; operator feedback). A map seed opens it straight away.
+    const addBtn = content.createEl("button", { text: "Lägg till plats…", cls: "mod-cta" });
+    const openAdd = (coord?: string) =>
+      new AddPlaceModal(this.plugin.app, coord, async (name, place) => {
+        await this.plugin.addPredefinedPlace(name, place);
+        this.showPlaces(); // stay on the screen — the operator often adds several
+      }).open();
+    addBtn.onclick = () => openAdd();
+    if (initCoord) openAdd(initCoord);
   }
 
   /** 🔭 Watchlist manager — the operator's short list, with status + remove. */
@@ -4353,6 +4420,87 @@ class AnalysisReportModal extends Modal {
   }
 }
 
+/** "Lägg till plats" — name + position + radius + skyddsvärd, in a dialog so
+ *  the whole form and its button are always visible. Copy the coordinate from
+ *  the map BEFORE opening (the tip says how); a map seed prefills it. */
+class AddPlaceModal extends Modal {
+  constructor(
+    app: App,
+    private readonly initCoord: string | undefined,
+    private readonly onDone: (name: string, place: PredefinedLocation) => Promise<void>,
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "Lägg till namngiven plats" });
+    contentEl.createEl("p", {
+      text: "Observationer inom radien kopplas till platsen i grafen. Skyddsvärda platser ger dessutom larmsignal vid närhet.",
+    }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
+
+    const nameIn = contentEl.createEl("input", { type: "text" });
+    nameIn.placeholder = "Namn (t.ex. Norra grinden)";
+    nameIn.style.cssText = "width:100%;margin:0 0 6px;";
+
+    const coordIn = contentEl.createEl("input", { type: "text" });
+    coordIn.placeholder = "Position: 59.2622,17.712  eller  33VXF5453072480";
+    coordIn.style.cssText = "width:100%;margin:0 0 2px;";
+    if (this.initCoord) coordIn.value = this.initCoord;
+    contentEl.createEl("div", {
+      text:
+        "Tips: högerklicka i kartan → “Copy geolocation as front matter” och klistra in här " +
+        "(kopiera gärna innan du öppnar dialogen). Eller “New note here (front matter)” — då " +
+        "öppnas den här dialogen med positionen ifylld.",
+    }).style.cssText = "opacity:.55;font-size:.8em;margin:0 0 8px;";
+
+    const optRow = contentEl.createDiv();
+    optRow.style.cssText = "display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 8px;";
+    optRow.createEl("span", { text: "Radie (m):" }).style.cssText = "font-size:.9em;";
+    const radIn = optRow.createEl("input", { type: "number" });
+    radIn.value = "100";
+    radIn.style.cssText = "width:90px;";
+    const sensLbl = optRow.createEl("label");
+    sensLbl.style.cssText = "display:flex;gap:4px;align-items:center;font-size:.9em;cursor:pointer;";
+    const sensIn = sensLbl.createEl("input", { type: "checkbox" });
+    sensLbl.appendText("Skyddsvärd (larma vid närhet)");
+
+    const err = contentEl.createEl("div");
+    err.style.cssText = "color:var(--text-error);font-size:.85em;min-height:1.2em;margin-bottom:8px;";
+
+    const bar = contentEl.createDiv();
+    bar.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
+    bar.createEl("button", { text: "Avbryt" }).onclick = () => this.close();
+    const add = bar.createEl("button", { text: "Lägg till", cls: "mod-cta" });
+    const submit = async () => {
+      const name = nameIn.value.trim();
+      if (!name) {
+        err.setText("Ange ett namn på platsen.");
+        return;
+      }
+      const c = parseCoord(coordIn.value);
+      if (!c) {
+        err.setText("Kunde inte tolka positionen — ange lat,lon, en MGRS-ruta eller klistra in från kartan.");
+        return;
+      }
+      const radiusM = Math.round(Number(radIn.value));
+      if (!Number.isFinite(radiusM) || radiusM < 10) {
+        err.setText("Radien måste vara minst 10 m.");
+        return;
+      }
+      this.close();
+      await this.onDone(name, { lat: c.lat, lon: c.lon, radiusM, sensitive: sensIn.checked });
+    };
+    add.onclick = () => void submit();
+    for (const el of [nameIn, coordIn, radIn]) el.addEventListener("keydown", (e) => { if (e.key === "Enter") void submit(); });
+    window.setTimeout(() => (this.initCoord ? nameIn : nameIn).focus(), 0);
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
 class DemoFeedModal extends Modal {
   constructor(
     app: App,
@@ -4400,6 +4548,9 @@ class ConfirmModal extends Modal {
     app: App,
     private opts: { title: string; body: string; confirmText?: string; cancelText?: string; cta?: boolean },
     private onConfirm: () => void | Promise<void>,
+    /** Optional: the cancel button is a real second choice, not just "close"
+     *  (e.g. "Mata utan att byta område"). Esc/✕ never fire it. */
+    private onCancel?: () => void | Promise<void>,
   ) {
     super(app);
   }
@@ -4412,7 +4563,10 @@ class ConfirmModal extends Modal {
     btns.style.cssText = "display:flex;gap:8px;justify-content:flex-end;";
     // Destructive confirmations warn (default); a plain offer uses the CTA style.
     const ok = btns.createEl("button", { text: this.opts.confirmText ?? "Fortsätt", cls: this.opts.cta ? "mod-cta" : "mod-warning" });
-    btns.createEl("button", { text: this.opts.cancelText ?? "Avbryt" }).onclick = () => this.close();
+    btns.createEl("button", { text: this.opts.cancelText ?? "Avbryt" }).onclick = () => {
+      this.close();
+      if (this.onCancel) void this.onCancel();
+    };
     ok.onclick = () => {
       this.close();
       void this.onConfirm();

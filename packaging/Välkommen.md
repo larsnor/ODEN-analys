@@ -50,34 +50,38 @@ misstankepoängen – den styr bara vad du ser.
 
 ## Testa med demodata
 
-I mappen `demo/` ligger en syntetisk övningskorpus: fjorton dygn kring HvSS
-Vällinge med drygt 360 rapporter (en del med foton), en dold spaningscell, en
-infiltrationscell och en demonstration. Inga riktiga personer eller fordon
+I mappen `demo/` ligger sex **demokassetter** – fristående syntetiska
+övningskorpusar, var och en med egen plats, egen hotbild och eget facit: HvSS
+Vällinge (standardkorpusen, med foton), Centrala Uppsala, Tranbygge läger,
+Norrtälje hamn, Tierps flygfält och Södertälje Syd. `demo/LÄS-MIG.md`
+beskriver hotbilden i varje kassett. Inga riktiga personer eller fordon
 förekommer.
 
-Sätt operationsområdet till demokoordinaten `59.2622,17.712`. Kör sedan
-kommandot **"ODEN: Mata demodata"** (finns även i `⋯`-menyn), välj hur lång tid
-uppspelningen ska ta – 15 minuter är lagom första gången – och luta dig
-tillbaka. Rapporterna droppar in i korpusens egen rytm: lugna nätter är lugna,
-och när spaningscellen rör sig blir det plötsligt bråttom. Granska förslagen,
-flagga, bevaka och fråga i chatten medan det pågår; samma kommando pausar och
-återupptar. Kör du Ollama kan du slå på 📷-chipet – då ser du *"Bild mottagen,
-analys startad"* följt av bildfynd att granska när fotorapporterna kommer.
+Kör kommandot **"ODEN: Mata demodata — <plats>"** för den kassett du vill öva
+på (eller `⋯ → Mata demodata…` och välj i listan). Kommandot erbjuder sig att
+byta operationsområde till kassettens plats – tacka ja, annars hamnar allt
+långt från objektet – och frågar hur lång tid uppspelningen ska ta; 15 minuter
+är lagom första gången. Rapporterna droppar in i korpusens egen rytm: lugna
+nätter är lugna, och när en cell rör sig blir det plötsligt bråttom. Granska
+förslagen, flagga, bevaka och fråga i chatten medan det pågår; samma kommando
+pausar och återupptar. Kör du Ollama kan du slå på 📷-chipet i kassetterna med
+foton (Vällinge, Tierp) – då ser du *"Bild mottagen, analys startad"* följt
+av bildfynd att granska.
 
 Vill man hellre mata för hand går det förstås också: dra innehållet i
-`demo/batch-01` till `inkorg/` (i Obsidians filpanel eller i Finder), och
-fortsätt batch för batch.
+`demo/<kassett>/batch-01` till `inkorg/`, och fortsätt batch för batch.
 
-När du är klar visar `demo/facit.json` hur det faktiskt låg till – jämför gärna
-med vad du själv hittade. Vill du börja om kör du *"ODEN: Nollställ valvet"*
-(finns även under `⋯` → *Avancerat*): demorapporterna flyttas tillbaka till
-`demo/` och allt annat i valvet hamnar i papperskorgen – noter, beslut,
-namngivna platser och analyssvar. Kvar står `demo/`, `inkorg/`, den här filen
-och operationsområdet, precis som efter installationen. Sedan är det bara att
-mata igen.
+När du är klar visar `demo/<kassett>/facit.json` hur det faktiskt låg till –
+jämför gärna med vad du själv hittade, eller kör *"Genomför analys"* och se
+om djupanalysen pekar ut cellen. Vill du börja om, eller byta kassett, kör du
+*"ODEN: Nollställ valvet"* (finns även under `⋯` → *Avancerat*): matade
+rapporter flyttas tillbaka till sin kassett och allt annat i valvet hamnar i
+papperskorgen – noter, beslut, namngivna platser och analyssvar. Sedan är det
+bara att mata igen.
 
-Vill du generera egna korpusar, med andra platser och hotbilder, finns
-verktyget [7S-generator](https://github.com/larsnor/7S-generator).
+Vill du generera egna kassetter, med andra platser och hotbilder, finns
+verktyget [7S-generator](https://github.com/larsnor/7S-generator) och
+receptet i `scripts/cartridges.sh`.
 
 ## Skarp drift
 

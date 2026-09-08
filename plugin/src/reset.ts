@@ -27,14 +27,14 @@ export const DEMO_BATCH_SIZE = 25;
 
 /** Target folder under demo/ for every corpus file, reproducing the
  *  packager's chronological batch split. */
-export function demoBatchPlan(facit: FacitEntry[], batchSize = DEMO_BATCH_SIZE): Map<string, string> {
+export function demoBatchPlan(facit: FacitEntry[], batchSize = DEMO_BATCH_SIZE, root = "demo"): Map<string, string> {
   const ordered = [...facit].sort(
     (a, b) => (a.tidpunkt ?? "").localeCompare(b.tidpunkt ?? "") || a.file.localeCompare(b.file),
   );
   const plan = new Map<string, string>();
   ordered.forEach((entry, i) => {
     const batch = Math.floor(i / batchSize) + 1;
-    plan.set(entry.file, `demo/batch-${String(batch).padStart(2, "0")}`);
+    plan.set(entry.file, `${root}/batch-${String(batch).padStart(2, "0")}`);
   });
   return plan;
 }
