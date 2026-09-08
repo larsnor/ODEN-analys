@@ -790,7 +790,7 @@ export default class SevenSPlugin extends Plugin {
    *  naming. Feature-detected + try/caught: if Map View is absent or its API
    *  changes, naming still works, just without the zoom. `dedicatedPane` reuses
    *  the open map leaf rather than replacing the active (ODEN) panel. */
-  private focusMapOn(lat: number, lon: number, query?: string, zoom?: number): void {
+  private async focusMapOn(lat: number, lon: number, query?: string, zoom?: number, needle?: string): Promise<void> {
     try {
       const mv = (this.app as unknown as { plugins?: { plugins?: Record<string, unknown> } }).plugins?.plugins?.[
         "obsidian-map-view"
@@ -801,7 +801,18 @@ export default class SevenSPlugin extends Plugin {
       // visible even if the map's persisted query doesn't include its tag yet.
       const state: Record<string, unknown> = { mapCenter: { lat, lng: lon }, mapZoom };
       if (query) state.query = query;
-      void mv.openMapWithState(state, "dedicatedPane", false);
+      await mv.openMapWithState(state, "dedicatedPane", false);
+      // A "needle": Map View's own temporary search-result marker (the pin its
+      // place search drops) — the exact spot stays visible at a zoom where
+      // street names and POIs render. Feature-detected; absent → no needle.
+      if (needle) {
+        const view = this.app.workspace.getLeavesOfType("map")[0]?.view as
+          | { addSearchResultMarker?: (d: { location: { lat: number; lng: number }; name: string }, keepZoom: boolean) => void }
+          | undefined;
+        if (view && typeof view.addSearchResultMarker === "function") {
+          view.addSearchResultMarker({ location: { lat, lng: lon }, name: needle }, true);
+        }
+      }
     } catch (err) {
       console.warn("ODEN: could not focus Map View", err);
     }
@@ -813,17 +824,18 @@ export default class SevenSPlugin extends Plugin {
     const current = this.settings.locationNicknames[grid] ?? "";
     // Show the operator WHERE this grid is on the map, to help them pick a name.
     const ll = mgrsToLatLon(grid);
-    // Zoom 13 keeps surrounding placenames/roads visible for context (map-view's
-    // own zoomOnGoFromNote of 15 is too tight — a bare marker on empty tiles).
-    const NAMING_ZOOM = 13;
-    if (ll) this.focusMapOn(ll.lat, ll.lon, undefined, NAMING_ZOOM);
+    // Zoom 16: street names and POIs render (operator feedback 2026-09-08) —
+    // the needle marks the exact grid so the tight zoom no longer loses it.
+    const NAMING_ZOOM = 16;
+    const needle = `Namnge: ${grid}`;
+    if (ll) void this.focusMapOn(ll.lat, ll.lon, undefined, NAMING_ZOOM, needle);
     new NameLocationModal(
       this.app,
       grid,
       current,
       ll,
       () => {
-        if (ll) this.focusMapOn(ll.lat, ll.lon, undefined, NAMING_ZOOM); // "visa på karta igen"
+        if (ll) void this.focusMapOn(ll.lat, ll.lon, undefined, NAMING_ZOOM, needle); // "visa på karta igen"
       },
       async (name) => {
         this.settings.locationNameAsked[grid] = true;
@@ -4209,7 +4221,52 @@ class ReviewModal extends Modal {
   }
 }
 
-class NameLocationModal extends Modal {
+/** A NON-modal dialog: a floating card over the workspace with no backdrop, so
+ *  the map (and everything else) stays fully interactive while it is open —
+ *  the operator right-clicks the map for a coordinate WITH the dialog open.
+ *  Mirrors the bit of Obsidian's Modal API the place dialogs use (contentEl,
+ *  open/close, onOpen/onClose). Esc or ✕ closes. */
+class FloatingDialog {
+  contentEl!: HTMLElement;
+  private root: HTMLElement | null = null;
+  private readonly onKey = (e: KeyboardEvent) => {
+    if (e.key === "Escape") this.close();
+  };
+
+  constructor(protected readonly app: App, private readonly title: string) {}
+
+  open(): void {
+    const root = document.body.createDiv();
+    root.style.cssText =
+      "position:fixed;top:72px;right:24px;width:400px;max-width:92vw;max-height:80vh;overflow-y:auto;" +
+      "z-index:var(--layer-popover, 60);background:var(--background-primary);color:var(--text-normal);" +
+      "border:1px solid var(--background-modifier-border);border-radius:8px;" +
+      "box-shadow:var(--shadow-l, 0 8px 32px rgba(0,0,0,.35));padding:12px 14px;";
+    const head = root.createDiv();
+    head.style.cssText = "display:flex;align-items:center;gap:8px;margin-bottom:8px;";
+    head.createEl("strong", { text: this.title }).style.flex = "1";
+    const x = head.createEl("button", { text: "✕" });
+    x.setAttribute("aria-label", "Stäng");
+    x.onclick = () => this.close();
+    this.contentEl = root.createDiv();
+    this.root = root;
+    root.addEventListener("keydown", this.onKey);
+    this.onOpen();
+  }
+
+  close(): void {
+    if (!this.root) return;
+    this.onClose();
+    this.root.removeEventListener("keydown", this.onKey);
+    this.root.remove();
+    this.root = null;
+  }
+
+  onOpen(): void {}
+  onClose(): void {}
+}
+
+class NameLocationModal extends FloatingDialog {
   constructor(
     app: App,
     private grid: string,
@@ -4218,12 +4275,11 @@ class NameLocationModal extends Modal {
     private onShowMap: () => void,
     private onDone: (name: string | null) => void | Promise<void>,
   ) {
-    super(app);
+    super(app, "Namnge plats");
   }
 
   onOpen(): void {
     const { contentEl } = this;
-    contentEl.createEl("h3", { text: "Namnge plats" });
     const sub = contentEl.createEl("p");
     sub.style.cssText = "opacity:.7;margin:0 0 8px;";
     sub.setText(
@@ -4233,7 +4289,7 @@ class NameLocationModal extends Modal {
     );
     if (this.coords) {
       const hint = contentEl.createEl("p", {
-        text: "Kartan (Map View) har zoomat till platsen — se var den ligger och välj ett namn.",
+        text: "Kartan har zoomat in och satt en nål på platsen. Dialogen blockerar inte kartan — panorera, zooma och högerklicka fritt för gatunamn och närliggande platser.",
       });
       hint.style.cssText = "opacity:.7;margin:0 0 8px;font-size:.9em;";
       const showMap = contentEl.createEl("button", { text: "📍 Visa på karta igen" });
@@ -4494,18 +4550,17 @@ class AnalysisReportModal extends Modal {
 /** "Lägg till plats" — name + position + radius + skyddsvärd, in a dialog so
  *  the whole form and its button are always visible. Copy the coordinate from
  *  the map BEFORE opening (the tip says how); a map seed prefills it. */
-class AddPlaceModal extends Modal {
+class AddPlaceModal extends FloatingDialog {
   constructor(
     app: App,
     private readonly initCoord: string | undefined,
     private readonly onDone: (name: string, place: PredefinedLocation) => Promise<void>,
   ) {
-    super(app);
+    super(app, "Lägg till namngiven plats");
   }
 
   onOpen(): void {
     const { contentEl } = this;
-    contentEl.createEl("h3", { text: "Lägg till namngiven plats" });
     contentEl.createEl("p", {
       text: "Observationer inom radien kopplas till platsen i grafen. Skyddsvärda platser ger dessutom larmsignal vid närhet.",
     }).style.cssText = "opacity:.75;margin:0 0 10px;font-size:.9em;";
@@ -4520,9 +4575,9 @@ class AddPlaceModal extends Modal {
     if (this.initCoord) coordIn.value = this.initCoord;
     contentEl.createEl("div", {
       text:
-        "Tips: högerklicka i kartan → “Copy geolocation as front matter” och klistra in här " +
-        "(kopiera gärna innan du öppnar dialogen). Eller “New note here (front matter)” — då " +
-        "öppnas den här dialogen med positionen ifylld.",
+        "Tips: kartan är klickbar medan dialogen är öppen — högerklicka i kartan → " +
+        "“Copy geolocation as front matter” och klistra in här. Eller “New note here (front " +
+        "matter)” — då öppnas dialogen med positionen ifylld.",
     }).style.cssText = "opacity:.55;font-size:.8em;margin:0 0 8px;";
 
     const optRow = contentEl.createDiv();
