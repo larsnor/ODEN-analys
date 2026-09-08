@@ -275,7 +275,10 @@ export const SYNTH_SYS =
  *  never produced a hypothesis — dropped from the ladder (14b is unmeasured
  *  but sits between two measured points). Fall back to the vision model,
  *  which then yields an honest failure line rather than silence. */
-export const DEEP_TEXT_MODELS = ["qwen3:32b", "qwen3:14b", "qwen3:8b"];
+export const DEEP_TEXT_MODELS = ["qwen3:32b", "qwen3-coder:30b", "qwen3:14b", "qwen3:8b"];
+// qwen3-coder:30b (MoE, ~3B active, 18.6 GB) measured 2026-09-08 on par with
+// qwen3:32b — 5 cell-TNRs, 0 hallucinations, 46 s — and it fits the 32 GB
+// class where 32b does not. llama3.3:70b (42.5 GB) could not load on 48 GB.
 
 /** Models MEASURED unusable for the deep analysis (REPORT_VALIDATION.md):
  *  qwen3:4b leaks chain-of-thought into content; the qwen3-vl 4b/8b tags are

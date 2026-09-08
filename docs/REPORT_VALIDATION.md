@@ -56,6 +56,8 @@ infiltrationscell), "allt"-spann, 48 GB-maskin, prompt 9 508 tokens uppmätt.
 | 2026-09-04 | qwen3:8b (text) | single-shot, think:false | 1 (en samordningshypotes med 5 cell-TNR av 7 citat, H2+H3 blandade) | **0** | 25 s | marginell: övriga hypoteser benignt brus med 30–90-citats-dumpar; budget slut mitt i listan |
 | 2026-09-04 | qwen3:4b (text) | single-shot, think:false | 0 | – | 17 s | **oanvändbar: engelsk tankekedja läckte in i innehållet, ingen hypotes** — struken ur modellstegen |
 | 2026-09-08 | **qwen3:32b, promptversion 2** | single-shot, think:false | **2 (H2 + infiltrationscellen H3)** | **0** | 64 s | 4 hypoteser varav 3 säkerhetsrelevanta (kamerakartläggning, passertidsfrågor, drönare) och 1 vardagsrutin — mot 1 av 4 relevanta under v1 |
+| 2026-09-08 | llama3.3:70b (42,5 GB), prompt v2 | single-shot | – | – | 301 s → inget svar | **kunde inte köras på 48 GB** (Ollama gav upp laddningen; modellen + KV-cache ryms inte) — omätt, inte underkänd |
+| 2026-09-08 | **qwen3-coder:30b** (MoE, ~3B aktiva, 18,6 GB), prompt v2 | single-shot, think:false | **2 (H2 + infiltrationscellen H3)**, 5 cell-TNR | **0** | **46 s** | 5 hypoteser, alla säkerhetsinramade (kamerakartläggning, kvällsaktivitet, hantverkare med verktyg, drönare); en knyter ett civilt meddelande till spaning — verifieringen fångar det. I nivå med qwen3:32b och ryms i 32 GB-klassen → inlagd som nummer två i modellstegen |
 
 ## Uppmätta lärdomar (inbyggda i koden)
 
@@ -97,6 +99,10 @@ hämtas från den valda modellen via /api/show.
   på ~1 min och pekade ut infiltrationscellen — exakt operatörsscenariot
   ("var för sig oskyldiga händelser"). Brus förekommer (paketbud,
   häckklippning) — operatören triagerar.
+- **qwen3-coder:30b** (32 GB-klass): uppmätt i nivå med 32b på 46 s trots
+  att det är en kodmodell — andrahandsval i "auto"-stegen.
+- **llama3.3:70b**: ryms inte i 48 GB (42,5 GB vikter + KV-cache); omätt på
+  större maskiner.
 - **qwen3:8b (text)**: fungerar med förbehåll — noll hallucinationer och en
   äkta cellpekande samordningshypotes, men bruset dominerar och
   citatsdisciplinen är svag (dumpar halva rostern som "evidens"). Näst-bästa

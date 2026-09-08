@@ -213,6 +213,7 @@ test("sanitizeHypotheses: invented TNR de-linked and flagged; valid kept", () =>
 
 test("pickDeepModel prefers the best pulled text model, else the vision model", () => {
   assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:8b", "qwen3:32b"], "qwen3-vl:4b"), "qwen3:32b");
+  assert.equal(pickDeepModel(["qwen3:8b", "qwen3-coder:30b"], "qwen3-vl:4b"), "qwen3-coder:30b", "measured MoE ranks above 8b");
   assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:8b"], "qwen3-vl:4b"), "qwen3:8b");
   // qwen3:4b TEXT is measured-unusable (CoT leakage) — never picked.
   assert.equal(pickDeepModel(["qwen3-vl:4b", "qwen3:4b"], "qwen3-vl:4b"), "qwen3-vl:4b");
