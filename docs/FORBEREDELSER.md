@@ -1,19 +1,16 @@
 # Nödvändiga förberedelser för ODEN
 
-_Utkast (2026-09-09). Checklista inför skarp drift eller övning — allt nedan
-görs INNAN första rapporten ska in. Punkter märkta ⚙ finns beskrivna i detalj
-i `INSTALL.md`._
-
 ## 1. Signal — rapporteringskanalerna
 
-- **Dedikerat nummer för intaget.** Oden (intagsappen) länkas till ett eget
+- **Dedikerat nummer för ODEN.** Oden (intagsappen) länkas till ett eget
   telefonnummer/konto — aldrig en operatörs privata. Länkningen kräver telefonen
-  på plats och internet (QR-kod) — gör det i förväg, inte på ledningsplatsen.
-- **Grupperna skapas uppifrån.** En person i kompaniledningen skapar
-  Signal-grupperna (t.ex. en per pluton/sektor) och bjuder in plutoncheferna;
+  på plats och internet (QR-kod) — gör det i förväg.
+- **Grupp(erna) skapas uppifrån.** En person i kompaniledningen skapar
+  Signal-grupp(er) (t.ex. en per pluton/sektor) och bjuder in plutoncheferna;
   plutoncheferna bjuder i sin tur in sina soldater. Odens nummer läggs till i
   varje grupp intaget ska lyssna på; vitlistning i Odens konfiguration om bara
-  vissa avsändare ska tas emot.
+  vissa avsändare eller grupper ska tas emot. Minimum (och enklast) är en signal grupp, 
+  för all rapportering där samtliga är medlemmar.
 - **Tydliga instruktioner för hur Signal-trafiken hanteras**, skriftligt och
   utdelat:
   - Endast meddelanden som börjar med `7S RAPPORT` blir rapporter — allt annat
@@ -25,10 +22,14 @@ i `INSTALL.md`._
     räcker; kvalitet före kvantitet).
   - En observation = ett meddelande. Rätta fel med ett nytt meddelande, inte
     genom att redigera.
+  **Kanalen för rapportering enkelriktad**, dvs endast 7S meddelanden in från 
+  rapportörer till ODEN, inga frågor, inga omsändning, inget annat. 
 
 ## 2. På soldatnivå (varje rapportör)
 
-- Installera **Signal** på telefonen; verifiera att numret fungerar.
+- Installera **Signal** på telefonen; verifiera att numret fungerar. 
+- Saknas mobilnummer på telefonen, knyts enklast telefonen till individens 
+  eget Signal konto med hjälp av QR-kod
 - **Medlemskap i rätt Signal-grupp(er)** — kontrollera i förväg att alla
   rapportörer syns i gruppen och att Odens nummer finns med.
 - Öppna **7srapport.com** — webbsidan som säkerställer 7S-formatet (fälten
@@ -37,14 +38,12 @@ i `INSTALL.md`._
 - **Spara sidan som genväg på telefonens hemskärm** (Safari: Dela → *Lägg till
   på hemskärmen*; Android/Chrome: ⋮ → *Lägg till på startskärmen*) för snabb
   åtkomst i fält.
-- Öva ett provmeddelande per rapportör och kontrollera att det landar i
-  ODEN:s flöde ("Meddelande TNR… mottaget").
 
-## 3. Ledningsplatsen
 
-- **Dator på plats** (macOS Apple Silicon eller Windows): ODEN-valvet (⚙
-  engradsinstallationen — operativ variant), Obsidian, Oden.app. Strömförsörjning
-  och laddare — analysen är strömkrävande med lokal AI.
+## 3. På Ledningsplatsen
+
+- **Dator på plats**  ODEN-valvet (⚙ enradsinstallationen — operativ variant), 
+Obsidian, Oden.app. Strömförsörjning och laddare — analysen är strömkrävande med lokal AI.
 - **Internetåtkomst på ledningsplatsen**: krävs för Signal-intaget (Oden tar
   emot via Signals servrar) och för kartrutor som inte redan är hämtade.
   Mobilt bredband/delad telefon räcker; bandbredden är låg (text + foton).
@@ -68,11 +67,10 @@ i `INSTALL.md`._
 - **Fungerar inte:** nya Signal-meddelanden når inte Oden (intaget står
   stilla tills nätet är tillbaka — meddelandena köas i Signal och levereras
   då); kartrutor utanför det förhämtade området.
-- **Reservrutin — traditionella sambandsmedel:** rapporterna lämnas på
+- **Reservrutin — traditionella sambandsmedel:** rapporterna lämnas via
   **Ra 180** (röst) eller via **MC-ordonnans**, och operatören matar in dem
   manuellt med **＋ Obs** i ODEN-panelen (samma 7S-fält, samma TNR-disciplin)
-  eller som `TNR<DDHHMM>.md` i `inkorg/`; foton flyttas med kabel/AirDrop
-  till rapportens bildmapp. Analysen fortsätter som vanligt — ODEN analyserar
+  eller som `TNR<DDHHMM>.md` i `inkorg/`;  Analysen fortsätter som vanligt — ODEN analyserar
   valvet, inte Signal — och när nätet är tillbaka fyller Signal-kön på utan
   dubbletter (manuellt inmatade rapporter får sina egna TNR).
 - Förbered: kartan förhämtad i förväg (Map View: *cache all tiles* över
