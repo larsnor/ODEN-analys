@@ -148,13 +148,30 @@ upptäcker detta självt.) Manuellt är det samma tre delar, **i denna ordning**
 
 Ibland ligger fixen man behöver i en öppen pull request i Oden, inte i en
 release. Oden bygger då en **PR-snapshot** (en förhandsutgåva med en egen tag,
-`pr-<nummer>-snapshot-<sha>`), och samlingsskriptet kan installera exakt den
-byggnationen tillsammans med valvet:
+`pr-<nummer>-snapshot-<sha>`). Enklast är att ange **PR-numret** och låta
+skriptet slå upp bygget — taggen innehåller commitens sha och byter alltså namn
+varje gång pull requesten uppdateras:
 
 ```bash
-# Avsluta Oden.app först. Taggen står i Odens Releases-lista.
+# Avsluta Oden.app först. 269 är PR-numret ur länken till pull requesten.
+curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_testbuild.sh \
+  | bash -s -- 269
+```
+
+Samma skript tar också en exakt tagg (`bash -s -- pr-269-snapshot-32ccf68`) och
+`bash -s -- senaste` för senaste testbygget av Odens main. `ODEN_PROFILE`,
+`ODEN_VALV_DIR` och de andra variablerna fungerar som vanligt, för skriptet
+lämnar över till `install_system.sh` som gör själva installationen.
+
+Finns inget bygge för PR-numret säger skriptet det: bygget görs först när pull
+requesten har etiketten `snapshot-release`, vilket den som äger Oden-repot
+sätter.
+
+Vill man styra taggen själv går det direkt via samlingsskriptet:
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh \
-  | ODEN_SNAPSHOT_TAG=pr-268-snapshot-99e98fa bash
+  | ODEN_SNAPSHOT_TAG=pr-269-snapshot-32ccf68 bash
 ```
 
 En pinnad tag är ett uttryckligt val, så den **ersätter** en redan installerad
