@@ -71,6 +71,8 @@ lyssnar på en Signal-grupp och skriver varje `7S RAPPORT`-meddelande som en
 färdig rapportfil i valvet. ODEN analyserar dem i samma stund de landar. Hela
 kedjan installeras med ett kommando:
 
+**macOS:**
+
 ```bash
 # Operativ installation (skarpt valv, ingen demodata):
 curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh | bash
@@ -78,6 +80,22 @@ curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/in
 # Övningsinstallation (samma system + sex demokassetter, valvet ODEN-övning):
 curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_training.sh | bash
 ```
+
+**Windows** (PowerShell; skriptet läses som fil eftersom `iex` inte tar
+parametrar och teckenkodningen måste överleva):
+
+```powershell
+# Operativ installation:
+iwr https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_windows.ps1 -OutFile "$env:TEMP\oden.ps1" -UseBasicParsing; powershell -ExecutionPolicy Bypass -File "$env:TEMP\oden.ps1"
+
+# Övningsinstallation:
+powershell -ExecutionPolicy Bypass -File "$env:TEMP\oden.ps1" -Variant training
+```
+
+Behöver du en Oden-fix som ännu inte är släppt, lägg till `-Pr <nummer>` på
+Windows eller kör `scripts/install_testbuild.sh <nummer>` på macOS. Lägg valvet
+utanför OneDrive — se varningen i [`INSTALL.md`](INSTALL.md). Windows-skriptet är
+granskat men ännu inte fälttestat.
 
 Skriptet hämtar valvet, installerar Oden via dess officiella installations­skript
 och skriver ut de tre manuella stegen (Obsidian, setup-wizarden, kartnyckeln).
