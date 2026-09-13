@@ -187,8 +187,42 @@ bara ha senaste testbygget av main räcker `ODEN_APP_CHANNEL=snapshot`.
 
 ### Windows
 
-Samlingsskriptet är macOS-specifikt, men varje del finns för Windows — flödet
-är den manuella treordningen ovan:
+```powershell
+# Ett kommando. 269 är PR-numret i Oden; utan -Pr tas senaste stabila release.
+iwr https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_windows.ps1 -OutFile "$env:TEMP\oden.ps1" -UseBasicParsing; powershell -ExecutionPolicy Bypass -File "$env:TEMP\oden.ps1" -Pr 269
+```
+
+`scripts/install_windows.ps1` gör samma tre saker som macOS-skriptet: hämtar
+senaste valvet, installerar Oden via dess egen installerare, och skriver ut de
+manuella stegen. Ingen administratörsbehörighet behövs (Oden installeras i
+`%LOCALAPPDATA%\Programs\Oden`), ett befintligt valv skrivs aldrig över, och
+Obsidian installeras aldrig automatiskt.
+
+Varför den omvägen i stället för `irm … | iex`: parametrar går inte att skicka
+till `iex`, och skriptet måste läsas som en fil för att teckenkodningen ska
+överleva (`ODEN-övning` har omljud). `-ExecutionPolicy Bypass` behövs eftersom
+en nedladdad, osignerad `.ps1` annars blockeras.
+
+| Flagga | Vad |
+|---|---|
+| `-Pr 269` | installera testbygget för en öppen pull request i Oden |
+| `-Tag pr-269-snapshot-e76310f` | en exakt Oden-byggnation |
+| `-Channel snapshot` | senaste testbygget av Odens main |
+| `-Variant training` | övningsvalvet med demokassetter (`-Profile` är upptaget i PowerShell) |
+| `-VaultParent C:\` | annan målkatalog; default `%USERPROFILE%`, medvetet inte Dokument |
+| `-SkipVault` / `-SkipOden` | hoppa över en av delarna |
+
+En pinnad `-Pr` eller `-Tag` **ersätter** en redan installerad Oden; samma
+byggnation en gång till hoppas över. Kör Oden när kommandot startar blir det ett
+stopp, inte en varning. SmartScreen kan fortfarande varna för den osignerade
+installeraren — skriptet avmarkerar filen med `Unblock-File`, vilket brukar
+räcka.
+
+> **Ännu inte fälttestat.** Skriptet är skrivet och granskat mot Odens och
+> ODEN-analys riktiga utgåvor, men det har inte körts på en Windows-maskin —
+> säg till om något beter sig fel, så rättas det.
+
+Varje del går också att göra för hand, vilket är samma treordning som ovan:
 
 1. **Valvet:** ladda ner `ODEN-valv-<v>.zip` från
    [senaste releasen](https://github.com/larsnor/ODEN-analys/releases/latest)
