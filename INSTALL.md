@@ -144,6 +144,30 @@ upptäcker detta självt.) Manuellt är det samma tre delar, **i denna ordning**
      och Oden rör aldrig en befintlig `.obsidian`-mapp — ordningen valv-först är
      det som gör att ODEN:s konfiguration (graf, karta, lås) står orörd kvar.
 
+### En specifik Oden-byggnation (fix som ännu inte är släppt)
+
+Ibland ligger fixen man behöver i en öppen pull request i Oden, inte i en
+release. Oden bygger då en **PR-snapshot** (en förhandsutgåva med en egen tag,
+`pr-<nummer>-snapshot-<sha>`), och samlingsskriptet kan installera exakt den
+byggnationen tillsammans med valvet:
+
+```bash
+# Avsluta Oden.app först. Taggen står i Odens Releases-lista.
+curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh \
+  | ODEN_SNAPSHOT_TAG=pr-268-snapshot-99e98fa bash
+```
+
+En pinnad tag är ett uttryckligt val, så den **ersätter** en redan installerad
+Oden.app i stället för att hoppa över den. Kör man samma tag igen hoppas steget
+över. Valvet rörs aldrig, oavsett vilken Oden-byggnation som installeras. Kör
+Oden när kommandot startar stoppar skriptet med en uppmaning att avsluta appen —
+en app som byts ut medan den kör blir trasig.
+
+Snapshots är testbyggen, inte produktion. När fixen är släppt går man tillbaka
+till den stabila kanalen med samma kommando utan `ODEN_SNAPSHOT_TAG` (installera
+över med Odens eget `install_mac.sh`, eller ta bort Oden.app först). Vill man
+bara ha senaste testbygget av main räcker `ODEN_APP_CHANNEL=snapshot`.
+
 ### Windows
 
 Samlingsskriptet är macOS-specifikt, men varje del finns för Windows — flödet
