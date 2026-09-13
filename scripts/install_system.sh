@@ -12,6 +12,7 @@
 # Användning:
 #   curl -fsSL https://raw.githubusercontent.com/larsnor/ODEN-analys/main/scripts/install_system.sh | bash
 #   ODEN_VALV_DIR=~/Skrivbord/valv  …  | bash    # annan målkatalog
+#   ODEN_SNAPSHOT_TAG=pr-268-snapshot-99e98fa  …  | bash   # en EXAKT Oden-byggnation
 set -euo pipefail
 
 REPO="larsnor/ODEN-analys"
@@ -22,6 +23,14 @@ REPO="larsnor/ODEN-analys"
 # rätt igen.) Vill man ändå ha senaste snapshot:  ODEN_APP_CHANNEL=snapshot  …  | bash
 ODEN_INSTALLER_SNAPSHOT="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_snapshot_mac.sh"
 ODEN_INSTALLER_RELEASE="https://raw.githubusercontent.com/NicklasAndersson/oden/main/scripts/install_mac.sh"
+# En EXAKT Oden-byggnation, t.ex. en PR-snapshot vars fix ännu inte är släppt:
+#   ODEN_SNAPSHOT_TAG=pr-268-snapshot-99e98fa
+# Namnet är Odens eget — det skickas vidare oförändrat till Odens installatör.
+# En pinnad tag är ett uttryckligt val och ERSÄTTER därför en redan installerad
+# Oden.app (annars hoppas installationen över — se steg 2).
+ODEN_SNAPSHOT_TAG="${ODEN_SNAPSHOT_TAG:-}"
+ODEN_APP_CHANNEL="${ODEN_APP_CHANNEL:-release}"
+[ -z "$ODEN_SNAPSHOT_TAG" ] || ODEN_APP_CHANNEL="snapshot"
 # Äldsta Oden-version utan kända 7S-luckor (foton + koordinater).
 ODEN_MIN_OK="3.2.0"
 # Profile: "release" = the OPERATIONAL vault (ODEN-valv, no demo data);
@@ -74,28 +83,55 @@ for a in rel.get("assets", []):
 fi
 
 # --- 2. Oden.app (Bin 1) — via dess egna officiella installationsskript ------
+ODEN_VER=""
 if [ -d "/Applications/Oden.app" ]; then
   ODEN_VER=$(defaults read /Applications/Oden.app/Contents/Info.plist CFBundleShortVersionString 2>/dev/null || echo "okänd")
+fi
+
+install_oden_app() {
+  if [ "$(uname -m)" != "arm64" ]; then
+    # Oden ≥4.0.0 bygger macOS-appen enbart för Apple Silicon — Intel-Macar kör
+    # Oden via Docker i stället (se Odens README).
+    info "OBS: den här datorn är inte Apple Silicon — Oden.app finns bara för arm64 sedan v4.0.0."
+    info "Kör Oden via Docker: se https://github.com/NicklasAndersson/oden#docker"
+    return 0
+  fi
+  if [ -n "$ODEN_VER" ]; then
+    # Hit kommer vi bara när en exakt byggnation begärts. En app som byts ut
+    # medan den kör blir trasig, så det är ett stopp — inte en varning.
+    if pgrep -f "/Applications/Oden.app/Contents/MacOS/" >/dev/null 2>&1; then
+      fail "Oden.app kör — avsluta appen och kör kommandot igen (valvet rörs inte)."
+    fi
+    info "Ersätter Oden.app $ODEN_VER med ${ODEN_SNAPSHOT_TAG}…"
+  fi
+  if [ -n "$ODEN_SNAPSHOT_TAG" ]; then
+    info "Installerar Oden — exakt byggnation ${ODEN_SNAPSHOT_TAG}…"
+    curl -fsSL "$ODEN_INSTALLER_SNAPSHOT" | ODEN_SNAPSHOT_TAG="$ODEN_SNAPSHOT_TAG" bash
+  elif [ "$ODEN_APP_CHANNEL" = "snapshot" ]; then
+    info "Installerar Oden (senaste snapshot — testkanal)…"
+    curl -fsSL "$ODEN_INSTALLER_SNAPSHOT" | ODEN_SNAPSHOT_SELECT=latest bash
+  else
+    info "Installerar Oden (senaste stabila release) via dess officiella skript…"
+    curl -fsSL "$ODEN_INSTALLER_RELEASE" | bash
+  fi
+}
+
+if [ -z "$ODEN_VER" ]; then
+  install_oden_app
+elif [ -n "$ODEN_SNAPSHOT_TAG" ] && [ "$ODEN_VER" = "$ODEN_SNAPSHOT_TAG" ]; then
+  ok "Oden.app är redan den begärda byggnationen ($ODEN_SNAPSHOT_TAG — hoppar över)"
+elif [ -n "$ODEN_SNAPSHOT_TAG" ]; then
+  install_oden_app
+else
   ok "Oden.app finns redan i /Applications (version $ODEN_VER — hoppar över)"
   case "$ODEN_VER" in
-    snapshot-*) : ;; # testkanal — bedöms inte mot versionsnumret
+    snapshot-*|pr-*-snapshot-*) : ;; # testkanal — bedöms inte mot versionsnumret
     *)
       if [ "$(printf '%s\n' "$ODEN_VER" "$ODEN_MIN_OK" | sort -V | head -1)" != "$ODEN_MIN_OK" ]; then
         info "OBS: Oden före $ODEN_MIN_OK tappar foton i 7S-rapporter och kan skriva fel koordinater."
         info "Uppgradera (avsluta Oden först):  curl -fsSL $ODEN_INSTALLER_RELEASE | bash"
       fi ;;
   esac
-elif [ "$(uname -m)" != "arm64" ]; then
-  # Oden ≥4.0.0 bygger macOS-appen enbart för Apple Silicon — Intel-Macar kör
-  # Oden via Docker i stället (se Odens README).
-  info "OBS: den här datorn är inte Apple Silicon — Oden.app finns bara för arm64 sedan v4.0.0."
-  info "Kör Oden via Docker: se https://github.com/NicklasAndersson/oden#docker"
-elif [ "${ODEN_APP_CHANNEL:-release}" = "snapshot" ]; then
-  info "Installerar Oden (senaste snapshot — testkanal)…"
-  curl -fsSL "$ODEN_INSTALLER_SNAPSHOT" | ODEN_SNAPSHOT_SELECT=latest bash
-else
-  info "Installerar Oden (senaste stabila release) via dess officiella skript…"
-  curl -fsSL "$ODEN_INSTALLER_RELEASE" | bash
 fi
 
 # --- 3. Manuella steg -------------------------------------------------------
