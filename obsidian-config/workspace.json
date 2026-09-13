@@ -84,8 +84,7 @@
                   "type": "markdown",
                   "state": {
                     "file": "Välkommen.md",
-                    "mode": "source",
-                    "source": false
+                    "mode": "preview"
                   },
                   "icon": "lucide-file",
                   "title": ""

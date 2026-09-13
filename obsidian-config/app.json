@@ -1,5 +1,7 @@
 {
   "propertiesInDocument": "hidden",
   "nativeMenus": false,
-  "showUnsupportedFiles": true
+  "showUnsupportedFiles": true,
+  "defaultViewMode": "preview",
+  "livePreview": false
 }
