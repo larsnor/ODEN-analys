@@ -117,6 +117,14 @@ the 7S frontmatter is still fully parsed and used by ODEN and Map View, it's jus
 not shown inline. (Equivalent to Settings → Editor → *Properties in document* →
 *Hidden*.)
 
+Also sets `defaultViewMode: "preview"` with `livePreview: false`, so a report
+opens in **Reading view**. That is what an operator wants — reports are written
+by Oden, not typed here — and it is also the only view that honours Obsidian's
+comment syntax. A report that came in over TAK ends with the untouched 8S fields
+in a `%% … %%` block so nothing is lost; in Reading view that block is hidden, in
+the editor it is not. (Equivalent to Settings → Editor → *Default view for new
+tabs* → *Reading view*.) Editing is still one click away in the note menu.
+
 ## `workspace.json` — default pane layout
 
 Copy to `<vault>/.obsidian/workspace.json`. The operator workspace: the **map**,
